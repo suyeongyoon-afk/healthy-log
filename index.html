@@ -173,6 +173,35 @@
   .pose .key.post{background:var(--up);}
   .pose .pd{font-size:12px; color:var(--muted); margin-top:5px;}
   .s-pt{background:var(--yellow); border-radius:12px; padding:11px 13px; font-size:12.5px; color:#8a6d1a; margin-top:12px; line-height:1.5;}
+  .s-lab .play{margin-left:auto; border:0; background:var(--blue); color:#fff; font-size:11.5px; font-weight:800; border-radius:9px; padding:6px 11px; cursor:pointer;}
+  .s-lab .play.post{background:var(--up);}
+  .pose{cursor:pointer;}
+  .pose .pdetail{font-size:10.5px; color:var(--blue); font-weight:700; margin-top:5px;}
+  /* guided timer player */
+  .player{position:fixed; inset:0; z-index:60; background:var(--bg); display:none; flex-direction:column;}
+  .player.on{display:flex;}
+  .phead{display:flex; align-items:center; gap:12px; padding:calc(14px + env(safe-area-inset-top)) 16px 8px;}
+  .phead .px{flex:0 0 auto; width:36px; height:36px; border-radius:50%; background:var(--card); border:0; box-shadow:var(--sh); font-size:16px; color:var(--sub); cursor:pointer;}
+  .pprog{flex:1; height:6px; background:var(--line); border-radius:4px; overflow:hidden;}
+  .pprog i{display:block; height:100%; border-radius:4px; transition:width .3s;}
+  .pcount{flex:0 0 auto; font-size:13px; font-weight:800; color:var(--sub); font-variant-numeric:tabular-nums;}
+  .pstage{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:0 24px; gap:9px; overflow-y:auto;}
+  .pfig{width:200px; height:200px; border-radius:24px; overflow:hidden; box-shadow:var(--sh);}
+  .pfig .fig{width:100%; height:100%; display:block;}
+  .pname{font-size:23px; font-weight:800; letter-spacing:-.02em; margin-top:4px;}
+  .ptar{font-size:12px; font-weight:800; border-radius:8px; padding:4px 10px;}
+  .pcue{font-size:14px; color:var(--sub); line-height:1.55; max-width:300px;}
+  .pring{position:relative; width:132px; height:132px; margin-top:4px;}
+  .pring svg{transform:rotate(-90deg);}
+  .pring .ringfg{transition:stroke-dashoffset .12s linear;}
+  .pnum{position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center;}
+  .pnum .pbig{font-size:38px; font-weight:800; font-variant-numeric:tabular-nums; line-height:1;}
+  .pnum .psub{font-size:12px; color:var(--muted); font-weight:700; margin-top:3px;}
+  .pctrl{display:flex; align-items:center; justify-content:center; gap:16px; padding:16px 0 calc(22px + env(safe-area-inset-bottom));}
+  .pctrl button{border:0; background:var(--card); box-shadow:var(--sh); border-radius:50%; cursor:pointer; color:var(--ink); display:flex; align-items:center; justify-content:center;}
+  .pctrl .sm{width:52px; height:52px; font-size:17px;}
+  .pctrl .big{width:66px; height:66px; font-size:22px; background:var(--blue); color:#fff; box-shadow:0 6px 16px rgba(49,130,246,.35);}
+  .pdone .em{font-size:52px; margin-bottom:6px;}
 
   /* more tab */
   .m-card{background:var(--card); border-radius:var(--r); padding:17px; margin:12px 0; box-shadow:var(--sh);}
@@ -723,20 +752,78 @@ function renderProgram(){
 }
 
 /* ============ STRETCH ============ */
+var MOVE_INFO={
+ "밴드 풀어파트":{t:"후면 어깨·회전근개",c:"팔꿈치 살짝 굽히고 견갑골 조이며 뒤로. 반동 금지.",reps:15},
+ "암 서클":{t:"어깨 관절",c:"팔 쭉 펴고 크게 원. 전·후 방향 각각.",reps:15},
+ "상체 로테이션":{t:"흉추·코어",c:"골반은 고정, 상체만 좌우로 비틀기.",reps:10},
+ "캣카우":{t:"척추 가동성",c:"숨 뱉으며 등 말고, 마시며 젖히기.",reps:10},
+ "레그 스윙":{t:"고관절·햄스트링",c:"한 손 지지, 반동 없이 다리 전후로.",reps:15},
+ "바디웨이트 스쿼트":{t:"하체·발목",c:"천천히 최대 깊이까지. 뒤꿈치 붙이고.",reps:18},
+ "워킹 런지":{t:"고관절·둔근",c:"앞무릎 90도, 상체 세우고 걷기.",reps:10},
+ "도어웨이 가슴":{t:"대흉근",c:"팔꿈치 어깨높이, 가슴 앞으로 밀며 늘리기.",sec:30,sets:2},
+ "오버헤드 삼두":{t:"삼두",c:"팔꿈치 뒤로 접고 반대손으로 지그시 당김.",sec:20,sets:2},
+ "크로스바디 숄더":{t:"후면 삼각근",c:"팔을 반대편으로 끌어당겨 유지.",sec:30,sets:2},
+ "쿼드 스트레칭":{t:"대퇴사두",c:"발목 잡고 무릎 모아 골반 앞으로.",sec:30,sets:2},
+ "스탠딩 햄스트링":{t:"햄스트링",c:"허리 편 채 상체 숙이기(무릎 살짝 굽혀).",sec:30,sets:2},
+ "데드행잉":{t:"광배·어깨",c:"바에 매달려 어깨·척추 힘 빼고 이완.",sec:30,sets:2}
+};
 function renderStretch(){
   var h=document.getElementById("v-stretch");
-  var html=FIGDEFS+'<div class="cardio" style="margin:8px 0 4px"><div>운동 <b>전</b>은 동적(정적 금지 — 근출력 저하), <b>후</b>는 정적으로 20-30초씩. <b>핵심</b> 배지가 그날 제일 중요한 동작이에요.</div></div>';
-  STRETCH.forEach(function(day){
+  var html=FIGDEFS+'<div class="cardio" style="margin:8px 0 4px"><div><b>재생 ▶</b> 누르면 타이머가 자동으로 넘겨줘요. 카드 하나만 탭하면 그 동작만. 운동 <b>전</b>=동적, <b>후</b>=정적.</div></div>';
+  STRETCH.forEach(function(day){ var did="d"+day.d.match(/DAY (\d)/)[1];
     html+='<div class="s-day">'+day.d+'</div>'+
-      '<div class="s-lab"><span class="d" style="background:var(--blue)"></span>운동 전 · 동적<span class="cnt">'+day.pre.length+'개</span></div>'+poseRow(day.pre,'')+
-      '<div class="s-lab"><span class="d" style="background:var(--up)"></span>운동 후 · 정적<span class="cnt">'+day.post.length+'개</span></div>'+poseRow(day.post,'post')+
+      '<div class="s-lab"><span class="d" style="background:var(--blue)"></span>운동 전 · 동적<button class="play" data-d="'+did+'" data-sec="pre">▶ 재생 '+day.pre.length+'</button></div>'+poseRow(did,"pre",day.pre,"")+
+      '<div class="s-lab"><span class="d" style="background:var(--up)"></span>운동 후 · 정적<button class="play post" data-d="'+did+'" data-sec="post">▶ 재생 '+day.post.length+'</button></div>'+poseRow(did,"post",day.post,"post")+
       '<div class="s-pt">💡 '+day.pt+'</div>';
   });
   h.innerHTML=html;
+  h.querySelectorAll(".play").forEach(function(b){ b.onclick=function(){ openPlayer(b.getAttribute("data-d"),b.getAttribute("data-sec"),0); }; });
+  h.querySelectorAll(".pose").forEach(function(p){ p.onclick=function(){ openPlayer(p.getAttribute("data-d"),p.getAttribute("data-sec"),+p.getAttribute("data-i")); }; });
 }
-function poseRow(list,cls){ return '<div class="poses">'+list.map(function(m){
-  return '<div class="pose">'+buildFig(POSES[m[1]]||POSES.armcircle)+'<div class="pbody"><div class="pn">'+m[0]+(m[3]?' <span class="key '+cls+'">핵심</span>':'')+'</div><div class="pd">'+m[2]+'</div></div></div>';
+function poseRow(dayId,sec,list,cls){ return '<div class="poses">'+list.map(function(m,i){ var info=MOVE_INFO[m[0]]||{};
+  return '<div class="pose" data-d="'+dayId+'" data-sec="'+sec+'" data-i="'+i+'">'+buildFig(POSES[m[1]]||POSES.armcircle)+
+   '<div class="pbody"><div class="pn">'+m[0]+(m[3]?' <span class="key '+cls+'">핵심</span>':'')+'</div>'+
+   '<div class="pd">'+(info.sec?info.sec+'초 × '+(info.sets||2):(info.reps||m[2])+'회')+'</div>'+
+   (info.t?'<div class="pdetail">'+info.t+'</div>':'')+'</div></div>';
 }).join("")+'</div>'; }
+
+/* ===== 가이드 타이머 플레이어 ===== */
+var PL=null, RINGC=364.4;
+function ensurePlayer(){ var el=document.getElementById("player"); if(!el){ el=document.createElement("div"); el.id="player"; el.className="player"; document.body.appendChild(el); } return el; }
+function openPlayer(dayId,sec,startIdx){ var day=STRETCH_MAP[dayId]; if(!day) return; var arr=day[sec]; if(!arr||!arr.length) return;
+  PL={dayId:dayId,sec:sec,list:arr,i:startIdx||0,set:1,paused:false,rem:0,total:0,timer:null};
+  ensurePlayer().classList.add("on"); showMove(); }
+function moveMeta(){ var m=PL.list[PL.i], info=MOVE_INFO[m[0]]||{}, isStat=PL.sec==="post";
+  var total=isStat?(info.sec||30):Math.max(14,Math.round((info.reps||15)*1.1)); var sets=isStat?(info.sets||2):1;
+  return {m:m,info:info,isStat:isStat,total:total,sets:sets}; }
+function showMove(){ var el=document.getElementById("player"); var M=moveMeta(); PL.total=M.total; PL.rem=M.total;
+  var big=M.isStat?Math.ceil(PL.rem):(M.info.reps||15), sub=M.isStat?("세트 "+PL.set+" / "+M.sets):"회 · 천천히";
+  var ringCol=M.isStat?"var(--up)":"var(--blue)";
+  var pct=Math.round((PL.i)/PL.list.length*100);
+  el.innerHTML='<div class="phead"><button class="px" data-a="x">✕</button><div class="pprog"><i style="width:'+pct+'%;background:'+ringCol+'"></i></div><div class="pcount">'+(PL.i+1)+' / '+PL.list.length+'</div></div>'+
+   '<div class="pstage"><div class="pfig">'+buildFig(POSES[M.m[1]]||POSES.armcircle)+'</div>'+
+   '<div class="pname">'+M.m[0]+'</div>'+
+   (M.info.t?'<span class="ptar" style="color:'+ringCol+';background:'+(M.isStat?"#E4F8F0":"var(--blue-t)")+'">'+M.info.t+'</span>':'')+
+   '<div class="pcue">'+(M.info.c||M.m[2])+'</div>'+
+   '<div class="pring"><svg width="132" height="132"><circle cx="66" cy="66" r="58" stroke="var(--line)" stroke-width="8" fill="none"/><circle class="ringfg" cx="66" cy="66" r="58" stroke="'+ringCol+'" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="'+RINGC+'" stroke-dashoffset="0"/></svg>'+
+   '<div class="pnum"><div class="pbig">'+big+'</div><div class="psub">'+sub+'</div></div></div></div>'+
+   '<div class="pctrl"><button class="sm" data-a="prev">◀</button><button class="big" data-a="pause">'+(PL.paused?"▶":"❚❚")+'</button><button class="sm" data-a="next">▶▶</button></div>';
+  el.querySelectorAll("[data-a]").forEach(function(b){ b.onclick=function(){ var a=b.getAttribute("data-a"); if(a==="x")pClose(); else if(a==="prev")pPrev(); else if(a==="next")pNext(); else if(a==="pause")pPause(); }; });
+  PL.ring=el.querySelector(".ringfg"); PL.num=el.querySelector(".pbig");
+  startTimer();
+}
+function startTimer(){ clearInterval(PL.timer); if(PL.paused) return; PL.timer=setInterval(function(){ if(PL.paused) return; PL.rem-=0.1; if(PL.rem<=0){ onExpire(); } else updateRing(); },100); }
+function updateRing(){ if(PL.ring) PL.ring.setAttribute("stroke-dashoffset",(RINGC*(PL.total-PL.rem)/PL.total).toFixed(1)); var M=moveMeta(); if(M.isStat&&PL.num) PL.num.textContent=Math.ceil(PL.rem); }
+function onExpire(){ clearInterval(PL.timer); var M=moveMeta(); if(M.isStat&&PL.set<M.sets){ PL.set++; showMove(); } else { PL.i++; PL.set=1; if(PL.i>=PL.list.length) showDone(); else showMove(); } }
+function pNext(){ clearInterval(PL.timer); PL.i++; PL.set=1; if(PL.i>=PL.list.length) showDone(); else showMove(); }
+function pPrev(){ clearInterval(PL.timer); PL.i=Math.max(0,PL.i-1); PL.set=1; showMove(); }
+function pPause(){ PL.paused=!PL.paused; if(!PL.paused) startTimer(); var b=document.querySelector('#player [data-a="pause"]'); if(b) b.textContent=PL.paused?"▶":"❚❚"; }
+function pClose(){ if(PL&&PL.timer) clearInterval(PL.timer); var el=document.getElementById("player"); if(el) el.classList.remove("on"); PL=null; }
+function showDone(){ clearInterval(PL.timer); var el=document.getElementById("player");
+  el.innerHTML='<div class="phead"><button class="px" data-a="x">✕</button><div class="pprog"><i style="width:100%;background:var(--up)"></i></div><div class="pcount">완료</div></div>'+
+   '<div class="pstage pdone"><div class="em">💪</div><div class="pname">루틴 완료!</div><div class="pcue">'+(PL.sec==="post"?"수고했어요. 정리 스트레칭 끝!":"몸 다 데웠으면 바로 운동 고고.")+'</div><button class="big" data-a="x" style="margin-top:18px">✕</button></div>';
+  el.querySelectorAll('[data-a="x"]').forEach(function(b){ b.onclick=pClose; });
+}
 
 /* ============ MORE ============ */
 function renderMore(){
