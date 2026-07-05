@@ -362,7 +362,7 @@ var PROGRAM=[
 /* 3D mannequin illustration system */
 var FIGDEFS='<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>'+
  '<radialGradient id="bgg" cx="50%" cy="36%" r="82%"><stop offset="0%" stop-color="#eef1f4"/><stop offset="68%" stop-color="#ccd1d8"/><stop offset="100%" stop-color="#a6acb5"/></radialGradient>'+
- '<linearGradient id="lg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#565d67"/><stop offset=".28" stop-color="#d4d9df"/><stop offset=".58" stop-color="#969ca6"/><stop offset="1" stop-color="#484e57"/></linearGradient>'+
+ '<linearGradient id="lg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8f8b86"/><stop offset=".4" stop-color="#c8c3bc"/><stop offset=".72" stop-color="#a8a39c"/><stop offset="1" stop-color="#827d77"/></linearGradient>'+
  '<radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(255,74,58,.95)"/><stop offset="45%" stop-color="rgba(255,66,50,.55)"/><stop offset="100%" stop-color="rgba(255,66,50,0)"/></radialGradient>'+
  '<filter id="blur" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2"/></filter>'+
  '<filter id="soft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="1.5"/></filter>'+
@@ -379,10 +379,10 @@ function bone(x1,y1,x2,y2,r1,r2){
  return 'M'+f(p1[0])+' '+f(p1[1])+'L'+f(p2[0])+' '+f(p2[1])+'Q'+f(c2[0])+' '+f(c2[1])+' '+f(p3[0])+' '+f(p3[1])+
    'L'+f(p4[0])+' '+f(p4[1])+'Q'+f(c1[0])+' '+f(c1[1])+' '+f(p1[0])+' '+f(p1[1])+'Z';
 }
-function seg(x1,y1,x2,y2,r){ return '<path d="'+bone(x1,y1,x2,y2,r[0],r[1])+'" fill="url(#lg)" stroke="#3b414a" stroke-width=".5" stroke-linejoin="round"/>'; }
+function seg(x1,y1,x2,y2,r){ return '<path d="'+bone(x1,y1,x2,y2,r[0],r[1])+'" fill="url(#lg)" stroke="#726d67" stroke-width=".5" stroke-linejoin="round"/>'; }
 function limbSeg(l){ var r=RT[l[4]]||RT.ua, out=seg(l[0],l[1],l[2],l[3],r);
- if(l[4]==='ca') out+='<ellipse cx="'+f(l[2]+1.2)+'" cy="'+f(l[3]+0.6)+'" rx="3.2" ry="1.9" fill="url(#lg)" stroke="#3b414a" stroke-width=".5"/>';
- if(l[4]==='fa') out+='<ellipse cx="'+l[2]+'" cy="'+l[3]+'" rx="2.1" ry="2.5" fill="url(#lg)" stroke="#3b414a" stroke-width=".5"/>';
+ if(l[4]==='ca') out+='<ellipse cx="'+f(l[2]+1.2)+'" cy="'+f(l[3]+0.6)+'" rx="3.2" ry="1.9" fill="url(#lg)" stroke="#726d67" stroke-width=".5"/>';
+ if(l[4]==='fa') out+='<ellipse cx="'+l[2]+'" cy="'+l[3]+'" rx="2.1" ry="2.5" fill="url(#lg)" stroke="#726d67" stroke-width=".5"/>';
  return out; }
 function buildFig(sp){
  var t=sp.torso, mid=sp.torsoMid||[t[0]+(t[2]-t[0])*.58,t[1]+(t[3]-t[1])*.58];
@@ -395,7 +395,7 @@ function buildFig(sp){
  s+=seg(hx,hy+5.5,t[0],t[1],RT.nk);
  s+=seg(t[0],t[1],mid[0],mid[1],RT.tc)+seg(mid[0],mid[1],t[2],t[3],RT.ta);
  (sp.limbs||[]).forEach(function(l){ s+=limbSeg(l); });
- s+='<ellipse cx="'+hx+'" cy="'+hy+'" rx="6.3" ry="7.7" fill="url(#lg)" stroke="#3b414a" stroke-width=".5"'+(hR?' transform="rotate('+hR+' '+hx+' '+hy+')"':'')+'/>';
+ s+='<ellipse cx="'+hx+'" cy="'+hy+'" rx="6.3" ry="7.7" fill="url(#lg)" stroke="#726d67" stroke-width=".5"'+(hR?' transform="rotate('+hR+' '+hx+' '+hy+')"':'')+'/>';
  if(sp.front) s+=sp.front;
  var g=sp.glow; if(g) s+='<ellipse cx="'+g[0]+'" cy="'+g[1]+'" rx="'+g[2]+'" ry="'+g[3]+'"'+(g[4]?' transform="rotate('+g[4]+' '+g[0]+' '+g[1]+')"':'')+' fill="url(#glow)" filter="url(#soft)"/>';
  return s+'</svg>';
@@ -797,32 +797,47 @@ function V(base,edits){ var s={}; for(var kk in base) s[kk]=base[kk];
   for(var k in edits){ if(k==='torsoMid')s.torsoMid=edits[k]; else if(k==='head')s.head=edits[k]; else if(k==='torso')s.torso=edits[k]; else if(k==='glow')s.glow=edits[k]; else if(k==='front')s.front=edits[k]; else s.limbs[+k]=edits[k]; }
   return s; }
 function lerpArr(a,b,p){ return a.map(function(v,i){ return (typeof v==='number'&&typeof b[i]==='number')? v+(b[i]-v)*p : v; }); }
+function lerpLimb(la,lb,p){ var x1=la[0]+(lb[0]-la[0])*p, y1=la[1]+(lb[1]-la[1])*p, x2=la[2]+(lb[2]-la[2])*p, y2=la[3]+(lb[3]-la[3])*p;
+  var lA=Math.hypot(la[2]-la[0],la[3]-la[1]), lB=Math.hypot(lb[2]-lb[0],lb[3]-lb[1]), L=lA+(lB-lA)*p;
+  var dx=x2-x1, dy=y2-y1, d=Math.hypot(dx,dy)||0.001; return [x1,y1,x1+dx/d*L,y1+dy/d*L,la[4]]; }
 function lerpSpec(A,B,p){ var s={}; for(var k in A)s[k]=A[k];
   s.torso=lerpArr(A.torso,B.torso,p); if(A.torsoMid&&B.torsoMid)s.torsoMid=lerpArr(A.torsoMid,B.torsoMid,p);
   s.head=lerpArr(A.head,B.head,p); if(A.glow&&B.glow)s.glow=lerpArr(A.glow,B.glow,p);
-  s.limbs=A.limbs.map(function(l,i){ return lerpArr(l,B.limbs[i]||l,p); }); return s; }
+  s.limbs=A.limbs.map(function(l,i){ return lerpLimb(l,B.limbs[i]||l,p); });
+  if(A.back2&&B.back2) s.back2=A.back2.map(function(l,i){ return lerpLimb(l,B.back2[i]||l,p); });
+  return s; }
 function ease(p){ return p*p*(3-2*p); }
+function pingHold(t){ var r; if(t<0.42)r=t/0.42; else if(t<0.5)r=1; else if(t<0.92)r=1-(t-0.5)/0.42; else r=0; return ease(r); }
 var PB=POSES;
 var POSE_KF={
- bandpull:{mode:'ping',dur:1600,frames:[V(PB.bandpull,{front:''}),V(PB.bandpull,{front:'',0:[42,32,50,37,'ua'],1:[50,37,55,39,'fa'],2:[58,32,50,37,'ua'],3:[50,37,45,39,'fa']})]},
- armcircle:{mode:'loop',dur:2400,frames:[PB.armcircle,V(PB.armcircle,{0:[42,32,30,32,'ua'],1:[30,32,20,34,'fa'],2:[58,32,70,32,'ua'],3:[70,32,80,34,'fa']}),V(PB.armcircle,{0:[42,33,39,46,'ua'],1:[39,46,43,54,'fa'],2:[58,33,61,46,'ua'],3:[61,46,57,54,'fa']})]},
- torsorotate:{mode:'ping',dur:1800,frames:[PB.torsorotate,V(PB.torsorotate,{head:[48,16],0:[42,33,41,41,'ua'],1:[41,41,34,38,'fa'],2:[58,33,42,40,'ua'],3:[42,40,33,37,'fa'],glow:[47,46,13,9,-20]})]},
- catcow:{mode:'ping',dur:2200,frames:[PB.catcow,V(PB.catcow,{torsoMid:[47,60],head:[24,57],glow:[47,58,15,8,6]})]},
- legswing:{mode:'ping',dur:1500,frames:[PB.legswing,V(PB.legswing,{2:[50,59,56,67,'th'],3:[56,67,64,80,'ca'],glow:[52,66,11,8,10]})]},
- squat:{mode:'ping',dur:2000,frames:[PB.squat,V(PB.squat,{torso:[50,31,50,60],head:[50,17],0:[43,33,58,40,'ua'],1:[58,40,66,40,'fa'],2:[57,34,60,41,'ua'],3:[45,60,44,75,'th'],4:[44,75,44,90,'ca'],5:[55,60,56,75,'th'],6:[56,75,56,90,'ca'],glow:[50,60,18,6,0]})]},
- lunge:{mode:'ping',dur:2200,frames:[PB.lunge,V(PB.lunge,{head:[51,22],torso:[52,34,52,56]})]},
- quad:{mode:'ping',dur:2600,frames:[V(PB.quad,{2:[50,60,52,74,'th'],3:[52,74,52,90,'ca'],6:[48,55,50,74,'fa'],glow:[52,72,6,9,0]}),PB.quad]},
- hamstring:{mode:'ping',dur:2600,frames:[V(PB.hamstring,{torso:[50,30,50,58],head:[50,16],2:[50,33,48,50,'ua'],3:[48,50,47,58,'fa'],glow:[50,45,7,10,0]}),PB.hamstring]},
- chestdoor:{mode:'ping',dur:2600,frames:[V(PB.chestdoor,{0:[58,32,68,32,'ua'],1:[68,32,74,26,'fa'],glow:[47,38,11,9,0]}),PB.chestdoor]},
- crossshoulder:{mode:'ping',dur:2600,frames:[V(PB.crossshoulder,{0:[42,32,54,34,'ua'],1:[54,34,62,34,'fa']}),PB.crossshoulder]},
- tricep:{mode:'ping',dur:2600,frames:[V(PB.tricep,{0:[58,32,64,20,'ua'],1:[64,20,58,24,'fa']}),PB.tricep]}
+ bandpull:{mode:'ping',dur:1800,frames:[V(PB.bandpull,{front:'',0:[42,32,50,37,'ua'],1:[50,37,55,39,'fa'],2:[58,32,50,37,'ua'],3:[50,37,45,39,'fa']}),V(PB.bandpull,{front:''})]},
+ armcircle:{mode:'loop',dur:3000,frames:[PB.armcircle,V(PB.armcircle,{0:[42,32,30,32,'ua'],1:[30,32,20,34,'fa'],2:[58,32,70,32,'ua'],3:[70,32,80,34,'fa']}),V(PB.armcircle,{0:[42,33,39,46,'ua'],1:[39,46,43,54,'fa'],2:[58,33,61,46,'ua'],3:[61,46,57,54,'fa']})]},
+ torsorotate:{mode:'ping',dur:2600,frames:[
+   V(PB.torsorotate,{head:[48,16],0:[42,33,41,41,'ua'],1:[41,41,34,38,'fa'],2:[58,33,42,40,'ua'],3:[42,40,33,37,'fa'],glow:[47,46,13,9,-20]}),
+   V(PB.torsorotate,{head:[50,16],0:[42,33,50,42,'ua'],1:[50,42,54,44,'fa'],2:[58,33,50,42,'ua'],3:[50,42,46,44,'fa'],glow:[50,46,12,9,0]}),
+   PB.torsorotate]},
+ catcow:{mode:'ping',dur:3000,frames:[PB.catcow,V(PB.catcow,{torsoMid:[47,55],head:[25,59],glow:[47,53,15,8,0]}),V(PB.catcow,{torsoMid:[47,61],head:[24,56],glow:[47,59,15,8,6]})]},
+ legswing:{mode:'ping',dur:2000,frames:[
+   V(PB.legswing,{2:[50,59,56,67,'th'],3:[56,67,64,80,'ca'],glow:[53,66,11,8,12]}),
+   V(PB.legswing,{2:[50,59,52,74,'th'],3:[52,74,53,90,'ca'],glow:[52,66,11,8,0]}),
+   PB.legswing]},
+ squat:{mode:'ping',dur:2800,frames:[
+   V(PB.squat,{torso:[50,31,50,60],head:[50,17],0:[43,33,58,40,'ua'],1:[58,40,66,40,'fa'],2:[57,34,60,41,'ua'],3:[45,60,44,75,'th'],4:[44,75,44,90,'ca'],5:[55,60,56,75,'th'],6:[56,75,56,90,'ca'],glow:[50,60,18,6,0]}),
+   V(PB.squat,{torso:[50,35,50,61],head:[51,22],0:[43,38,59,40,'ua'],1:[59,40,67,40,'fa'],2:[57,39,61,41,'ua'],3:[45,61,42,74,'th'],4:[42,74,42,90,'ca'],5:[55,61,58,74,'th'],6:[58,74,58,90,'ca'],glow:[50,66,18,6,0]}),
+   PB.squat]},
+ lunge:{mode:'ping',dur:2800,frames:[V(PB.lunge,{head:[51,22],torso:[52,34,52,56]}),PB.lunge]},
+ quad:{mode:'ping',dur:2800,frames:[V(PB.quad,{2:[50,60,52,74,'th'],3:[52,74,52,90,'ca'],6:[48,55,50,74,'fa'],glow:[52,72,6,9,0]}),PB.quad]},
+ hamstring:{mode:'ping',dur:2800,frames:[V(PB.hamstring,{torso:[50,30,50,58],head:[50,16],2:[50,33,48,50,'ua'],3:[48,50,47,58,'fa'],glow:[50,45,7,10,0]}),PB.hamstring]},
+ chestdoor:{mode:'ping',dur:2800,frames:[V(PB.chestdoor,{0:[58,32,68,32,'ua'],1:[68,32,74,26,'fa'],glow:[47,38,11,9,0]}),PB.chestdoor]},
+ crossshoulder:{mode:'ping',dur:2800,frames:[V(PB.crossshoulder,{0:[42,32,54,34,'ua'],1:[54,34,62,34,'fa']}),PB.crossshoulder]},
+ tricep:{mode:'ping',dur:2800,frames:[V(PB.tricep,{0:[58,32,64,20,'ua'],1:[64,20,58,24,'fa']}),PB.tricep]}
 };
-function startFigAnim(poseKey){ stopFigAnim(); var kf=POSE_KF[poseKey]; if(!kf) return; var fr=kf.frames,mode=kf.mode,dur=kf.dur||1800; PL.animT=0;
-  PL.raf=setInterval(function(){ if(!PL||PL.paused) return; PL.animT+=60; var t=(PL.animT%dur)/dur, spec;
+function startFigAnim(poseKey){ stopFigAnim(); var kf=POSE_KF[poseKey]; if(!kf) return; var fr=kf.frames,mode=kf.mode,dur=kf.dur||2000; PL.animT=0;
+  PL.raf=setInterval(function(){ if(!PL||PL.paused) return; PL.animT+=55; var t=(PL.animT%dur)/dur, spec;
     if(mode==='loop'){ var n=fr.length,fp=t*n,i=Math.floor(fp)%n,p=fp-Math.floor(fp); spec=lerpSpec(fr[i],fr[(i+1)%n],ease(p)); }
-    else { var pp=t<0.5?t*2:(1-t)*2; spec=lerpSpec(fr[0],fr[1],ease(pp)); }
+    else { var pp=pingHold(t), m=fr.length, fp2=pp*(m-1), j=Math.min(m-2,Math.floor(fp2)), q=fp2-j; spec=lerpSpec(fr[j],fr[j+1],q); }
     var fig=document.querySelector('#player .pfig'); if(fig) fig.innerHTML=buildFig(spec);
-  },60); }
+  },55); }
 function stopFigAnim(){ if(PL&&PL.raf){ clearInterval(PL.raf); PL.raf=null; } }
 
 /* ===== 가이드 타이머 플레이어 ===== */
