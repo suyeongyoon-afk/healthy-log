@@ -200,6 +200,52 @@
   .rowbtns button{flex:1; border:1.5px solid var(--line); background:var(--card); color:var(--ink); border-radius:11px; padding:12px 0; font-weight:700; font-size:13.5px; cursor:pointer;}
   .rowbtns button.warn{border-color:var(--down); color:var(--down);}
 
+  /* flow blocks (walk/stretch) */
+  .flow{display:flex; align-items:center; gap:12px; background:var(--card); border-radius:15px; padding:12px 14px; margin:10px 0; box-shadow:var(--sh);}
+  .flow.done{opacity:.66;}
+  .flow .fic{flex:0 0 auto; width:38px; height:38px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:19px;}
+  .flow .fmid{flex:1; min-width:0;}
+  .flow .ft{font-size:14px; font-weight:800; letter-spacing:-.01em;}
+  .flow .ft .fmin{font-size:11px; font-weight:700; color:var(--blue); background:var(--blue-t); border-radius:6px; padding:1px 6px; margin-left:4px;}
+  .flow .fd{font-size:11.5px; color:var(--muted); margin-top:3px; line-height:1.4;}
+  .flow.done .ft{text-decoration:line-through; text-decoration-color:var(--muted);}
+  /* banners */
+  .banner{border-radius:12px; padding:10px 12px; margin:12px 0 4px; font-size:12.5px; line-height:1.55;}
+  .banner b{font-weight:800;}
+  .banner.danger{background:#FDECEE; color:#B4232E;}
+  .banner.danger .why{color:#C7616A; font-size:11px;}
+  .banner.danger .prime{color:#8a2b32; font-size:11.5px;}
+  .banner.ok{background:#E4F8F0; color:#0E7A55;}
+  .banner.maint{background:var(--card2); color:var(--sub);}
+  /* warmup box */
+  .warmbox{background:var(--card2); border-radius:12px; padding:9px 12px; margin:12px 0 4px;}
+  .wlab{font-size:10.5px; font-weight:800; color:var(--muted); letter-spacing:.04em; margin-bottom:5px;}
+  .wrow{display:flex; align-items:center; gap:10px; padding:3px 0; font-size:13px;}
+  .wrow .wn{width:26px; font-weight:800; color:var(--blue); font-size:11px;}
+  .wrow .ww{font-weight:800; color:var(--ink); font-variant-numeric:tabular-nums; min-width:56px;}
+  .wrow .wr{color:var(--muted); font-size:12px;}
+  .worklab-wrap{margin-top:12px;}
+  .worklab-wrap .wlab{margin:0 0 6px 2px;}
+  .setrow.bo .snum{background:var(--c-arms); color:#fff; font-size:10px; width:auto; padding:0 5px; border-radius:9px;}
+  .hintline{font-size:11.5px; color:var(--muted); padding:6px 2px 0; line-height:1.5;}
+  .hintline b{color:var(--sub); font-weight:800;}
+  /* intensifier rows */
+  .intens{display:flex; gap:8px; align-items:flex-start; border-radius:11px; padding:9px 11px; margin-top:9px; font-size:12px; line-height:1.5;}
+  .intens .ilab{flex:0 0 auto; font-weight:800;}
+  .intens.rp{background:#FEECEC; color:#C0392B;}
+  .intens.drop{background:#EAF2FF; color:#2E6BDE;}
+  /* collapsed completed card */
+  .card.collapsed{padding:0;}
+  .cbar{display:flex; align-items:center; gap:9px; padding:13px 15px; cursor:pointer;}
+  .cbar .cchk{width:22px; height:22px; border-radius:50%; background:var(--up); color:#fff; font-size:13px; font-weight:800; display:flex; align-items:center; justify-content:center; flex-shrink:0;}
+  .cbar b{font-size:14.5px;}
+  .cbar .csum{font-size:12px; color:var(--muted); font-variant-numeric:tabular-nums;}
+  .cbar .cexp{margin-left:auto; font-size:11.5px; color:var(--blue); font-weight:700;}
+  /* done popup */
+  .donepop{margin-top:12px; background:#E4F8F0; border-radius:12px; padding:11px 13px; display:flex; align-items:center; justify-content:space-between; gap:10px; font-size:12.5px; color:#0E7A55;}
+  .donepop b{font-weight:800;} .donepop .cd{font-weight:800;}
+  .donepop .nope{flex:0 0 auto; border:1.5px solid #12B886; background:var(--card); color:#0E7A55; border-radius:9px; padding:7px 11px; font-size:12px; font-weight:800; cursor:pointer;}
+
   nav.tabs{position:fixed; left:0; right:0; bottom:0; z-index:30; background:rgba(255,255,255,.94); backdrop-filter:blur(14px); border-top:1px solid var(--line); display:flex; max-width:480px; margin:0 auto; padding:7px 4px calc(7px + env(safe-area-inset-bottom));}
   nav.tabs button{flex:1; background:none; border:0; color:var(--muted); font-size:10.5px; font-weight:700; display:flex; flex-direction:column; align-items:center; gap:3px; padding:5px 0; cursor:pointer;}
   nav.tabs button svg{width:23px; height:23px; stroke:currentColor; fill:none; stroke-width:1.9;}
@@ -236,49 +282,49 @@ var BPC={ "가슴":"var(--c-chest)","등":"var(--c-back)","어깨":"var(--c-shou
 var BPS=["가슴","등","어깨","하체","팔","복근","카프"];
 
 var PROGRAM=[
- {id:"d1",day:"DAY 1",dow:"월",focus:"가슴·어깨·팔·카프",cardio:"트레드밀 8분(경사2%·5.5km/h) + 동적 스트레칭 · 밴드 풀어파트 필수",ex:[
-   {n:"머신 인클라인 프레스",bp:"가슴",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",m:"메인 — 상부가슴 최우선"},
-   {n:"플랫 덤벨 프레스",bp:"가슴",s:"1set",w:"2×8-12",tech:"프리웨이트",rest:"2분",m:""},
-   {n:"펙덱 플라이",bp:"가슴",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",m:"수축 → 쉬지 않고 어깨",ss:"A"},
-   {n:"머신 사이드 레터럴",bp:"어깨",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",m:"",ss:"A"},
-   {n:"케이블 푸시다운",bp:"팔",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",m:"팔 1회차 — 길항 슈퍼세트",ss:"B"},
-   {n:"EZ바 컬",bp:"팔",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",m:"",ss:"B"},
-   {n:"스탠딩 카프레이즈",bp:"카프",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",m:"바닥 스트레치 2초"}
+ {id:"d1",day:"DAY 1",focus:"가슴·어깨·팔·카프",walk:8,liss:30,ex:[
+   {n:"머신 인클라인 프레스",bp:"가슴",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",t:15,main:1,bo:1,m:"메인 — 상부가슴 최우선"},
+   {n:"플랫 덤벨 프레스",bp:"가슴",s:"1set",w:"2×8-12",tech:"프리웨이트",rest:"2분",t:9,m:"프리웨이트 — 자세 우선, 인텐시파이어 금지"},
+   {n:"펙덱 플라이",bp:"가슴",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"수축 → 쉬지 않고 어깨",ss:"A"},
+   {n:"머신 사이드 레터럴",bp:"어깨",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"",ss:"A"},
+   {n:"케이블 푸시다운",bp:"팔",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"팔 1회차 — 길항 슈퍼세트",ss:"B"},
+   {n:"EZ바 컬",bp:"팔",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"",ss:"B"},
+   {n:"스탠딩 카프레이즈",bp:"카프",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",t:8,m:"바닥 스트레치 2초"}
  ]},
- {id:"d2",day:"DAY 2",dow:"화",focus:"하체·복근",cardio:"트레드밀 8분(경사2%·5.5km/h) + 동적 스트레칭 · 관절 준비",ex:[
-   {n:"레그 익스텐션 (사전 피로)",bp:"하체",s:"2set",w:"2×12-15",tech:"활성화",rest:"90초",m:"첫 종목 — 수축 1초 정지"},
-   {n:"핵스쿼트 또는 펜듈럼 스쿼트",bp:"하체",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",m:"메인 — 최대 깊이, 네거티브 3-4초"},
-   {n:"레그프레스 (발 낮게·좁게)",bp:"하체",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"2분",m:"깊은 무릎 굴곡"},
-   {n:"레그 익스텐션 (마무리)",bp:"하체",s:"none",w:"2×12-15",tech:"트리플 드롭",rest:"90초",m:"쿼드 완전 소진"},
-   {n:"케이블 크런치",bp:"복근",s:"1set",w:"3×10-15",tech:"없음",rest:"60초",m:"중량 더블 프로그레션"}
+ {id:"d2",day:"DAY 2",focus:"하체·복근",walk:8,ex:[
+   {n:"레그 익스텐션 (사전 피로)",bp:"하체",s:"2set",w:"2×12-15",tech:"활성화",rest:"90초",t:6,m:"첫 종목 — 수축 1초 정지"},
+   {n:"핵스쿼트 또는 펜듈럼 스쿼트",bp:"하체",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",t:18,main:1,bo:1,risky:1,m:"메인 — 최대 깊이, 네거티브 3-4초"},
+   {n:"레그프레스 (발 낮게·좁게)",bp:"하체",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"2분",t:10,main:1,bo:1,m:"깊은 무릎 굴곡"},
+   {n:"레그 익스텐션 (마무리)",bp:"하체",s:"none",w:"2×12-15",tech:"트리플 드롭",rest:"90초",t:7,m:"쿼드 완전 소진"},
+   {n:"케이블 크런치",bp:"복근",s:"1set",w:"3×10-15",tech:"없음",rest:"60초",t:6,m:"중량 더블 프로그레션"}
  ]},
- {id:"d3",day:"DAY 3",dow:"수",focus:"등·팔·카프",cardio:"트레드밀 8분(경사2%·5.5km/h) + 동적 스트레칭 · 햄 동적 웜업 포함",ex:[
-   {n:"랫 풀다운",bp:"등",s:"2set",w:"2×8-12",tech:"없음",rest:"2분",m:"유지 볼륨 (RIR 1-2)"},
-   {n:"체스트서포티드 로우",bp:"등",s:"1set",w:"2×8-12",tech:"없음",rest:"2분",m:"유지 볼륨"},
-   {n:"루마니안 데드리프트",bp:"하체",s:"2set",w:"2×8-10",tech:"없음",rest:"2분",m:"힌지 패턴 — 웜업 유지"},
-   {n:"라잉 레그컬",bp:"하체",s:"1set",w:"2×10-12",tech:"없음",rest:"90초",m:"햄 유지"},
-   {n:"인클라인 덤벨 컬",bp:"팔",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",m:"팔 2회차 — 이두 스트레치",ss:"A"},
-   {n:"오버헤드 케이블 익스텐션",bp:"팔",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",m:"삼두 장두",ss:"A"},
-   {n:"시티드 카프레이즈",bp:"카프",s:"1set",w:"3×12-15",tech:"드롭세트 1회",rest:"90초",m:"카프 2회차"}
+ {id:"d3",day:"DAY 3",focus:"등·팔·카프",walk:8,ex:[
+   {n:"랫 풀다운",bp:"등",s:"2set",w:"2×8-12",tech:"없음",rest:"2분",t:9,maint:1,m:"유지 볼륨 (RIR 1-2) — 안 털어도 됨"},
+   {n:"체스트서포티드 로우",bp:"등",s:"1set",w:"2×8-12",tech:"없음",rest:"2분",t:7,maint:1,m:"유지 볼륨"},
+   {n:"루마니안 데드리프트",bp:"하체",s:"2set",w:"2×8-10",tech:"없음",rest:"2분",t:10,risky:1,m:"힌지 패턴 — 무게보다 자세. RIR 1-2"},
+   {n:"라잉 레그컬",bp:"하체",s:"1set",w:"2×10-12",tech:"없음",rest:"90초",t:6,m:"햄 유지"},
+   {n:"인클라인 덤벨 컬",bp:"팔",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",t:6,m:"팔 2회차 — 이두 스트레치",ss:"A"},
+   {n:"오버헤드 케이블 익스텐션",bp:"팔",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",t:6,m:"삼두 장두",ss:"A"},
+   {n:"스탠딩 카프레이즈",bp:"카프",s:"1set",w:"3×12-15",tech:"드롭세트 1회",rest:"90초",t:7,m:"카프 2회차 — 풀 스트레치"}
  ]},
- {id:"d4",day:"DAY 4",dow:"목",focus:"휴식",rest:true,cardio:"회복 걷기 40분 — 경사 0%·5.0km/h (야외 산책 대체 가능). 소파 금지, 걷기는 하는 날"},
- {id:"d5",day:"DAY 5",dow:"금",focus:"어깨·팔·복근",cardio:"트레드밀 8분(경사2%·5.5km/h) + 동적 스트레칭 · 손목·팔꿈치 웜업",ex:[
-   {n:"머신 숄더프레스",bp:"어깨",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",m:"메인 — 어깨 매스"},
-   {n:"시티드 사이드 레터럴 레이즈",bp:"어깨",s:"1set",w:"3×10-15",tech:"드롭세트 1회",rest:"90초",m:"측면 델트 2회차"},
-   {n:"머신 딥",bp:"팔",s:"1set",w:"3×8-12",tech:"레스트포즈 20초",rest:"90초",m:"팔 3회차 메인 — 매스",ss:"A"},
-   {n:"머신 프리처컬",bp:"팔",s:"1set",w:"3×8-12",tech:"레스트포즈 20초",rest:"90초",m:"",ss:"A"},
-   {n:"해머 컬",bp:"팔",s:"none",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",m:"상완근·전완 = 팔 굵기",ss:"B"},
-   {n:"케이블 푸시다운 (로프)",bp:"팔",s:"none",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",m:"",ss:"B"},
-   {n:"행잉 레그레이즈",bp:"복근",s:"none",w:"3×10-15",tech:"없음",rest:"60초",m:"하복부"}
+ {id:"d4",day:"DAY 4",focus:"휴식",rest:true,cardio:"회복 걷기 40분 — 경사 0%·5.0km/h (야외 산책 대체 가능). 소파 금지, 걷기는 하는 날"},
+ {id:"d5",day:"DAY 5",focus:"어깨·팔·복근",walk:8,liss:30,ex:[
+   {n:"머신 숄더프레스",bp:"어깨",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",t:15,main:1,bo:1,m:"메인 — 어깨 매스"},
+   {n:"시티드 사이드 레터럴 레이즈",bp:"어깨",s:"1set",w:"3×10-15",tech:"드롭세트 1회",rest:"90초",t:8,m:"측면 델트 2회차"},
+   {n:"머신 딥",bp:"팔",s:"1set",w:"3×8-12",tech:"레스트포즈 20초",rest:"90초",t:7,main:1,m:"팔 3회차 메인 — 매스",ss:"A"},
+   {n:"머신 프리처컬",bp:"팔",s:"1set",w:"3×8-12",tech:"레스트포즈 20초",rest:"90초",t:6,m:"",ss:"A"},
+   {n:"해머 컬",bp:"팔",s:"none",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:4,m:"상완근·전완 = 팔 굵기",ss:"B"},
+   {n:"케이블 푸시다운 (로프)",bp:"팔",s:"none",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:4,m:"",ss:"B"},
+   {n:"행잉 레그레이즈",bp:"복근",s:"none",w:"3×10-15",tech:"없음",rest:"60초",t:6,m:"하복부"}
  ]},
- {id:"d6",day:"DAY 6",dow:"토",focus:"하체·가슴·카프",cardio:"트레드밀 8분(경사2%·5.5km/h) + 동적 스트레칭 · 2회차 날 웜업 넉넉히",ex:[
-   {n:"레그프레스 (발 낮게)",bp:"하체",s:"2set",w:"2×10-15",tech:"레스트포즈 20초",rest:"2분",m:"쿼드 2회차 (무게 90%, RIR 1-2)"},
-   {n:"불가리안 스플릿 스쿼트 또는 워킹 런지",bp:"하체",s:"1set",w:"2×10-12",tech:"편측",rest:"2분",m:"좌우 교정"},
-   {n:"머신 체스트프레스 (플랫)",bp:"가슴",s:"2set",w:"2×8-12",tech:"레스트포즈 20초",rest:"2분",m:"가슴 2회차"},
-   {n:"케이블 크로스오버 (로우-하이)",bp:"가슴",s:"1set",w:"2×12-15",tech:"드롭세트 1회",rest:"90초",m:"상부 라인"},
-   {n:"스탠딩 카프레이즈",bp:"카프",s:"1set",w:"3×10-15",tech:"드롭세트 1회",rest:"90초",m:"카프 3회차"}
+ {id:"d6",day:"DAY 6",focus:"하체·가슴·카프",walk:8,ex:[
+   {n:"레그프레스 (발 낮게)",bp:"하체",s:"2set",w:"2×10-15",tech:"레스트포즈 20초",rest:"2분",t:11,main:1,bo:1,m:"쿼드 2회차 (무게 90%, RIR 1-2)"},
+   {n:"불가리안 스플릿 스쿼트 또는 워킹 런지",bp:"하체",s:"1set",w:"2×10-12",tech:"편측",rest:"2분",t:8,m:"좌우 교정 — 편측"},
+   {n:"머신 체스트프레스 (플랫)",bp:"가슴",s:"2set",w:"2×8-12",tech:"레스트포즈 20초",rest:"2분",t:11,main:1,bo:1,m:"가슴 2회차"},
+   {n:"케이블 크로스오버 (로우-하이)",bp:"가슴",s:"1set",w:"2×12-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"상부 라인"},
+   {n:"스탠딩 카프레이즈",bp:"카프",s:"1set",w:"3×10-15",tech:"드롭세트 1회",rest:"90초",t:7,m:"카프 3회차"}
  ]},
- {id:"d7",day:"DAY 7",dow:"일",focus:"휴식",rest:true,cardio:"회복 걷기 40분 — 경사 0%·5.0km/h. 내일(월) 헤비 인클라인 대비"}
+ {id:"d7",day:"DAY 7",focus:"휴식",rest:true,cardio:"회복 걷기 40분 — 경사 0%·5.0km/h. 다음 헤비 세션 대비"}
 ];
 
 /* 3D mannequin illustration system */
@@ -400,7 +446,7 @@ var GUIDE=[
 /* ============ STORE ============ */
 var KEY="healthy_log_v2";
 var DB=load();
-function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)); if(o&&o.logs) return o; }catch(e){} return {day:"d1",week:0,startWeek:null,logs:{},memos:{}}; }
+function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)); if(o&&o.logs){ o.blocks=o.blocks||{}; o.collapsed=o.collapsed||{}; return o; } }catch(e){} return {day:"d1",week:0,startWeek:null,logs:{},memos:{},blocks:{},collapsed:{}}; }
 function save(){ try{ localStorage.setItem(KEY,JSON.stringify(DB)); }catch(e){} }
 function keyFor(id,n){ return id+"|"+n; }
 
@@ -432,89 +478,143 @@ function progPct(){
   }); });
   return total? Math.round(done/total*100):0;
 }
+var STRETCH_MAP={}; STRETCH.forEach(function(s){ var mm=s.d.match(/DAY (\d)/); if(mm) STRETCH_MAP["d"+mm[1]]=s; });
+var COMPLETE_POPUP=null, popupTimer=null;
+function dayMinutes(d){ var m=(d.walk||0)+5; d.ex.forEach(function(e){ m+=e.t||0; }); m+=5; m+=(d.liss||5); return m; }
 function renderToday(){
   var host=document.getElementById("v-today"); host.innerHTML="";
   var wkNo=CUR_WEEK-DB.startWeek+1; if(wkNo<1) wkNo=1;
   var pct=progPct();
-  var prog='<div class="prog"><div class="pname">닉 워커 커팅 프로그램</div><div class="pweek">'+wkNo+'주차 · 이번 주 '+pct+'% 완료</div>'+
-    '<div class="bar"><i style="width:'+pct+'%"></i></div><div class="pmeta"><span>강도 &gt; 볼륨 · RIR 0-1</span><span>더블 프로그레션</span></div></div>';
-  // day chips
+  var prog='<div class="prog"><div class="pname">윤수영 린매스업</div><div class="pweek">'+wkNo+'주차 · 목표 근육량 40kg · 체지방 10% · 이번 주 '+pct+'% 완료</div>'+
+    '<div class="bar"><i style="width:'+pct+'%"></i></div><div class="pmeta"><span>강도 &gt; 볼륨 · 자세 우선</span><span>더블 프로그레션</span></div></div>';
   var chips='<div class="days">'+PROGRAM.map(function(d){
     var doneToday=false; if(!d.rest){ doneToday=d.ex.every(function(ex){ var s=sessionOn(keyFor(d.id,ex.n),todayStr()); return s&&s.sets.some(function(x){return x.done;}); }); }
     var ic=d.rest? '<path d="M20 13a8 8 0 1 1-9-9 6 6 0 0 0 9 9z"/>' : (doneToday?'<path d="M5 12l5 5L20 6"/>':'<path d="M6 8v8M18 8v8M4 10h2M18 10h2M8 12h8"/>');
     return '<button class="dchip'+(d.id===DB.day?" on":"")+(doneToday?" done":"")+'" data-day="'+d.id+'"><div class="ic"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">'+ic+'</svg></div><div class="dl">'+(d.rest?"휴식":d.day.replace("DAY ","Day "))+'</div></button>';
   }).join("")+'</div>';
   host.innerHTML=prog+chips+'<div id="dayBody"></div>';
-  host.querySelectorAll(".dchip").forEach(function(b){ b.onclick=function(){ DB.day=b.getAttribute("data-day"); save(); renderToday(); }; });
+  host.querySelectorAll(".dchip").forEach(function(b){ b.onclick=function(){ DB.day=b.getAttribute("data-day"); COMPLETE_POPUP=null; save(); renderToday(); }; });
   renderDayBody();
+}
+function flowBlock(d,id,glyph,title,detail,min,accent){
+  var bk=todayStr()+"|"+d.id+"|"+id, done=!!DB.blocks[bk];
+  var el=document.createElement("div"); el.className="flow"+(done?" done":"");
+  el.innerHTML='<div class="fic" style="background:'+(done?"var(--up)":accent)+'22;color:'+(done?"var(--up)":accent)+'">'+glyph+'</div>'+
+    '<div class="fmid"><div class="ft">'+title+' <span class="fmin">'+min+'분</span></div><div class="fd">'+detail+'</div></div>'+
+    '<button class="chk"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></button>';
+  el.querySelector(".chk").onclick=function(){ if(DB.blocks[bk]) delete DB.blocks[bk]; else DB.blocks[bk]=1; save(); renderDayBody(); };
+  return el;
 }
 function renderDayBody(){
   var d=PROGRAM.filter(function(x){return x.id===DB.day;})[0];
   var host=document.getElementById("dayBody"); host.innerHTML="";
   var head=document.createElement("div"); head.className="dayhead";
-  head.innerHTML='<h2>'+d.day+' · '+d.dow+'요일</h2><div class="focus">'+d.focus+'</div>'; host.appendChild(head);
-  var cd=document.createElement("div"); cd.className="cardio";
-  cd.innerHTML='<svg class="ci" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 5l7 7-7 7M4 12h15"/></svg><div><b>웜업/유산소</b> · '+d.cardio+'</div>'; host.appendChild(cd);
+  head.innerHTML='<h2>'+d.day+'</h2><div class="focus">'+d.focus+(d.rest?'':' · 예상 ~'+dayMinutes(d)+'분')+'</div>'; host.appendChild(head);
   if(d.rest){
     var rc=document.createElement("div"); rc.className="rest-card";
-    rc.innerHTML='<div class="em"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13a8 8 0 1 1-9-9 6 6 0 0 0 9 9z"/></svg></div><h3>회복하는 날이에요</h3><p>중추신경계 회복 + 걸음 수 확보.<br>가볍게 걷고 푹 쉬세요 💙</p>'; host.appendChild(rc); return;
+    rc.innerHTML='<div class="em"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13a8 8 0 1 1-9-9 6 6 0 0 0 9 9z"/></svg></div><h3>회복하는 날이에요</h3><p>'+d.cardio+'<br>가볍게 걷고 푹 쉬세요 💙</p>'; host.appendChild(rc); return;
   }
-  d.ex.forEach(function(ex){ host.appendChild(exCard(d,ex)); });
+  var st=STRETCH_MAP[d.id];
+  // 1) 웜업 걷기  2) 동적 스트레칭
+  host.appendChild(flowBlock(d,"walk1","🚶","웜업 걷기 (유산소)","트레드밀 · 경사 2% · 5.5km/h",d.walk||8,"#3182F6"));
+  if(st) host.appendChild(flowBlock(d,"str1","🤸","운동 전 · 동적 스트레칭",st.pre.map(function(m){return m[0];}).join(" · ")+" — 스트레칭 탭에 그림",5,"#3182F6"));
+  // 3) 운동
+  d.ex.forEach(function(ex,i){ host.appendChild(exCard(d,ex,i===0)); });
+  // 4) 정적 스트레칭  5) 마무리 걷기
+  if(st) host.appendChild(flowBlock(d,"str2","🧘","운동 후 · 정적 스트레칭",st.post.map(function(m){return m[0];}).join(" · ")+" — 30초씩",5,"#12B886"));
+  host.appendChild(flowBlock(d,"walk2","🚶",d.liss?"마무리 LISS 걷기":"마무리 걷기 (선택)",d.liss?"경사 10% · 5.0km/h · 심박 60-70%":"가벼운 쿨다운",d.liss||5,"#12B886"));
   var cta=document.createElement("div"); cta.className="cta";
   var allDone=d.ex.every(function(ex){ var s=sessionOn(keyFor(d.id,ex.n),todayStr()); return s&&s.sets.every(function(x){return x.done;}); });
-  cta.innerHTML='<button class="'+(allDone?"done":"")+'">'+(allDone?"오늘 운동 완료! 💪":d.day+" 기록 중")+'</button>'; host.appendChild(cta);
+  cta.innerHTML='<button class="'+(allDone?"done":"")+'">'+(allDone?"오늘 운동 완료! 💪":d.day+" 진행 중")+'</button>'; host.appendChild(cta);
 }
-function exCard(d,ex){
+function warmRows(ex,baseW,isFirst){
+  var out='';
+  var rows=[];
+  if(isFirst) rows.push(['활성화','최소무게',30]);
+  if(SCHEME[ex.s]){ SCHEME[ex.s].forEach(function(p){ rows.push(['W', baseW>0?fmt(round25(baseW*p[0]))+'kg':(p[0]*100)+'%', p[1]]); }); }
+  if(!rows.length) return '';
+  return '<div class="warmbox"><div class="wlab">웜업 세트</div>'+rows.map(function(r,i){
+    return '<div class="wrow"><span class="wn">'+(r[0]==='활성화'?'⚡':'W'+i)+'</span><span class="ww">'+r[1]+'</span><span class="wr">×'+r[2]+(r[0]==='활성화'?'회 (가볍게 풀기)':'회')+'</span></div>';
+  }).join('')+'</div>';
+}
+function exCard(d,ex,isFirst){
   var k=keyFor(d.id,ex.n), t=todayStr(), ps=parseSets(ex.w);
-  var sess=sessionOn(k,t);
-  if(!sess){ sess={date:t,sets:[]}; }
-  // ensure sets array length
+  var sess=sessionOn(k,t); if(!sess){ sess={date:t,sets:[]}; }
   var prev=lastSessionBefore(k,t);
-  while(sess.sets.length<ps.sets){ var i=sess.sets.length; var pv=prev&&prev.sets[i]; sess.sets.push({w:pv?pv.w:0,r:pv?pv.r:ps.lo,done:false}); }
+  var want=ps.sets+(ex.bo?1:0);
+  while(sess.sets.length<want){ var i=sess.sets.length; var pv=prev&&prev.sets[i]; sess.sets.push({w:pv?pv.w:0,r:pv?pv.r:ps.lo,done:false}); }
+  var kt=k+"|"+t;
+  var allDone=sess.sets.length>0 && sess.sets.every(function(x){return x.done;});
   var card=document.createElement("div"); card.className="card";
-  // header
-  var lastTxt = prev? '<span class="last">지난 '+fmt(bestTop(prev).w)+'kg·'+bestTop(prev).r+'회</span>' : '<span>첫 기록</span>';
-  // 전주 대비
+  // collapsed view (완료 후 접기)
+  if(allDone && DB.collapsed[kt] && COMPLETE_POPUP!==kt){
+    var bt=bestTop(sess);
+    card.className="card collapsed";
+    card.innerHTML='<div class="cbar"><span class="cchk">✓</span><b>'+ex.n+'</b><span class="csum">'+fmt(bt.w)+'kg × '+bt.r+' 완료</span><span class="cexp">펼치기 ▾</span></div>';
+    card.querySelector(".cbar").onclick=function(){ delete DB.collapsed[kt]; save(); renderDayBody(); };
+    return card;
+  }
   var thisB=weekBestE1(k,CUR_WEEK), lastB=weekBestE1(k,CUR_WEEK-1);
   var wow='';
-  if(lastB>0){ var diff=thisB-lastB; if(thisB===0){wow='';} else { var c=diff>0.5?"up":(diff<-0.5?"down":"flat"); var ar=diff>0.5?"▲":(diff<-0.5?"▼":"–"); wow='<div class="wow '+c+'">'+ar+' '+fmt(Math.abs(diff))+'</div>'; } }
+  if(lastB>0){ var diff=thisB-lastB; if(thisB!==0){ var c=diff>0.5?"up":(diff<-0.5?"down":"flat"); var ar=diff>0.5?"▲":(diff<-0.5?"▼":"–"); wow='<div class="wow '+c+'">'+ar+' '+fmt(Math.abs(diff))+'</div>'; } }
   else if(thisB>0){ wow='<div class="wow flat">이번주</div>'; }
-  card.innerHTML='<div class="exhead"><div class="bp" style="background:'+BPC[ex.bp]+'">'+ex.bp.charAt(0)+'</div>'+
-    '<div class="exmeta"><div class="exname">'+(ex.ss?'<span class="ss">슈퍼 '+ex.ss+'</span>':'')+ex.n+'</div>'+
-    '<div class="exsub">'+ex.w+' · '+ex.tech+' · '+lastTxt+'</div></div>'+
+  var lastTxt = prev? '지난 '+fmt(bestTop(prev).w)+'kg·'+bestTop(prev).r+'회' : '첫 기록';
+  card.innerHTML='<div class="exhead"><div class="exmeta"><div class="exname">'+(ex.ss?'<span class="ss">슈퍼 '+ex.ss+'</span>':'')+ex.n+'</div>'+
+    '<div class="exsub">'+ex.w.replace("×","세트 ")+'회 · 휴식 '+ex.rest+' · ⏱~'+ex.t+'분 · <span class="last">'+lastTxt+'</span></div></div>'+
     '<div class="badge">'+wow+'</div></div>';
+  // 안전/메인 배너
+  if(ex.risky){ var sb=document.createElement("div"); sb.className="banner danger";
+    sb.innerHTML='⚠️ <b>무게 욕심 내려놓기</b> — 매 렙 <b>자세·호흡·근육인지</b> 3번 생각.<br><span class="why">자세=부상↓·자극집중 / 호흡=복압으로 척추보호 / 근육인지=타깃 활성↑</span><br><span class="prime">🦺 선행(디스크 보호): 복압 브레이싱 + 힙힌지 5회 + 맥길빅3(버드독·데드버그·사이드플랭크 각 10초) → 그다음 램프 웜업</span>';
+    card.appendChild(sb); }
+  else if(ex.main){ var mn=document.createElement("div"); mn.className="banner ok";
+    mn.innerHTML='✅ <b>안전한 기구 메인</b> — 마지막 워킹세트는 자세 유지하며 <b>실패(RIR 0)까지</b> 밀어붙이기'; card.appendChild(mn); }
+  else if(ex.maint){ var mt=document.createElement("div"); mt.className="banner maint";
+    mt.innerHTML='🟦 <b>유지 종목</b> — RIR 1-2, 무게 유지가 목표. 끝까지 안 털어도 됨'; card.appendChild(mt); }
   // recommendation
   var baseE=0; sessions(k).forEach(function(s){ baseE=Math.max(baseE,bestE1(s)); });
+  var topW=0; sess.sets.forEach(function(s,ix){ if(ix<ps.sets&&s.w>topW) topW=s.w; }); if(topW===0&&prev) topW=bestTop(prev).w;
   var recWrap=document.createElement("div");
   if(SCHEME[ex.s]!==undefined && baseE>0){
     var tr=ps.lo, base=baseE/(1+tr/30);
-    var easy=round25(base*0.95), mid=round25(base), hard=round25(base*1.03);
-    recWrap.innerHTML='<div class="recos">'+
-      recoEl("쉬움",easy,tr,"")+recoEl("적정",mid,tr,"mid")+recoEl("도전",hard,tr,"")+
-      '</div><div class="recohint">최근 기록 기준 · '+tr+'회 목표 무게예요. 탭하면 전 세트에 채워져요.</div>';
-  } else {
-    recWrap.innerHTML='<div class="recohint" style="margin-top:12px">첫 세트를 기록하면 다음부턴 무게를 추천해드려요.</div>';
-  }
+    recWrap.innerHTML='<div class="recos">'+recoEl("쉬움",round25(base*0.95),tr,"")+recoEl("적정",round25(base),tr,"mid")+recoEl("도전",round25(base*1.03),tr,"")+
+      '</div><div class="recohint">최근 기록 기준 '+tr+'회 목표 무게. 탭하면 채워져요.</div>';
+  } else recWrap.innerHTML='<div class="recohint" style="margin-top:12px">첫 세트를 기록하면 다음부턴 무게를 추천해드려요.</div>';
   card.appendChild(recWrap);
-  recWrap.querySelectorAll(".reco").forEach(function(r){ r.onclick=function(){ var w=+r.getAttribute("data-w"),rp=+r.getAttribute("data-r"); sess.sets.forEach(function(s){ if(!s.done){ s.w=w; s.r=rp; } }); persist(k,sess); renderDayBody(); }; });
-  // set rows
-  var setWrap=document.createElement("div");
-  sess.sets.forEach(function(st,idx){
-    var row=document.createElement("div"); row.className="setrow"+(st.done?" done":"");
-    row.innerHTML='<div class="snum">'+(idx+1)+'</div>'+
-      stp("w",st.w,2.5)+'<span class="unit">kg</span>'+
-      stp("r",st.r,1)+'<span class="unit">회</span>'+
+  recWrap.querySelectorAll(".reco").forEach(function(r){ r.onclick=function(){ var w=+r.getAttribute("data-w"),rp=+r.getAttribute("data-r"); sess.sets.forEach(function(s,ix){ if(!s.done&&ix<ps.sets){ s.w=w; s.r=rp; } }); persist(k,sess); renderDayBody(); }; });
+  // 웜업 세트
+  var wm=document.createElement("div"); wm.innerHTML=warmRows(ex,topW,isFirst); if(wm.firstChild) card.appendChild(wm.firstChild);
+  // 워킹 세트 (+백오프)
+  var setWrap=document.createElement("div"); setWrap.className="worklab-wrap";
+  var wl=document.createElement("div"); wl.className="wlab"; wl.textContent="워킹 세트"; setWrap.appendChild(wl);
+  sess.sets.forEach(function(stt,idx){
+    var isBo=idx>=ps.sets;
+    var row=document.createElement("div"); row.className="setrow"+(stt.done?" done":"")+(isBo?" bo":"");
+    if(isBo && !stt.w && topW) stt.w=round25(topW*0.5);
+    row.innerHTML='<div class="snum">'+(isBo?'BO':(idx+1))+'</div>'+
+      stp("w",stt.w,2.5)+'<span class="unit">kg</span>'+
+      stp("r",stt.r,1)+'<span class="unit">회</span>'+
       '<button class="chk"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></button>';
     var wI=row.querySelector('[data-f="w"]'), rI=row.querySelector('[data-f="r"]');
-    wI.addEventListener("input",function(){ st.w=parseFloat(wI.value)||0; persist(k,sess); });
-    rI.addEventListener("input",function(){ st.r=parseInt(rI.value)||0; persist(k,sess); });
-    row.querySelector(".chk").onclick=function(){ st.done=!st.done; if(st.done&&(!st.w||!st.r)){ toast("무게·횟수를 먼저 입력하세요"); st.done=false; return; } persist(k,sess); if(st.done) toast("e1RM "+fmt(e1rm(st.w,st.r))+"kg"); renderDayBody(); };
+    wI.addEventListener("input",function(){ stt.w=parseFloat(wI.value)||0; persist(k,sess); });
+    rI.addEventListener("input",function(){ stt.r=parseInt(rI.value)||0; persist(k,sess); });
+    row.querySelector(".chk").onclick=function(){ stt.done=!stt.done; if(stt.done&&(!stt.w||!stt.r)){ toast("무게·횟수를 먼저 입력하세요"); stt.done=false; return; } persist(k,sess);
+      var nowAll=sess.sets.every(function(x){return x.done;});
+      if(stt.done && nowAll){ COMPLETE_POPUP=kt; } if(stt.done) toast("e1RM "+fmt(e1rm(stt.w,stt.r))+"kg");
+      renderDayBody(); };
     setWrap.appendChild(row);
   });
+  if(ex.bo){ var boh=document.createElement("div"); boh.className="hintline"; boh.innerHTML='↳ <b>BO 백오프</b>: 마지막 세트 후 무게 <b>50%</b>로 낮춰 실패까지 1세트 (볼륨 보충 · 관절 부담↓)'; setWrap.appendChild(boh); }
   card.appendChild(setWrap);
+  // 인텐시파이어 열 (레스트포즈 / 드롭) — 마지막 워킹세트만
+  var tech=ex.tech||"";
+  if(tech.indexOf("레스트포즈")>=0){ var rp=document.createElement("div"); rp.className="intens rp";
+    rp.innerHTML='<span class="ilab">🔴 레스트포즈</span><span>마지막 워킹세트만 — 실패 → 20초 쉬고 → 3~5회 더 · 총 2라운드</span>'; card.appendChild(rp); }
+  if(tech.indexOf("드롭")>=0){ var dr=document.createElement("div"); dr.className="intens drop";
+    var trip=tech.indexOf("트리플")>=0;
+    dr.innerHTML='<span class="ilab">🔻 '+(trip?'트리플 드롭':'드롭세트')+'</span><span>마지막 세트만 — 무게 20~30%↓ 즉시 실패까지'+(trip?' (3연속)':'')+'</span>'; card.appendChild(dr); }
   // foot: e1rm + memo
   var foot=document.createElement("div"); foot.className="exfoot";
-  var be=bestTop(sess); var e1=e1rm(be.w,be.r);
+  var be=bestTop(sess), e1=e1rm(be.w,be.r);
   foot.innerHTML='<span class="e1tag">'+(e1>0?'추정 1RM <b>'+fmt(e1)+'kg</b>':'&nbsp;')+'</span><button class="memoBtn">메모 '+(DB.memos[k]?'●':'')+'</button>';
   card.appendChild(foot);
   var mb=document.createElement("div"); mb.className="memoBox";
@@ -524,6 +624,16 @@ function exCard(d,ex){
   mb.querySelector("textarea").addEventListener("input",function(){ DB.memos[k]=this.value; save(); });
   if(DB.memos[k]){ var pn=document.createElement("div"); pn.className="pinned"; pn.innerHTML='<span class="pin">📌</span><span>'+esc(DB.memos[k])+'</span>'; card.appendChild(pn); }
   if(ex.m){ var mm=document.createElement("div"); mm.className="pinned"; mm.style.background="var(--card2)"; mm.style.color="var(--sub)"; mm.innerHTML='<span class="pin">💡</span><span>'+ex.m+'</span>'; card.appendChild(mm); }
+  // 완료 팝업 (5초 뒤 자동 접기)
+  if(COMPLETE_POPUP===kt){
+    var pop=document.createElement("div"); pop.className="donepop";
+    pop.innerHTML='<span>✅ <b>'+ex.n+'</b> 완료! <span class="cd">5</span>초 뒤 접혀요</span><button class="nope">아니오, 더 할래요</button>';
+    card.appendChild(pop);
+    var n=5, cd=pop.querySelector(".cd");
+    clearInterval(popupTimer);
+    popupTimer=setInterval(function(){ n--; if(cd) cd.textContent=n; if(n<=0){ clearInterval(popupTimer); DB.collapsed[kt]=1; COMPLETE_POPUP=null; save(); renderDayBody(); } },1000);
+    pop.querySelector(".nope").onclick=function(){ clearInterval(popupTimer); COMPLETE_POPUP=null; renderDayBody(); };
+  }
   return card;
 }
 function recoEl(lab,w,r,cls){ return '<div class="reco '+cls+'" data-w="'+w+'" data-r="'+r+'"><div class="rl">'+lab+'</div><div class="rv">'+fmt(w)+'<small>kg</small></div></div>'; }
@@ -593,14 +703,13 @@ function renderProgram(){
   var h=document.getElementById("v-program"); h.innerHTML="";
   PROGRAM.forEach(function(d){
     var t=document.createElement("div"); t.className="p-day"; var col=d.rest?"var(--muted)":BPC[d.focus.split("·")[0]]||"var(--blue)";
-    t.innerHTML='<span class="dot" style="background:'+col+'"></span>'+d.day+' ('+d.dow+') · '+d.focus; h.appendChild(t);
-    var c=document.createElement("div"); c.className="cardio"; c.style.margin="6px 0"; c.innerHTML='<span style="color:var(--muted)">🚶 </span><div>'+d.cardio+'</div>'; h.appendChild(c);
+    t.innerHTML='<span class="dot" style="background:'+col+'"></span>'+d.day+' · '+d.focus+(d.rest?'':' <span style="color:var(--muted);font-weight:600;font-size:12px">~'+dayMinutes(d)+'분</span>'); h.appendChild(t);
+    var c=document.createElement("div"); c.className="cardio"; c.style.margin="6px 0"; c.innerHTML='<span style="color:var(--muted)">🚶 </span><div>'+(d.rest?d.cardio:'웜업 걷기 '+(d.walk||8)+'분 → 동적 스트레칭 → 운동 → 정적 스트레칭'+(d.liss?' → LISS '+d.liss+'분':''))+'</div>'; h.appendChild(c);
     if(d.rest) return;
     d.ex.forEach(function(ex){
-      var e=document.createElement("div"); e.className="p-ex";
-      e.innerHTML='<div class="bp" style="background:'+BPC[ex.bp]+';width:34px;height:34px;border-radius:10px;font-size:12px">'+ex.bp.charAt(0)+'</div>'+
-        '<div class="info"><div class="n">'+(ex.ss?'<span class="ss">슈퍼 '+ex.ss+'</span>':'')+ex.n+'</div>'+
-        '<div class="m"><b>'+ex.w+'</b> · 웜업 '+SCHEME_LABEL[ex.s]+' · '+ex.tech+' · 휴식 '+ex.rest+(ex.m?'<br>'+ex.m:'')+'</div></div>';
+      var e=document.createElement("div"); e.className="p-ex"; e.style.display="block";
+      e.innerHTML='<div class="n">'+(ex.ss?'<span class="ss">슈퍼 '+ex.ss+'</span>':'')+ex.n+(ex.risky?' <span style="color:#B4232E;font-size:11px;font-weight:800">⚠️자세우선</span>':(ex.main?' <span style="color:#0E7A55;font-size:11px;font-weight:800">메인</span>':''))+'</div>'+
+        '<div class="m"><b>'+ex.w.replace("×","세트 ")+'회</b> · 웜업 '+SCHEME_LABEL[ex.s]+' · '+ex.tech+' · 휴식 '+ex.rest+' · ⏱~'+ex.t+'분'+(ex.bo?' · 백오프':'')+(ex.m?'<br>'+ex.m:'')+'</div>';
       h.appendChild(e);
     });
   });
