@@ -1,0 +1,681 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#F2F4F6">
+<title>HEALTHY — 트레이닝 로그</title>
+</head>
+<body>
+<style>
+  :root{
+    --bg:#F2F4F6; --card:#FFFFFF; --card2:#F7F8FA;
+    --blue:#3182F6; --blue-d:#2870E0; --blue-t:#EAF2FF;
+    --ink:#191F28; --sub:#4E5968; --muted:#8B95A1; --line:#E5E8EB;
+    --up:#12B886; --down:#F04452; --yellow:#FFF6D6; --yellow-b:#F2C94C;
+    --c-chest:#FF6B6B; --c-back:#4C6EF5; --c-shoulder:#FF922B; --c-legs:#3182F6;
+    --c-arms:#9775FA; --c-abs:#20C997; --c-calf:#F06595;
+    --r:18px; --sh:0 1px 3px rgba(0,20,60,.06),0 1px 2px rgba(0,20,60,.04);
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  html,body{margin:0; padding:0;}
+  body{
+    background:var(--bg); color:var(--ink);
+    font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Noto Sans KR",system-ui,sans-serif;
+    font-size:15px; line-height:1.45; -webkit-font-smoothing:antialiased; letter-spacing:-.01em;
+  }
+  .app{max-width:480px; margin:0 auto; padding:0 16px 92px; min-height:100vh;}
+  .num{font-variant-numeric:tabular-nums; font-feature-settings:"tnum";}
+  button{font-family:inherit; letter-spacing:-.01em;}
+
+  header.top{position:sticky; top:0; z-index:20; background:var(--bg); padding:18px 0 8px;}
+  .htitle{font-size:22px; font-weight:800; letter-spacing:-.03em;}
+  .hsub{color:var(--muted); font-size:13px; margin-top:1px;}
+
+  /* program progress card */
+  .prog{background:linear-gradient(135deg,#3182F6,#4C6EF5); color:#fff; border-radius:20px; padding:18px; margin:8px 0 14px; box-shadow:0 6px 18px rgba(49,130,246,.28);}
+  .prog .pname{font-size:17px; font-weight:800;}
+  .prog .pweek{font-size:12.5px; opacity:.85; margin-top:2px;}
+  .prog .bar{height:7px; background:rgba(255,255,255,.28); border-radius:5px; margin-top:13px; overflow:hidden;}
+  .prog .bar i{display:block; height:100%; background:#fff; border-radius:5px;}
+  .prog .pmeta{display:flex; justify-content:space-between; font-size:12px; margin-top:8px; opacity:.92;}
+
+  .weeks{display:flex; gap:8px; overflow-x:auto; padding:2px 0 6px; scrollbar-width:none;}
+  .weeks::-webkit-scrollbar{display:none;}
+  .wtab{flex:0 0 auto; border:0; background:none; color:var(--muted); font-size:14px; font-weight:700; padding:6px 4px; position:relative;}
+  .wtab.on{color:var(--ink);}
+  .wtab.on:after{content:""; position:absolute; left:4px; right:4px; bottom:-1px; height:2.5px; background:var(--ink); border-radius:2px;}
+
+  .days{display:flex; gap:9px; overflow-x:auto; padding:8px 0 6px; scrollbar-width:none;}
+  .days::-webkit-scrollbar{display:none;}
+  .dchip{flex:0 0 auto; width:62px; border:0; background:var(--card); border-radius:16px; padding:11px 0; box-shadow:var(--sh); cursor:pointer; display:flex; flex-direction:column; align-items:center; gap:6px;}
+  .dchip .ic{width:34px; height:34px; border-radius:11px; background:var(--card2); display:flex; align-items:center; justify-content:center;}
+  .dchip .ic svg{width:19px; height:19px; stroke:var(--muted); fill:none; stroke-width:2;}
+  .dchip .dl{font-size:12px; font-weight:700; color:var(--sub);}
+  .dchip.on{background:var(--blue);}
+  .dchip.on .dl{color:#fff;} .dchip.on .ic{background:rgba(255,255,255,.2);} .dchip.on .ic svg{stroke:#fff;}
+  .dchip.done .ic{background:#E4F8F0;} .dchip.done .ic svg{stroke:var(--up);}
+  .dchip.done.on .ic{background:rgba(255,255,255,.2);} .dchip.done.on .ic svg{stroke:#fff;}
+
+  .dayhead{margin:14px 2px 2px;}
+  .dayhead h2{margin:0; font-size:19px; font-weight:800; letter-spacing:-.02em;}
+  .dayhead .focus{color:var(--sub); font-size:13.5px; margin-top:2px;}
+
+  .cardio{background:var(--card); border-radius:14px; padding:12px 14px; margin:12px 0; box-shadow:var(--sh); color:var(--sub); font-size:13px; display:flex; gap:9px; align-items:flex-start;}
+  .cardio .ci{flex:0 0 auto; width:22px; height:22px; color:var(--blue);}
+  .cardio b{color:var(--ink);}
+
+  .card{background:var(--card); border-radius:var(--r); padding:15px; margin:12px 0; box-shadow:var(--sh);}
+  .exhead{display:flex; align-items:center; gap:11px;}
+  .bp{flex:0 0 auto; width:40px; height:40px; border-radius:12px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:14px; font-weight:800;}
+  .exmeta{flex:1; min-width:0;}
+  .exname{font-size:16px; font-weight:800; letter-spacing:-.02em; line-height:1.25;}
+  .exname .ss{font-size:10px; font-weight:800; color:var(--blue); background:var(--blue-t); border-radius:5px; padding:1px 5px; margin-right:5px; vertical-align:1.5px;}
+  .exsub{color:var(--muted); font-size:12.5px; margin-top:2px;}
+  .exsub .last{color:var(--sub); font-weight:600;}
+  .badge{flex:0 0 auto; text-align:right;}
+  .badge .wow{font-size:12px; font-weight:800; padding:4px 8px; border-radius:9px;}
+  .wow.up{color:var(--up); background:#E4F8F0;} .wow.down{color:var(--down); background:#FDECEE;} .wow.flat{color:var(--muted); background:var(--card2);}
+
+  .recos{display:flex; gap:7px; margin:13px 0 6px;}
+  .reco{flex:1; border:1.5px solid var(--line); background:var(--card); border-radius:13px; padding:8px 4px; text-align:center; cursor:pointer;}
+  .reco.mid{border-color:var(--blue); background:var(--blue-t);}
+  .reco .rl{font-size:11px; color:var(--muted); font-weight:700;}
+  .reco.mid .rl{color:var(--blue);}
+  .reco .rv{font-size:15px; font-weight:800; margin-top:2px;} .reco .rv small{font-size:11px; color:var(--muted); font-weight:700;}
+  .recohint{font-size:11.5px; color:var(--muted); margin:2px 2px 10px;}
+
+  .setrow{display:flex; align-items:center; gap:8px; padding:7px 0; border-top:1px solid var(--line);}
+  .setrow:first-of-type{border-top:0;}
+  .snum{flex:0 0 auto; width:22px; height:22px; border-radius:50%; background:var(--card2); color:var(--muted); font-size:12px; font-weight:800; display:flex; align-items:center; justify-content:center;}
+  .setrow.done .snum{background:var(--up); color:#fff;}
+  .stp{display:flex; align-items:center; background:var(--card2); border-radius:10px; overflow:hidden;}
+  .stp button{width:30px; height:38px; border:0; background:transparent; color:var(--sub); font-size:18px; font-weight:600; cursor:pointer;}
+  .stp button:active{background:var(--blue-t);}
+  .stp input{width:44px; border:0; background:transparent; text-align:center; font-size:15px; font-weight:800; color:var(--ink); padding:0; -moz-appearance:textfield; font-variant-numeric:tabular-nums;}
+  .stp input::-webkit-outer-spin-button,.stp input::-webkit-inner-spin-button{-webkit-appearance:none; margin:0;}
+  .unit{font-size:11px; color:var(--muted); font-weight:700; margin-left:-3px;}
+  .chk{flex:0 0 auto; margin-left:auto; width:30px; height:30px; border-radius:50%; border:2px solid var(--line); background:var(--card); cursor:pointer; display:flex; align-items:center; justify-content:center; padding:0;}
+  .chk svg{width:16px; height:16px; stroke:var(--muted); fill:none; stroke-width:2.6;}
+  .setrow.done .chk{background:var(--up); border-color:var(--up);} .setrow.done .chk svg{stroke:#fff;}
+
+  .exfoot{display:flex; align-items:center; justify-content:space-between; margin-top:10px;}
+  .memoBtn{background:var(--card2); border:0; border-radius:9px; color:var(--sub); font-size:12px; font-weight:700; padding:7px 11px; cursor:pointer;}
+  .e1tag{font-size:12px; color:var(--muted); font-weight:600;} .e1tag b{color:var(--ink); font-weight:800;}
+  .memoBox{margin-top:10px; display:none;}
+  .memoBox.open{display:block;}
+  .memoBox textarea{width:100%; height:56px; border:1.5px solid var(--line); border-radius:11px; background:var(--card2); padding:10px; font-family:inherit; font-size:13px; color:var(--ink); resize:none;}
+  .pinned{background:var(--yellow); border-radius:12px; padding:10px 12px; margin-top:10px; font-size:12.5px; color:#8a6d1a; display:flex; gap:8px;}
+  .pinned .pin{flex:0 0 auto;}
+
+  .cta{position:sticky; bottom:80px; margin:16px 0 4px;}
+  .cta button{width:100%; border:0; background:var(--blue); color:#fff; font-size:16px; font-weight:800; border-radius:15px; padding:16px; box-shadow:0 6px 16px rgba(49,130,246,.32); cursor:pointer;}
+  .cta button:active{background:var(--blue-d);}
+  .cta button.done{background:var(--up); box-shadow:0 6px 16px rgba(18,184,134,.3);}
+
+  .rest-card{background:var(--card); border-radius:var(--r); padding:28px 18px; text-align:center; box-shadow:var(--sh); margin:14px 0;}
+  .rest-card .em{width:56px; height:56px; margin:0 auto 12px; border-radius:18px; background:var(--blue-t); display:flex; align-items:center; justify-content:center;}
+  .rest-card .em svg{width:28px; height:28px; stroke:var(--blue); fill:none; stroke-width:2;}
+  .rest-card h3{margin:0 0 6px; font-size:18px;} .rest-card p{margin:0; color:var(--sub); font-size:13.5px;}
+
+  /* stats */
+  .stat-card{background:var(--card); border-radius:var(--r); padding:17px; margin:12px 0; box-shadow:var(--sh);}
+  .stat-card .cap{color:var(--muted); font-size:13px; font-weight:700;}
+  .stat-card .big{font-size:30px; font-weight:800; letter-spacing:-.03em; margin-top:3px;} .stat-card .big small{font-size:16px; color:var(--muted); font-weight:800;}
+  .wowline{font-size:13px; font-weight:700; margin-top:5px;}
+  .chart{display:flex; align-items:flex-end; gap:8px; height:110px; margin:16px 4px 4px;}
+  .chart .col{flex:1; display:flex; flex-direction:column; align-items:center; gap:6px; height:100%; justify-content:flex-end;}
+  .chart .stack{width:60%; max-width:26px; border-radius:6px 6px 3px 3px; display:flex; flex-direction:column-reverse; overflow:hidden; min-height:3px;}
+  .chart .seg{width:100%;}
+  .chart .lab{font-size:11px; color:var(--muted); font-weight:700;}
+  .chart .lab.today{color:var(--blue);}
+  .bpbars{margin-top:6px;}
+  .bpbar{display:flex; align-items:center; gap:10px; padding:7px 0;}
+  .bpbar .nm{width:34px; font-size:12.5px; font-weight:700; color:var(--sub);}
+  .bpbar .track{flex:1; height:9px; background:var(--card2); border-radius:6px; overflow:hidden;}
+  .bpbar .fill{height:100%; border-radius:6px;}
+  .bpbar .vv{font-size:12px; font-weight:800; color:var(--ink); width:64px; text-align:right;}
+  .spark{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:10px 0; border-top:1px solid var(--line);}
+  .spark:first-of-type{border-top:0;}
+  .spark .sn{font-size:13.5px; font-weight:700;} .spark .ssub{font-size:11.5px; color:var(--muted); margin-top:1px;}
+  .spark svg{flex:0 0 auto;}
+  .spark .grow{font-size:13px; font-weight:800; text-align:right;}
+  .empty{text-align:center; color:var(--muted); font-size:13.5px; padding:30px 10px;}
+
+  /* program list */
+  .p-day{margin:18px 2px 4px; font-size:16px; font-weight:800; display:flex; align-items:center; gap:8px;}
+  .p-day .dot{width:8px; height:8px; border-radius:50%;}
+  .p-ex{background:var(--card); border-radius:14px; padding:12px 14px; margin:8px 0; box-shadow:var(--sh); display:flex; gap:11px; align-items:flex-start;}
+  .p-ex .info{flex:1; min-width:0;}
+  .p-ex .n{font-weight:800; font-size:14.5px;} .p-ex .n .ss{font-size:10px; color:var(--blue); background:var(--blue-t); border-radius:5px; padding:1px 5px; margin-right:5px;}
+  .p-ex .m{color:var(--muted); font-size:12px; margin-top:4px; line-height:1.5;}
+  .p-ex .m b{color:var(--sub); font-weight:700;}
+
+  /* stretch */
+  .s-day{margin:22px 2px 6px; font-size:17px; font-weight:800; letter-spacing:-.02em;}
+  .s-lab{font-size:13px; font-weight:800; margin:14px 2px 9px; display:flex; align-items:center; gap:7px;}
+  .s-lab .d{width:7px; height:7px; border-radius:50%;}
+  .s-lab .cnt{margin-left:auto; font-size:11px; color:var(--muted); font-weight:700;}
+  .poses{display:flex; gap:12px; overflow-x:auto; padding:2px 2px 10px; margin:0 -2px; scrollbar-width:none; scroll-snap-type:x mandatory;}
+  .poses::-webkit-scrollbar{display:none;}
+  .pose{flex:0 0 auto; width:162px; background:var(--card); border-radius:18px; box-shadow:var(--sh); overflow:hidden; scroll-snap-align:start;}
+  .pose .fig{display:block; width:100%; height:152px;}
+  .pose .pbody{padding:11px 13px 13px;}
+  .pose .pn{font-size:14.5px; font-weight:800; line-height:1.25; letter-spacing:-.02em; display:flex; align-items:center; gap:6px; flex-wrap:wrap;}
+  .pose .key{font-size:10px; font-weight:800; color:#fff; background:var(--blue); border-radius:6px; padding:2px 6px; letter-spacing:0;}
+  .pose .key.post{background:var(--up);}
+  .pose .pd{font-size:12px; color:var(--muted); margin-top:5px;}
+  .s-pt{background:var(--yellow); border-radius:12px; padding:11px 13px; font-size:12.5px; color:#8a6d1a; margin-top:12px; line-height:1.5;}
+
+  /* more tab */
+  .m-card{background:var(--card); border-radius:var(--r); padding:17px; margin:12px 0; box-shadow:var(--sh);}
+  .m-card h3{margin:0 0 3px; font-size:16px;} .m-card .sb{color:var(--muted); font-size:12px; margin-bottom:13px;}
+  .frow{display:flex; align-items:center; justify-content:space-between; padding:12px 0; border-top:1px solid var(--line);}
+  .frow:first-of-type{border-top:0;}
+  .frow .fl{font-size:14px; font-weight:600; color:var(--sub);}
+  .fin{display:flex; align-items:center; gap:4px;}
+  .fin input{width:66px; border:0; background:var(--card2); border-radius:9px; text-align:right; font-size:16px; font-weight:800; color:var(--ink); padding:9px 10px; font-variant-numeric:tabular-nums;}
+  .fin .u{font-size:12px; color:var(--muted); font-weight:700; width:22px;}
+  .resbox{background:var(--blue-t); border-radius:13px; padding:13px 15px; margin-top:14px; display:flex; align-items:center; justify-content:space-between;}
+  .resbox .rl{font-size:13px; font-weight:700; color:var(--blue);}
+  .resbox .rv{font-size:22px; font-weight:800; color:var(--blue);} .resbox .rv small{font-size:13px;}
+  .seg{display:flex; gap:6px; margin:6px 0 4px;}
+  .seg button{flex:1; border:1.5px solid var(--line); background:var(--card); color:var(--sub); border-radius:11px; padding:9px 0; font-weight:700; font-size:13px; cursor:pointer;}
+  .seg button.on{background:var(--blue); border-color:var(--blue); color:#fff;}
+  .wout{display:flex; gap:8px; margin-top:12px;}
+  .wout .o{flex:1; background:var(--card2); border-radius:12px; padding:11px 6px; text-align:center;}
+  .wout .o .l{font-size:10.5px; color:var(--muted); font-weight:700;} .wout .o .v{font-size:19px; font-weight:800; margin-top:3px;}
+  .g-sec{margin:20px 2px 2px; font-size:13.5px; font-weight:800; color:var(--blue);}
+  .g-item{padding:11px 0; border-top:1px solid var(--line);} .g-item:first-of-type{border-top:0;}
+  .g-item .t{font-weight:800; font-size:13.5px;} .g-item .b{color:var(--sub); font-size:12.5px; line-height:1.55; margin-top:3px;}
+  textarea.io{width:100%; height:76px; background:var(--card2); border:1.5px solid var(--line); border-radius:11px; color:var(--ink); font-size:11px; padding:10px; font-family:ui-monospace,monospace; resize:vertical;}
+  .rowbtns{display:flex; gap:8px; margin-top:10px;}
+  .rowbtns button{flex:1; border:1.5px solid var(--line); background:var(--card); color:var(--ink); border-radius:11px; padding:12px 0; font-weight:700; font-size:13.5px; cursor:pointer;}
+  .rowbtns button.warn{border-color:var(--down); color:var(--down);}
+
+  nav.tabs{position:fixed; left:0; right:0; bottom:0; z-index:30; background:rgba(255,255,255,.94); backdrop-filter:blur(14px); border-top:1px solid var(--line); display:flex; max-width:480px; margin:0 auto; padding:7px 4px calc(7px + env(safe-area-inset-bottom));}
+  nav.tabs button{flex:1; background:none; border:0; color:var(--muted); font-size:10.5px; font-weight:700; display:flex; flex-direction:column; align-items:center; gap:3px; padding:5px 0; cursor:pointer;}
+  nav.tabs button svg{width:23px; height:23px; stroke:currentColor; fill:none; stroke-width:1.9;}
+  nav.tabs button.on{color:var(--blue);}
+  .view{display:none;} .view.on{display:block; animation:fade .2s ease;}
+  @keyframes fade{from{opacity:0; transform:translateY(5px);} to{opacity:1; transform:none;}}
+  @media (prefers-reduced-motion:reduce){.view.on{animation:none;}}
+  .toast{position:fixed; left:50%; bottom:84px; transform:translateX(-50%) translateY(16px); background:var(--ink); color:#fff; font-weight:700; font-size:13.5px; padding:11px 18px; border-radius:14px; opacity:0; transition:.25s; z-index:40; pointer-events:none; box-shadow:0 6px 20px rgba(0,0,0,.2);}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+</style>
+
+<div class="app">
+  <header class="top">
+    <div class="htitle" id="hTitle">오늘</div>
+    <div class="hsub" id="hSub"></div>
+  </header>
+  <section class="view on" id="v-today"></section>
+  <section class="view" id="v-stats"></section>
+  <section class="view" id="v-program"></section>
+  <section class="view" id="v-stretch"></section>
+  <section class="view" id="v-more"></section>
+</div>
+<nav class="tabs" id="nav"></nav>
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+"use strict";
+
+/* ============ DATA ============ */
+var SCHEME={ "3set":[[.40,10],[.60,6],[.80,3]], "2set":[[.50,8],[.75,4]], "1set":[[.60,5]], "none":null };
+var SCHEME_LABEL={ "3set":"40·60·80%", "2set":"50·75%", "1set":"60%", "none":"없음" };
+var BPC={ "가슴":"var(--c-chest)","등":"var(--c-back)","어깨":"var(--c-shoulder)","하체":"var(--c-legs)","팔":"var(--c-arms)","복근":"var(--c-abs)","카프":"var(--c-calf)" };
+var BPS=["가슴","등","어깨","하체","팔","복근","카프"];
+
+var PROGRAM=[
+ {id:"d1",day:"DAY 1",dow:"월",focus:"가슴·어깨·팔·카프",cardio:"트레드밀 8분(경사2%·5.5km/h) + 동적 스트레칭 · 밴드 풀어파트 필수",ex:[
+   {n:"머신 인클라인 프레스",bp:"가슴",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",m:"메인 — 상부가슴 최우선"},
+   {n:"플랫 덤벨 프레스",bp:"가슴",s:"1set",w:"2×8-12",tech:"프리웨이트",rest:"2분",m:""},
+   {n:"펙덱 플라이",bp:"가슴",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",m:"수축 → 쉬지 않고 어깨",ss:"A"},
+   {n:"머신 사이드 레터럴",bp:"어깨",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",m:"",ss:"A"},
+   {n:"케이블 푸시다운",bp:"팔",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",m:"팔 1회차 — 길항 슈퍼세트",ss:"B"},
+   {n:"EZ바 컬",bp:"팔",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",m:"",ss:"B"},
+   {n:"스탠딩 카프레이즈",bp:"카프",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",m:"바닥 스트레치 2초"}
+ ]},
+ {id:"d2",day:"DAY 2",dow:"화",focus:"하체·복근",cardio:"트레드밀 8분(경사2%·5.5km/h) + 동적 스트레칭 · 관절 준비",ex:[
+   {n:"레그 익스텐션 (사전 피로)",bp:"하체",s:"2set",w:"2×12-15",tech:"활성화",rest:"90초",m:"첫 종목 — 수축 1초 정지"},
+   {n:"핵스쿼트 또는 펜듈럼 스쿼트",bp:"하체",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",m:"메인 — 최대 깊이, 네거티브 3-4초"},
+   {n:"레그프레스 (발 낮게·좁게)",bp:"하체",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"2분",m:"깊은 무릎 굴곡"},
+   {n:"레그 익스텐션 (마무리)",bp:"하체",s:"none",w:"2×12-15",tech:"트리플 드롭",rest:"90초",m:"쿼드 완전 소진"},
+   {n:"케이블 크런치",bp:"복근",s:"1set",w:"3×10-15",tech:"없음",rest:"60초",m:"중량 더블 프로그레션"}
+ ]},
+ {id:"d3",day:"DAY 3",dow:"수",focus:"등·팔·카프",cardio:"트레드밀 8분(경사2%·5.5km/h) + 동적 스트레칭 · 햄 동적 웜업 포함",ex:[
+   {n:"랫 풀다운",bp:"등",s:"2set",w:"2×8-12",tech:"없음",rest:"2분",m:"유지 볼륨 (RIR 1-2)"},
+   {n:"체스트서포티드 로우",bp:"등",s:"1set",w:"2×8-12",tech:"없음",rest:"2분",m:"유지 볼륨"},
+   {n:"루마니안 데드리프트",bp:"하체",s:"2set",w:"2×8-10",tech:"없음",rest:"2분",m:"힌지 패턴 — 웜업 유지"},
+   {n:"라잉 레그컬",bp:"하체",s:"1set",w:"2×10-12",tech:"없음",rest:"90초",m:"햄 유지"},
+   {n:"인클라인 덤벨 컬",bp:"팔",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",m:"팔 2회차 — 이두 스트레치",ss:"A"},
+   {n:"오버헤드 케이블 익스텐션",bp:"팔",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",m:"삼두 장두",ss:"A"},
+   {n:"시티드 카프레이즈",bp:"카프",s:"1set",w:"3×12-15",tech:"드롭세트 1회",rest:"90초",m:"카프 2회차"}
+ ]},
+ {id:"d4",day:"DAY 4",dow:"목",focus:"휴식",rest:true,cardio:"회복 걷기 40분 — 경사 0%·5.0km/h (야외 산책 대체 가능). 소파 금지, 걷기는 하는 날"},
+ {id:"d5",day:"DAY 5",dow:"금",focus:"어깨·팔·복근",cardio:"트레드밀 8분(경사2%·5.5km/h) + 동적 스트레칭 · 손목·팔꿈치 웜업",ex:[
+   {n:"머신 숄더프레스",bp:"어깨",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",m:"메인 — 어깨 매스"},
+   {n:"시티드 사이드 레터럴 레이즈",bp:"어깨",s:"1set",w:"3×10-15",tech:"드롭세트 1회",rest:"90초",m:"측면 델트 2회차"},
+   {n:"머신 딥",bp:"팔",s:"1set",w:"3×8-12",tech:"레스트포즈 20초",rest:"90초",m:"팔 3회차 메인 — 매스",ss:"A"},
+   {n:"머신 프리처컬",bp:"팔",s:"1set",w:"3×8-12",tech:"레스트포즈 20초",rest:"90초",m:"",ss:"A"},
+   {n:"해머 컬",bp:"팔",s:"none",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",m:"상완근·전완 = 팔 굵기",ss:"B"},
+   {n:"케이블 푸시다운 (로프)",bp:"팔",s:"none",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",m:"",ss:"B"},
+   {n:"행잉 레그레이즈",bp:"복근",s:"none",w:"3×10-15",tech:"없음",rest:"60초",m:"하복부"}
+ ]},
+ {id:"d6",day:"DAY 6",dow:"토",focus:"하체·가슴·카프",cardio:"트레드밀 8분(경사2%·5.5km/h) + 동적 스트레칭 · 2회차 날 웜업 넉넉히",ex:[
+   {n:"레그프레스 (발 낮게)",bp:"하체",s:"2set",w:"2×10-15",tech:"레스트포즈 20초",rest:"2분",m:"쿼드 2회차 (무게 90%, RIR 1-2)"},
+   {n:"불가리안 스플릿 스쿼트 또는 워킹 런지",bp:"하체",s:"1set",w:"2×10-12",tech:"편측",rest:"2분",m:"좌우 교정"},
+   {n:"머신 체스트프레스 (플랫)",bp:"가슴",s:"2set",w:"2×8-12",tech:"레스트포즈 20초",rest:"2분",m:"가슴 2회차"},
+   {n:"케이블 크로스오버 (로우-하이)",bp:"가슴",s:"1set",w:"2×12-15",tech:"드롭세트 1회",rest:"90초",m:"상부 라인"},
+   {n:"스탠딩 카프레이즈",bp:"카프",s:"1set",w:"3×10-15",tech:"드롭세트 1회",rest:"90초",m:"카프 3회차"}
+ ]},
+ {id:"d7",day:"DAY 7",dow:"일",focus:"휴식",rest:true,cardio:"회복 걷기 40분 — 경사 0%·5.0km/h. 내일(월) 헤비 인클라인 대비"}
+];
+
+/* 3D mannequin illustration system */
+var FIGDEFS='<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>'+
+ '<radialGradient id="bgg" cx="50%" cy="36%" r="82%"><stop offset="0%" stop-color="#eef1f4"/><stop offset="68%" stop-color="#ccd1d8"/><stop offset="100%" stop-color="#a6acb5"/></radialGradient>'+
+ '<linearGradient id="lg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#565d67"/><stop offset=".28" stop-color="#d4d9df"/><stop offset=".58" stop-color="#969ca6"/><stop offset="1" stop-color="#484e57"/></linearGradient>'+
+ '<radialGradient id="glow" cx="50%" cy="50%" r="50%"><stop offset="0%" stop-color="rgba(255,74,58,.95)"/><stop offset="45%" stop-color="rgba(255,66,50,.55)"/><stop offset="100%" stop-color="rgba(255,66,50,0)"/></radialGradient>'+
+ '<filter id="blur" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="2"/></filter>'+
+ '<filter id="soft" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="1.5"/></filter>'+
+ '</defs></svg>';
+var RT={ua:[4.6,3.2],fa:[3.2,2.2],th:[6.4,4.2],ca:[4.2,2.5],tc:[9,6.3],ta:[6.3,7.1],nk:[3.6,3]};
+function f(n){ return Math.round(n*100)/100; }
+function bone(x1,y1,x2,y2,r1,r2){
+ var dx=x2-x1,dy=y2-y1,d=Math.hypot(dx,dy)||0.001, ux=dx/d,uy=dy/d, base=Math.atan2(uy,ux);
+ var s=(r1-r2)/d; s=Math.max(-1,Math.min(1,s)); var a=Math.asin(s);
+ var A1=base+Math.PI/2+a, A2=base-Math.PI/2-a;
+ var p1=[x1+r1*Math.cos(A1),y1+r1*Math.sin(A1)], p2=[x2+r2*Math.cos(A1),y2+r2*Math.sin(A1)];
+ var p3=[x2+r2*Math.cos(A2),y2+r2*Math.sin(A2)], p4=[x1+r1*Math.cos(A2),y1+r1*Math.sin(A2)];
+ var c2=[x2+ux*r2*1.8,y2+uy*r2*1.8], c1=[x1-ux*r1*1.8,y1-uy*r1*1.8];
+ return 'M'+f(p1[0])+' '+f(p1[1])+'L'+f(p2[0])+' '+f(p2[1])+'Q'+f(c2[0])+' '+f(c2[1])+' '+f(p3[0])+' '+f(p3[1])+
+   'L'+f(p4[0])+' '+f(p4[1])+'Q'+f(c1[0])+' '+f(c1[1])+' '+f(p1[0])+' '+f(p1[1])+'Z';
+}
+function seg(x1,y1,x2,y2,r){ return '<path d="'+bone(x1,y1,x2,y2,r[0],r[1])+'" fill="url(#lg)" stroke="#3b414a" stroke-width=".5" stroke-linejoin="round"/>'; }
+function limbSeg(l){ var r=RT[l[4]]||RT.ua, out=seg(l[0],l[1],l[2],l[3],r);
+ if(l[4]==='ca') out+='<ellipse cx="'+f(l[2]+1.2)+'" cy="'+f(l[3]+0.6)+'" rx="3.2" ry="1.9" fill="url(#lg)" stroke="#3b414a" stroke-width=".5"/>';
+ if(l[4]==='fa') out+='<ellipse cx="'+l[2]+'" cy="'+l[3]+'" rx="2.1" ry="2.5" fill="url(#lg)" stroke="#3b414a" stroke-width=".5"/>';
+ return out; }
+function buildFig(sp){
+ var t=sp.torso, mid=sp.torsoMid||[t[0]+(t[2]-t[0])*.58,t[1]+(t[3]-t[1])*.58];
+ var hx=sp.head[0],hy=sp.head[1],hR=sp.headR||0;
+ var s='<svg class="fig" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">';
+ s+='<rect width="100" height="100" fill="url(#bgg)"/>';
+ s+='<ellipse cx="50" cy="94" rx="26" ry="4" fill="#3a4048" opacity=".16" filter="url(#blur)"/>';
+ if(sp.back) s+=sp.back;
+ (sp.back2||[]).forEach(function(l){ s+=limbSeg(l); });
+ s+=seg(hx,hy+5.5,t[0],t[1],RT.nk);
+ s+=seg(t[0],t[1],mid[0],mid[1],RT.tc)+seg(mid[0],mid[1],t[2],t[3],RT.ta);
+ (sp.limbs||[]).forEach(function(l){ s+=limbSeg(l); });
+ s+='<ellipse cx="'+hx+'" cy="'+hy+'" rx="6.3" ry="7.7" fill="url(#lg)" stroke="#3b414a" stroke-width=".5"'+(hR?' transform="rotate('+hR+' '+hx+' '+hy+')"':'')+'/>';
+ if(sp.front) s+=sp.front;
+ var g=sp.glow; if(g) s+='<ellipse cx="'+g[0]+'" cy="'+g[1]+'" rx="'+g[2]+'" ry="'+g[3]+'"'+(g[4]?' transform="rotate('+g[4]+' '+g[0]+' '+g[1]+')"':'')+' fill="url(#glow)" filter="url(#soft)"/>';
+ return s+'</svg>';
+}
+var POSES={
+ bandpull:{head:[50,16],torso:[50,30,50,60],
+  limbs:[[42,32,30,30,'ua'],[30,30,18,31,'fa'],[58,32,70,30,'ua'],[70,30,82,31,'fa'],
+   [45,60,46,76,'th'],[46,76,45,90,'ca'],[55,60,54,76,'th'],[54,76,55,90,'ca']],
+  front:'<path d="M18 31H82" stroke="#3182F6" stroke-width="1.7" stroke-dasharray="1.6 3" opacity=".6"/>', glow:[50,37,19,8,0]},
+ armcircle:{head:[50,16],torso:[50,30,50,60],
+  limbs:[[42,32,37,18,'ua'],[37,18,33,8,'fa'],[58,32,63,18,'ua'],[63,18,67,8,'fa'],
+   [45,60,45,76,'th'],[45,76,45,90,'ca'],[55,60,55,76,'th'],[55,76,55,90,'ca']], glow:[50,33,16,7,0]},
+ torsorotate:{head:[52,16],headR:8,torso:[50,30,50,60],
+  limbs:[[42,33,58,40,'ua'],[58,40,67,37,'fa'],[58,33,59,41,'ua'],[59,41,66,38,'fa'],
+   [45,60,45,76,'th'],[45,76,45,90,'ca'],[55,60,55,76,'th'],[55,76,55,90,'ca']], glow:[54,46,13,9,20]},
+ pushup:{head:[28,46],headR:20,torso:[36,50,62,62],
+  limbs:[[62,62,73,66,'th'],[73,66,85,71,'ca']],
+  back2:[[36,50,34,69,'ua'],[34,69,33,72,'fa']], glow:[42,53,10,7,-24]},
+ chestdoor:{head:[49,16],torso:[50,30,50,60],
+  back:'<path d="M80 6V45" stroke="#9aa1ab" stroke-width="2.4" stroke-linecap="round" opacity=".65"/>',
+  limbs:[[58,32,72,27,'ua'],[72,27,74,14,'fa'],[42,32,40,50,'ua'],[40,50,40,58,'fa'],
+   [45,60,45,76,'th'],[45,76,45,90,'ca'],[55,60,55,76,'th'],[55,76,55,90,'ca']], glow:[45,39,13,10,0]},
+ crossshoulder:{head:[49,16],torso:[50,30,50,60],
+  limbs:[[42,33,60,37,'ua'],[60,37,68,36,'fa'],[58,33,48,35,'ua'],[48,35,44,35,'fa'],
+   [45,60,45,76,'th'],[45,76,45,90,'ca'],[55,60,55,76,'th'],[55,76,55,90,'ca']], glow:[42,33,8,7,0]},
+ tricep:{head:[49,17],torso:[50,30,50,60],
+  limbs:[[58,32,63,16,'ua'],[63,16,50,20,'fa'],[42,32,54,15,'ua'],[54,15,60,17,'fa'],
+   [45,60,45,76,'th'],[45,76,45,90,'ca'],[55,60,55,76,'th'],[55,76,55,90,'ca']], glow:[62,20,6,8,25]},
+ legswing:{head:[46,16],headR:14,torso:[49,30,50,59],
+  back2:[[49,32,41,45,'ua'],[41,45,37,52,'fa']],
+  limbs:[[50,59,50,74,'th'],[50,74,50,90,'ca'],[50,59,64,55,'th'],[64,55,79,51,'ca'],[51,32,57,46,'ua'],[57,46,60,53,'fa']], glow:[54,60,11,8,-18]},
+ squat:{head:[52,27],torso:[51,40,50,62],
+  limbs:[[43,42,60,41,'ua'],[60,41,68,41,'fa'],[57,43,62,42,'ua'],
+   [44,62,40,74,'th'],[40,74,40,89,'ca'],[56,62,60,74,'th'],[60,74,60,89,'ca']], glow:[50,72,19,7,0]},
+ lunge:{head:[51,24],headR:14,torso:[52,37,52,58],
+  back2:[[52,58,68,72,'th'],[68,72,83,84,'ca']],
+  limbs:[[52,58,46,73,'th'],[46,73,46,89,'ca'],[52,39,49,53,'ua'],[49,53,48,60,'fa'],[52,39,58,52,'ua']], glow:[49,66,9,9,10]},
+ quad:{head:[50,16],torso:[50,30,50,60],
+  limbs:[[50,60,50,75,'th'],[50,75,50,90,'ca'],[50,60,54,73,'th'],[54,73,47,62,'ca'],
+   [50,33,40,41,'ua'],[50,33,48,55,'ua'],[48,55,47,62,'fa']], glow:[52,66,7,10,8]},
+ hamstring:{head:[77,52],headR:24,torso:[71,52,50,58],
+  limbs:[[50,58,50,74,'th'],[50,74,50,90,'ca'],[69,53,64,71,'ua'],[64,71,63,74,'fa']], glow:[50,72,7,10,0]},
+ catcow:{head:[26,61],headR:18,torso:[34,56,60,55],torsoMid:[47,49],
+  limbs:[[34,56,30,72,'ua'],[30,72,30,74,'fa'],[60,55,62,72,'th'],[62,72,73,74,'ca']], glow:[47,50,15,8,-6]},
+ deadhang:{head:[50,20],torso:[50,31,50,62],
+  back:'<path d="M27 9H73" stroke="#9aa1ab" stroke-width="2.8" stroke-linecap="round" opacity=".75"/>',
+  limbs:[[44,32,44,12,'ua'],[44,12,44,9,'fa'],[56,32,56,12,'ua'],[56,12,56,9,'fa'],
+   [46,62,47,76,'th'],[47,76,46,90,'ca'],[54,62,53,76,'th'],[53,76,54,90,'ca']], glow:[50,45,20,12,0]}
+};
+var STRETCH=[
+ {d:"DAY 1 · 가슴·어깨·팔",
+  pre:[["밴드 풀어파트","bandpull","15회 · 회전근개",1],["암 서클","armcircle","전후 각 15회",0],["상체 로테이션","torsorotate","좌우 10회",0]],
+  post:[["도어웨이 가슴","chestdoor","30초 × 2",1],["오버헤드 삼두","tricep","20초 × 2",0]],
+  pt:"인클라인 프레스 전, 밴드 풀어파트로 회전근개를 깨우는 게 어깨 부상 예방의 핵심."},
+ {d:"DAY 2 · 하체·복근",
+  pre:[["레그 스윙","legswing","전후·좌우 15회",1],["바디웨이트 스쿼트","squat","15-20회",0],["워킹 런지","lunge","10보",0]],
+  post:[["쿼드 스트레칭","quad","30초 × 2",1],["스탠딩 햄스트링","hamstring","30초 × 2",0]],
+  pt:"핵스쿼트 깊이는 고관절·발목 가동성이 결정. 웜업 대충 하면 깊이가 안 나와요."},
+ {d:"DAY 3 · 등·팔",
+  pre:[["캣카우","catcow","10회 · 척추",1],["상체 로테이션","torsorotate","좌우 10회",0],["레그 스윙","legswing","전후 15회 · 햄",0]],
+  post:[["데드행잉","deadhang","20-30초 × 2",1],["스탠딩 햄스트링","hamstring","30초 × 2",0]],
+  pt:"RDL이 있는 날이라 햄스트링 동적 웜업은 생략 금지."},
+ {d:"DAY 5 · 어깨·팔",
+  pre:[["암 서클","armcircle","전후 각 15회",1],["밴드 풀어파트","bandpull","15회",0],["상체 로테이션","torsorotate","좌우 10회",0]],
+  post:[["크로스바디 숄더","crossshoulder","30초 × 2",1],["오버헤드 삼두","tricep","30초 × 2",0]],
+  pt:"팔 전용 볼륨 날 — 팔꿈치·어깨 웜업이 건염 예방의 전부."},
+ {d:"DAY 6 · 하체·가슴",
+  pre:[["레그 스윙","legswing","15회",1],["바디웨이트 스쿼트","squat","15회",0],["암 서클","armcircle","15회",0]],
+  post:[["쿼드 스트레칭","quad","30초 × 2",1],["도어웨이 가슴","chestdoor","30초 × 2",0]],
+  pt:"2회차 하체 날 — 누적 피로 상태라 웜업 세트 1개 더 권장."}
+];
+
+var GUIDE=[
+ {sec:"약점 특화 원칙",items:[["우선 부위 (주 2-3회)","쿼드·가슴·어깨·팔 = 주 2회 / 카프 = 주 3회 / 복근 = 주 2회. 볼륨과 인텐시파이어를 우선 부위에 배정."],["유지 부위 (주 1회)","등·햄은 Day 3에서 종목당 2세트, RIR 1-2, 인텐시파이어 없음. 남는 회복력을 약점에 몰아주기."],["2회차 강도","Day 5·6 2회차는 1회차보다 가볍게(RIR 1-2, 90%). 두 번 다 전력이면 회복 안 됨."],["카프 주 3회","회복이 빨라 고빈도 효과적. 매 세션 바닥 2초 스트레치 정지 필수."]]},
+ {sec:"닉 워커 철학",items:[["강도 > 볼륨","워킹세트는 종목당 2-3개. 대신 모두 실패 직전(RIR 0-1)까지. 질로 승부."],["템포","네거티브 3-4초 + 신장 정지 + 수축 1초 쥐어짜기. 세트당 근긴장 30-60초."],["머신 위주","실패 훈련은 머신·케이블이 안전. 프리웨이트엔 인텐시파이어 금지."],["종목 고정","주마다 종목 바꾸지 않기. 진행 멈출 때만 교체."]]},
+ {sec:"증량 — 더블 프로그레션",items:[["규칙","렙 하단 시작 → 매주 렙 추가 → 전 세트 상단 RIR 0-1 → 다음 주 증량 후 하단부터."],["증량 폭","머신·하체 +5kg / 상체 케이블 +2.5kg / 덤벨 다음 단위."],["정체 시","3주 제자리면 ① 수면·식사 → ② 변형 교체 → ③ 디로딩."]]},
+ {sec:"커팅 (177cm·75kg·~20%)",items:[["목표","20→10-12%: 약 7-8kg 감량. 주 0.3-0.5kg가 상한 — 4-6개월."],["칼로리","유지 ~2,500-2,700 / 시작 2,200-2,300. 2주 평균 0.3kg 안 빠지면 -100~150."],["매크로","단백질 150-165g / 지방 55-70g / 탄수 200-230g은 운동 전후."],["유산소","걸음 5천→1만. LISS(경사10%·30분) 주 2회. HIIT는 회복 경쟁이라 지양."]]}
+];
+
+/* ============ STORE ============ */
+var KEY="healthy_log_v2";
+var DB=load();
+function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)); if(o&&o.logs) return o; }catch(e){} return {day:"d1",week:0,startWeek:null,logs:{},memos:{}}; }
+function save(){ try{ localStorage.setItem(KEY,JSON.stringify(DB)); }catch(e){} }
+function keyFor(id,n){ return id+"|"+n; }
+
+function todayStr(){ var d=new Date(); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); }
+function parseD(s){ var a=s.split("-"); return new Date(+a[0],+a[1]-1,+a[2],12,0,0); }
+function weekIdx(s){ var d=parseD(s); var day=(d.getDay()+6)%7; var mon=new Date(d); mon.setDate(d.getDate()-day); return Math.round(mon.getTime()/6.048e8); }
+var CUR_WEEK=weekIdx(todayStr());
+if(DB.startWeek==null){ DB.startWeek=CUR_WEEK; save(); }
+
+function e1rm(w,r){ return w>0&&r>0? w*(1+r/30):0; }
+function round25(x){ return Math.round(x/2.5)*2.5; }
+function fmt(n){ return (Math.round(n*10)/10).toString().replace(/\.0$/,""); }
+function parseSets(w){ var m=/^(\d+)×(\d+)(?:-(\d+))?/.exec(w); if(!m) return {sets:3,lo:8,hi:12}; return {sets:+m[1],lo:+m[2],hi:m[3]?+m[3]:+m[2]}; }
+
+function sessions(k){ return DB.logs[k]||[]; }
+function sessionOn(k,date){ var a=sessions(k); for(var i=0;i<a.length;i++) if(a[i].date===date) return a[i]; return null; }
+function bestE1(sess){ if(!sess||!sess.sets) return 0; var b=0; sess.sets.forEach(function(s){ b=Math.max(b,e1rm(s.w,s.r)); }); return b; }
+function weekBestE1(k,wi){ var b=0; sessions(k).forEach(function(s){ if(weekIdx(s.date)===wi) b=Math.max(b,bestE1(s)); }); return b; }
+function lastSessionBefore(k,date){ var a=sessions(k),r=null; a.forEach(function(s){ if(s.date<date) r=s; }); return r; }
+
+/* ============ TODAY ============ */
+function progPct(){
+  // sessions logged this week / total training exercises
+  var total=0,done=0;
+  PROGRAM.forEach(function(d){ if(d.rest) return; d.ex.forEach(function(ex){ total++; var s=sessionOn(keyFor(d.id,ex.n),todayStr()); }); });
+  // weekly completion: count exercises with any done set this week
+  var wk=DB.week||0; PROGRAM.forEach(function(d){ if(d.rest) return; d.ex.forEach(function(ex){
+    var any=sessions(keyFor(d.id,ex.n)).some(function(s){ return weekIdx(s.date)===CUR_WEEK && s.sets.some(function(x){return x.done;}); }); if(any) done++;
+  }); });
+  return total? Math.round(done/total*100):0;
+}
+function renderToday(){
+  var host=document.getElementById("v-today"); host.innerHTML="";
+  var wkNo=CUR_WEEK-DB.startWeek+1; if(wkNo<1) wkNo=1;
+  var pct=progPct();
+  var prog='<div class="prog"><div class="pname">닉 워커 커팅 프로그램</div><div class="pweek">'+wkNo+'주차 · 이번 주 '+pct+'% 완료</div>'+
+    '<div class="bar"><i style="width:'+pct+'%"></i></div><div class="pmeta"><span>강도 &gt; 볼륨 · RIR 0-1</span><span>더블 프로그레션</span></div></div>';
+  // day chips
+  var chips='<div class="days">'+PROGRAM.map(function(d){
+    var doneToday=false; if(!d.rest){ doneToday=d.ex.every(function(ex){ var s=sessionOn(keyFor(d.id,ex.n),todayStr()); return s&&s.sets.some(function(x){return x.done;}); }); }
+    var ic=d.rest? '<path d="M20 13a8 8 0 1 1-9-9 6 6 0 0 0 9 9z"/>' : (doneToday?'<path d="M5 12l5 5L20 6"/>':'<path d="M6 8v8M18 8v8M4 10h2M18 10h2M8 12h8"/>');
+    return '<button class="dchip'+(d.id===DB.day?" on":"")+(doneToday?" done":"")+'" data-day="'+d.id+'"><div class="ic"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">'+ic+'</svg></div><div class="dl">'+(d.rest?"휴식":d.day.replace("DAY ","Day "))+'</div></button>';
+  }).join("")+'</div>';
+  host.innerHTML=prog+chips+'<div id="dayBody"></div>';
+  host.querySelectorAll(".dchip").forEach(function(b){ b.onclick=function(){ DB.day=b.getAttribute("data-day"); save(); renderToday(); }; });
+  renderDayBody();
+}
+function renderDayBody(){
+  var d=PROGRAM.filter(function(x){return x.id===DB.day;})[0];
+  var host=document.getElementById("dayBody"); host.innerHTML="";
+  var head=document.createElement("div"); head.className="dayhead";
+  head.innerHTML='<h2>'+d.day+' · '+d.dow+'요일</h2><div class="focus">'+d.focus+'</div>'; host.appendChild(head);
+  var cd=document.createElement("div"); cd.className="cardio";
+  cd.innerHTML='<svg class="ci" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M13 5l7 7-7 7M4 12h15"/></svg><div><b>웜업/유산소</b> · '+d.cardio+'</div>'; host.appendChild(cd);
+  if(d.rest){
+    var rc=document.createElement("div"); rc.className="rest-card";
+    rc.innerHTML='<div class="em"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13a8 8 0 1 1-9-9 6 6 0 0 0 9 9z"/></svg></div><h3>회복하는 날이에요</h3><p>중추신경계 회복 + 걸음 수 확보.<br>가볍게 걷고 푹 쉬세요 💙</p>'; host.appendChild(rc); return;
+  }
+  d.ex.forEach(function(ex){ host.appendChild(exCard(d,ex)); });
+  var cta=document.createElement("div"); cta.className="cta";
+  var allDone=d.ex.every(function(ex){ var s=sessionOn(keyFor(d.id,ex.n),todayStr()); return s&&s.sets.every(function(x){return x.done;}); });
+  cta.innerHTML='<button class="'+(allDone?"done":"")+'">'+(allDone?"오늘 운동 완료! 💪":d.day+" 기록 중")+'</button>'; host.appendChild(cta);
+}
+function exCard(d,ex){
+  var k=keyFor(d.id,ex.n), t=todayStr(), ps=parseSets(ex.w);
+  var sess=sessionOn(k,t);
+  if(!sess){ sess={date:t,sets:[]}; }
+  // ensure sets array length
+  var prev=lastSessionBefore(k,t);
+  while(sess.sets.length<ps.sets){ var i=sess.sets.length; var pv=prev&&prev.sets[i]; sess.sets.push({w:pv?pv.w:0,r:pv?pv.r:ps.lo,done:false}); }
+  var card=document.createElement("div"); card.className="card";
+  // header
+  var lastTxt = prev? '<span class="last">지난 '+fmt(bestTop(prev).w)+'kg·'+bestTop(prev).r+'회</span>' : '<span>첫 기록</span>';
+  // 전주 대비
+  var thisB=weekBestE1(k,CUR_WEEK), lastB=weekBestE1(k,CUR_WEEK-1);
+  var wow='';
+  if(lastB>0){ var diff=thisB-lastB; if(thisB===0){wow='';} else { var c=diff>0.5?"up":(diff<-0.5?"down":"flat"); var ar=diff>0.5?"▲":(diff<-0.5?"▼":"–"); wow='<div class="wow '+c+'">'+ar+' '+fmt(Math.abs(diff))+'</div>'; } }
+  else if(thisB>0){ wow='<div class="wow flat">이번주</div>'; }
+  card.innerHTML='<div class="exhead"><div class="bp" style="background:'+BPC[ex.bp]+'">'+ex.bp.charAt(0)+'</div>'+
+    '<div class="exmeta"><div class="exname">'+(ex.ss?'<span class="ss">슈퍼 '+ex.ss+'</span>':'')+ex.n+'</div>'+
+    '<div class="exsub">'+ex.w+' · '+ex.tech+' · '+lastTxt+'</div></div>'+
+    '<div class="badge">'+wow+'</div></div>';
+  // recommendation
+  var baseE=0; sessions(k).forEach(function(s){ baseE=Math.max(baseE,bestE1(s)); });
+  var recWrap=document.createElement("div");
+  if(SCHEME[ex.s]!==undefined && baseE>0){
+    var tr=ps.lo, base=baseE/(1+tr/30);
+    var easy=round25(base*0.95), mid=round25(base), hard=round25(base*1.03);
+    recWrap.innerHTML='<div class="recos">'+
+      recoEl("쉬움",easy,tr,"")+recoEl("적정",mid,tr,"mid")+recoEl("도전",hard,tr,"")+
+      '</div><div class="recohint">최근 기록 기준 · '+tr+'회 목표 무게예요. 탭하면 전 세트에 채워져요.</div>';
+  } else {
+    recWrap.innerHTML='<div class="recohint" style="margin-top:12px">첫 세트를 기록하면 다음부턴 무게를 추천해드려요.</div>';
+  }
+  card.appendChild(recWrap);
+  recWrap.querySelectorAll(".reco").forEach(function(r){ r.onclick=function(){ var w=+r.getAttribute("data-w"),rp=+r.getAttribute("data-r"); sess.sets.forEach(function(s){ if(!s.done){ s.w=w; s.r=rp; } }); persist(k,sess); renderDayBody(); }; });
+  // set rows
+  var setWrap=document.createElement("div");
+  sess.sets.forEach(function(st,idx){
+    var row=document.createElement("div"); row.className="setrow"+(st.done?" done":"");
+    row.innerHTML='<div class="snum">'+(idx+1)+'</div>'+
+      stp("w",st.w,2.5)+'<span class="unit">kg</span>'+
+      stp("r",st.r,1)+'<span class="unit">회</span>'+
+      '<button class="chk"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></button>';
+    var wI=row.querySelector('[data-f="w"]'), rI=row.querySelector('[data-f="r"]');
+    wI.addEventListener("input",function(){ st.w=parseFloat(wI.value)||0; persist(k,sess); });
+    rI.addEventListener("input",function(){ st.r=parseInt(rI.value)||0; persist(k,sess); });
+    row.querySelector(".chk").onclick=function(){ st.done=!st.done; if(st.done&&(!st.w||!st.r)){ toast("무게·횟수를 먼저 입력하세요"); st.done=false; return; } persist(k,sess); if(st.done) toast("e1RM "+fmt(e1rm(st.w,st.r))+"kg"); renderDayBody(); };
+    setWrap.appendChild(row);
+  });
+  card.appendChild(setWrap);
+  // foot: e1rm + memo
+  var foot=document.createElement("div"); foot.className="exfoot";
+  var be=bestTop(sess); var e1=e1rm(be.w,be.r);
+  foot.innerHTML='<span class="e1tag">'+(e1>0?'추정 1RM <b>'+fmt(e1)+'kg</b>':'&nbsp;')+'</span><button class="memoBtn">메모 '+(DB.memos[k]?'●':'')+'</button>';
+  card.appendChild(foot);
+  var mb=document.createElement("div"); mb.className="memoBox";
+  mb.innerHTML='<textarea placeholder="자세 팁 · 기구 세팅값(핀/시트 높이) 등을 남겨두세요">'+(DB.memos[k]||"")+'</textarea>';
+  card.appendChild(mb);
+  foot.querySelector(".memoBtn").onclick=function(){ mb.classList.toggle("open"); if(mb.classList.contains("open")) mb.querySelector("textarea").focus(); };
+  mb.querySelector("textarea").addEventListener("input",function(){ DB.memos[k]=this.value; save(); });
+  if(DB.memos[k]){ var pn=document.createElement("div"); pn.className="pinned"; pn.innerHTML='<span class="pin">📌</span><span>'+esc(DB.memos[k])+'</span>'; card.appendChild(pn); }
+  if(ex.m){ var mm=document.createElement("div"); mm.className="pinned"; mm.style.background="var(--card2)"; mm.style.color="var(--sub)"; mm.innerHTML='<span class="pin">💡</span><span>'+ex.m+'</span>'; card.appendChild(mm); }
+  return card;
+}
+function recoEl(lab,w,r,cls){ return '<div class="reco '+cls+'" data-w="'+w+'" data-r="'+r+'"><div class="rl">'+lab+'</div><div class="rv">'+fmt(w)+'<small>kg</small></div></div>'; }
+function bestTop(sess){ var b={w:0,r:0},be=0; (sess.sets||[]).forEach(function(s){ var e=e1rm(s.w,s.r); if(e>be){be=e;b={w:s.w,r:s.r};} }); return b; }
+function stp(f,v,step){ return '<div class="stp"><button data-step="'+(-step)+'">−</button><input data-f="'+f+'" type="number" inputmode="decimal" value="'+(v||"")+'" placeholder="0"><button data-step="'+step+'">＋</button></div>'; }
+function persist(k,sess){ var a=sessions(k); var found=false; for(var i=0;i<a.length;i++){ if(a[i].date===sess.date){ a[i]=sess; found=true; } } if(!found) a.push(sess); DB.logs[k]=a; save(); }
+document.addEventListener("click",function(e){ var b=e.target.closest("button[data-step]"); if(!b) return; var inp=b.parentNode.querySelector("input"); var v=parseFloat(inp.value)||0,s=parseFloat(b.getAttribute("data-step")); v=Math.max(0,Math.round((v+s)*100)/100); inp.value=v; inp.dispatchEvent(new Event("input",{bubbles:true})); });
+
+/* ============ STATS ============ */
+function allSessionsWeek(wi){ var out=[]; PROGRAM.forEach(function(d){ if(d.rest) return; d.ex.forEach(function(ex){ var k=keyFor(d.id,ex.n); sessions(k).forEach(function(s){ if(weekIdx(s.date)===wi) out.push({ex:ex,s:s}); }); }); }); return out; }
+function volOf(s){ var v=0; s.sets.forEach(function(x){ if(x.w>0&&x.r>0) v+=x.w*x.r; }); return v; }
+function renderStats(){
+  var host=document.getElementById("v-stats"); host.innerHTML="";
+  var thisW=allSessionsWeek(CUR_WEEK), lastW=allSessionsWeek(CUR_WEEK-1);
+  var tv=thisW.reduce(function(a,x){return a+volOf(x.s);},0);
+  var lv=lastW.reduce(function(a,x){return a+volOf(x.s);},0);
+  if(tv===0 && Object.keys(DB.logs).length===0){ host.innerHTML='<div class="stat-card"><div class="empty">아직 기록이 없어요.<br>오늘 탭에서 세트를 체크하면<br>여기에 볼륨과 성장 그래프가 쌓여요 📈</div></div>'; return; }
+  // volume card
+  var wowTxt='';
+  if(lv>0){ var p=Math.round((tv-lv)/lv*100); wowTxt=p>=0?'<span style="color:var(--up)">▲ 지난주보다 '+p+'% 늘었어요</span>':'<span style="color:var(--down)">▼ 지난주보다 '+Math.abs(p)+'% 줄었어요</span>'; }
+  else wowTxt='<span style="color:var(--muted)">다음 주부터 지난주 대비가 나와요</span>';
+  var vc='<div class="stat-card"><div class="cap">이번 주 총 볼륨</div><div class="big num">'+fmt(Math.round(tv))+'<small> kg</small></div><div class="wowline">'+wowTxt+'</div>';
+  // weekday chart (stacked by bp)
+  var byDay={}; for(var i=0;i<7;i++) byDay[i]={};
+  thisW.forEach(function(x){ var wd=(parseD(x.s.date).getDay()+6)%7; byDay[wd][x.ex.bp]=(byDay[wd][x.ex.bp]||0)+volOf(x.s); });
+  var maxDay=1; for(var j=0;j<7;j++){ var sum=0; for(var b in byDay[j]) sum+=byDay[j][b]; maxDay=Math.max(maxDay,sum); }
+  var names=["월","화","수","목","금","토","일"]; var todayWd=(new Date().getDay()+6)%7;
+  var chart='<div class="chart">'+names.map(function(nm,idx){
+    var segs=BPS.map(function(bp){ var v=byDay[idx][bp]||0; if(!v) return ""; return '<div class="seg" style="height:'+(v/maxDay*100)+'%;background:'+BPC[bp]+'"></div>'; }).join("");
+    var tot=0; for(var b in byDay[idx]) tot+=byDay[idx][b];
+    return '<div class="col"><div class="stack" style="height:'+(tot/maxDay*100)+'%">'+segs+'</div><div class="lab'+(idx===todayWd?' today':'')+'">'+nm+'</div></div>';
+  }).join("")+'</div></div>';
+  host.innerHTML=vc+chart;
+  // body part balance
+  var bpv={}; thisW.forEach(function(x){ bpv[x.ex.bp]=(bpv[x.ex.bp]||0)+volOf(x.s); });
+  var maxbp=1; BPS.forEach(function(b){ maxbp=Math.max(maxbp,bpv[b]||0); });
+  var bc=document.createElement("div"); bc.className="stat-card";
+  bc.innerHTML='<div class="cap">부위별 볼륨 밸런스</div><div class="bpbars">'+BPS.map(function(bp){
+    var v=bpv[bp]||0; return '<div class="bpbar"><div class="nm">'+bp+'</div><div class="track"><div class="fill" style="width:'+(v/maxbp*100)+'%;background:'+BPC[bp]+'"></div></div><div class="vv num">'+fmt(Math.round(v))+'kg</div></div>';
+  }).join("")+'</div>'; host.appendChild(bc);
+  // 1RM growth per exercise (>=2 weeks)
+  var growth=[];
+  PROGRAM.forEach(function(d){ if(d.rest) return; d.ex.forEach(function(ex){
+    var k=keyFor(d.id,ex.n); var byW={}; sessions(k).forEach(function(s){ var wi=weekIdx(s.date); byW[wi]=Math.max(byW[wi]||0,bestE1(s)); });
+    var wks=Object.keys(byW).map(Number).sort(function(a,b){return a-b;}); if(wks.length<2) return;
+    var series=wks.map(function(w){return byW[w];}); var first=series[0],last=series[series.length-1];
+    growth.push({n:ex.n,bp:ex.bp,series:series,pct:first>0?Math.round((last-first)/first*100):0,last:last});
+  }); });
+  var gc=document.createElement("div"); gc.className="stat-card";
+  if(growth.length===0){ gc.innerHTML='<div class="cap">1RM 성장 추이</div><div class="empty" style="padding:18px">2주 이상 기록하면<br>종목별 성장 그래프가 나와요</div>'; }
+  else { growth.sort(function(a,b){return b.pct-a.pct;});
+    gc.innerHTML='<div class="cap">1RM 성장 추이</div>'+growth.map(function(g){
+      return '<div class="spark"><div style="min-width:0"><div class="sn">'+g.n+'</div><div class="ssub">최고 '+fmt(g.last)+'kg</div></div>'+sparkline(g.series,g.pct)+'<div class="grow" style="color:'+(g.pct>=0?"var(--up)":"var(--down)")+'">'+(g.pct>=0?"+":"")+g.pct+'%</div></div>';
+    }).join(""); }
+  host.appendChild(gc);
+}
+function sparkline(series,pct){
+  var w=72,h=30,pad=3,n=series.length,mn=Math.min.apply(null,series),mx=Math.max.apply(null,series),rng=(mx-mn)||1;
+  var pts=series.map(function(v,i){ var x=pad+i/(n-1)*(w-2*pad); var y=h-pad-(v-mn)/rng*(h-2*pad); return x+","+y; });
+  var col=pct>=0?"#12B886":"#F04452";
+  var last=pts[pts.length-1].split(",");
+  return '<svg width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'"><polyline points="'+pts.join(" ")+'" fill="none" stroke="'+col+'" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="'+last[0]+'" cy="'+last[1]+'" r="2.8" fill="'+col+'"/></svg>';
+}
+
+/* ============ PROGRAM ============ */
+function renderProgram(){
+  var h=document.getElementById("v-program"); h.innerHTML="";
+  PROGRAM.forEach(function(d){
+    var t=document.createElement("div"); t.className="p-day"; var col=d.rest?"var(--muted)":BPC[d.focus.split("·")[0]]||"var(--blue)";
+    t.innerHTML='<span class="dot" style="background:'+col+'"></span>'+d.day+' ('+d.dow+') · '+d.focus; h.appendChild(t);
+    var c=document.createElement("div"); c.className="cardio"; c.style.margin="6px 0"; c.innerHTML='<span style="color:var(--muted)">🚶 </span><div>'+d.cardio+'</div>'; h.appendChild(c);
+    if(d.rest) return;
+    d.ex.forEach(function(ex){
+      var e=document.createElement("div"); e.className="p-ex";
+      e.innerHTML='<div class="bp" style="background:'+BPC[ex.bp]+';width:34px;height:34px;border-radius:10px;font-size:12px">'+ex.bp.charAt(0)+'</div>'+
+        '<div class="info"><div class="n">'+(ex.ss?'<span class="ss">슈퍼 '+ex.ss+'</span>':'')+ex.n+'</div>'+
+        '<div class="m"><b>'+ex.w+'</b> · 웜업 '+SCHEME_LABEL[ex.s]+' · '+ex.tech+' · 휴식 '+ex.rest+(ex.m?'<br>'+ex.m:'')+'</div></div>';
+      h.appendChild(e);
+    });
+  });
+}
+
+/* ============ STRETCH ============ */
+function renderStretch(){
+  var h=document.getElementById("v-stretch");
+  var html=FIGDEFS+'<div class="cardio" style="margin:8px 0 4px"><div>운동 <b>전</b>은 동적(정적 금지 — 근출력 저하), <b>후</b>는 정적으로 20-30초씩. <b>핵심</b> 배지가 그날 제일 중요한 동작이에요.</div></div>';
+  STRETCH.forEach(function(day){
+    html+='<div class="s-day">'+day.d+'</div>'+
+      '<div class="s-lab"><span class="d" style="background:var(--blue)"></span>운동 전 · 동적<span class="cnt">'+day.pre.length+'개</span></div>'+poseRow(day.pre,'')+
+      '<div class="s-lab"><span class="d" style="background:var(--up)"></span>운동 후 · 정적<span class="cnt">'+day.post.length+'개</span></div>'+poseRow(day.post,'post')+
+      '<div class="s-pt">💡 '+day.pt+'</div>';
+  });
+  h.innerHTML=html;
+}
+function poseRow(list,cls){ return '<div class="poses">'+list.map(function(m){
+  return '<div class="pose">'+buildFig(POSES[m[1]]||POSES.armcircle)+'<div class="pbody"><div class="pn">'+m[0]+(m[3]?' <span class="key '+cls+'">핵심</span>':'')+'</div><div class="pd">'+m[2]+'</div></div></div>';
+}).join("")+'</div>'; }
+
+/* ============ MORE ============ */
+function renderMore(){
+  var h=document.getElementById("v-more");
+  h.innerHTML=
+  '<div class="m-card"><h3>1RM 계산기</h3><div class="sb">추정 최대 중량 (Epley)</div>'+
+    '<div class="frow"><span class="fl">무게</span><div class="fin"><input id="e_w" type="number" inputmode="decimal" value="100"><span class="u">kg</span></div></div>'+
+    '<div class="frow"><span class="fl">반복 횟수</span><div class="fin"><input id="e_r" type="number" inputmode="numeric" value="10"><span class="u">회</span></div></div>'+
+    '<div class="resbox"><span class="rl">추정 1RM</span><span class="rv num" id="e_out">—<small> kg</small></span></div></div>'+
+  '<div class="m-card"><h3>웜업 계산기</h3><div class="sb">워킹무게 입력 → 웜업 자동 (2.5kg 반올림)</div>'+
+    '<div class="frow"><span class="fl">워킹무게</span><div class="fin"><input id="w_w" type="number" inputmode="decimal" value="100"><span class="u">kg</span></div></div>'+
+    '<div class="seg" id="wseg"><button data-s="3set" class="on">3세트</button><button data-s="2set">2세트</button><button data-s="1set">1세트</button></div>'+
+    '<div class="wout" id="w_out"></div></div>'+
+  '<div class="m-card"><h3>데이터 백업 / 복원</h3><div class="sb">기록은 이 폰에만 저장돼요. 기기 바꿀 때 백업하세요.</div>'+
+    '<textarea class="io" id="ioBox" readonly></textarea>'+
+    '<div class="rowbtns"><button id="btnCopy">복사</button><button id="btnImp">붙여넣기 복원</button><button id="btnWipe" class="warn">전체 삭제</button></div></div>'+
+  '<div class="m-card"><h3>트레이닝 가이드</h3><div class="sb">닉 워커 원칙 · 커팅 플랜</div>'+
+    GUIDE.map(function(g){ return '<div class="g-sec">'+g.sec+'</div>'+g.items.map(function(it){ return '<div class="g-item"><div class="t">'+it[0]+'</div><div class="b">'+it[1]+'</div></div>'; }).join(""); }).join("")+'</div>';
+  // 1rm
+  function calcE(){ var w=parseFloat(document.getElementById("e_w").value)||0,r=parseInt(document.getElementById("e_r").value)||0; document.getElementById("e_out").innerHTML=(e1rm(w,r)?fmt(e1rm(w,r)):"—")+'<small> kg</small>'; }
+  document.getElementById("e_w").addEventListener("input",calcE); document.getElementById("e_r").addEventListener("input",calcE); calcE();
+  // warmup
+  var wsch="3set";
+  function calcW(){ var w=parseFloat(document.getElementById("w_w").value)||0,o=document.getElementById("w_out"); if(!SCHEME[wsch]||w<=0){ o.innerHTML='<div class="o"><div class="l">대기</div><div class="v">—</div></div>'; return; } o.innerHTML=SCHEME[wsch].map(function(p,i){ return '<div class="o"><div class="l">'+(p[0]*100)+'% ×'+p[1]+'</div><div class="v num">'+fmt(round25(w*p[0]))+'</div></div>'; }).join(""); }
+  document.querySelectorAll("#wseg button").forEach(function(b){ b.onclick=function(){ document.querySelectorAll("#wseg button").forEach(function(x){x.classList.remove("on");}); b.classList.add("on"); wsch=b.getAttribute("data-s"); calcW(); }; });
+  document.getElementById("w_w").addEventListener("input",calcW); calcW();
+  // backup
+  document.getElementById("ioBox").value=JSON.stringify(DB);
+  document.getElementById("btnCopy").onclick=function(){ var t=document.getElementById("ioBox"); t.select(); try{document.execCommand("copy");}catch(e){} if(navigator.clipboard)navigator.clipboard.writeText(t.value); toast("클립보드에 복사됐어요"); };
+  document.getElementById("btnImp").onclick=function(){ var t=document.getElementById("ioBox"); t.removeAttribute("readonly"); t.value=""; t.placeholder="백업 JSON을 붙여넣고 이 버튼을 한 번 더 누르세요"; t.focus(); this.textContent="복원 실행"; this.onclick=function(){ try{ var o=JSON.parse(t.value); if(o&&o.logs){ DB=o; save(); toast("복원 완료"); renderMore(); } else toast("형식이 올라요"); }catch(e){ toast("JSON 형식 오류"); } }; };
+  document.getElementById("btnWipe").onclick=function(){ if(this.dataset.c){ DB={day:DB.day,startWeek:CUR_WEEK,logs:{},memos:{}}; save(); toast("전체 삭제됐어요"); renderMore(); } else { this.dataset.c="1"; this.textContent="한 번 더 누르면 삭제"; var self=this; setTimeout(function(){self.textContent="전체 삭제"; delete self.dataset.c;},2500); } };
+}
+
+/* ============ NAV ============ */
+var TABS=[
+ {id:"today",label:"오늘",title:"오늘",icon:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/>'},
+ {id:"stats",label:"통계",title:"통계",icon:'<path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/>'},
+ {id:"program",label:"프로그램",title:"프로그램",icon:'<path d="M4 6h16M4 12h16M4 18h11"/>'},
+ {id:"stretch",label:"스트레칭",title:"스트레칭",icon:'<circle cx="12" cy="4.5" r="1.8"/><path d="M12 8v6M12 14l-4 6M12 14l4 6M7 10l5 2 5-2"/>'},
+ {id:"more",label:"더보기",title:"더보기",icon:'<circle cx="5" cy="12" r="1.4"/><circle cx="12" cy="12" r="1.4"/><circle cx="19" cy="12" r="1.4"/>'}
+];
+var SUB={today:"", stats:"부위별 볼륨과 성장", program:"7일 분할 루틴", stretch:"동작별 준비운동", more:"계산기 · 가이드 · 백업"};
+function renderNav(){ var n=document.getElementById("nav"); n.innerHTML=TABS.map(function(t,i){ return '<button class="'+(i===0?"on":"")+'" data-tab="'+t.id+'"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">'+t.icon+'</svg>'+t.label+'</button>'; }).join("");
+  n.querySelectorAll("button").forEach(function(b){ b.onclick=function(){ go(b.getAttribute("data-tab")); }; }); }
+function go(id){
+  document.querySelectorAll(".view").forEach(function(v){v.classList.remove("on");});
+  document.getElementById("v-"+id).classList.add("on");
+  document.querySelectorAll("#nav button").forEach(function(b){ b.classList.toggle("on",b.getAttribute("data-tab")===id); });
+  var t=TABS.filter(function(x){return x.id===id;})[0];
+  document.getElementById("hTitle").textContent=t.title; document.getElementById("hSub").textContent=SUB[id];
+  if(id==="today")renderToday(); if(id==="stats")renderStats(); if(id==="program")renderProgram(); if(id==="stretch")renderStretch(); if(id==="more")renderMore();
+  window.scrollTo(0,0);
+}
+var toastT; function toast(m){ var t=document.getElementById("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(function(){t.classList.remove("show");},1700); }
+function esc(s){ return (s||"").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+
+renderNav(); document.getElementById("hSub").textContent=SUB.today; renderToday();
+})();
+</script>
+
+</body>
+</html>
