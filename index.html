@@ -318,7 +318,7 @@ var PROGRAM=[
    {n:"머신 인클라인 프레스",bp:"가슴",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",t:15,main:1,bo:1,m:"메인 — 상부가슴 최우선"},
    {n:"플랫 덤벨 프레스",bp:"가슴",s:"1set",w:"2×8-12",tech:"프리웨이트",rest:"2분",t:9,m:"프리웨이트 — 자세 우선, 인텐시파이어 금지"},
    {n:"펙덱 플라이",bp:"가슴",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"수축 → 쉬지 않고 어깨",ss:"A"},
-   {n:"머신 사이드 레터럴",bp:"어깨",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"",ss:"A"},
+   {n:"머신 사이드 레터럴",bp:"어깨",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,wact:20,m:"웜업 20+ · 무겁게 1세트(10-12) + 저중량 고반복 1세트(20-25) 마무리",ss:"A"},
    {n:"케이블 푸시다운",bp:"팔",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"팔 1회차 — 길항 슈퍼세트",ss:"B"},
    {n:"EZ바 컬",bp:"팔",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"",ss:"B"},
    {n:"스탠딩 카프레이즈",bp:"카프",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",t:8,m:"바닥 스트레치 2초"}
@@ -342,7 +342,7 @@ var PROGRAM=[
  {id:"d4",day:"DAY 4",focus:"휴식",rest:true,cardio:"회복 걷기 40분 — 경사 0%·5.0km/h (야외 산책 대체 가능). 소파 금지, 걷기는 하는 날"},
  {id:"d5",day:"DAY 5",focus:"어깨·팔·복근",walk:8,liss:30,ex:[
    {n:"머신 숄더프레스",bp:"어깨",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",t:15,main:1,bo:1,m:"메인 — 어깨 매스"},
-   {n:"시티드 사이드 레터럴 레이즈",bp:"어깨",s:"1set",w:"3×10-15",tech:"드롭세트 1회",rest:"90초",t:8,m:"측면 델트 2회차"},
+   {n:"시티드 사이드 레터럴 레이즈",bp:"어깨",s:"1set",w:"3×10-15",tech:"드롭세트 1회",rest:"90초",t:8,wact:20,m:"측면 델트 2회차 · 웜업 20+ · 무겁게 2세트(10-12) + 저중량 고반복 1세트(20-25)"},
    {n:"머신 딥",bp:"팔",s:"1set",w:"3×8-12",tech:"레스트포즈 20초",rest:"90초",t:7,main:1,m:"팔 3회차 메인 — 매스",ss:"A"},
    {n:"머신 프리처컬",bp:"팔",s:"1set",w:"3×8-12",tech:"레스트포즈 20초",rest:"90초",t:6,m:"",ss:"A"},
    {n:"해머 컬",bp:"팔",s:"none",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:4,m:"상완근·전완 = 팔 굵기",ss:"B"},
@@ -518,7 +518,17 @@ function progPct(){
   return total? Math.round(done/total*100):0;
 }
 var STRETCH_MAP={}; STRETCH.forEach(function(s){ var mm=s.d.match(/DAY (\d)/); if(mm) STRETCH_MAP["d"+mm[1]]=s; });
-var COMPLETE_POPUP=null, popupTimer=null;
+var PENDING={}, collapseIv=null;
+function ensureCollapseIv(){ if(collapseIv) return; collapseIv=setInterval(function(){
+  var any=false, changed=false;
+  for(var kt in PENDING){ any=true; PENDING[kt]--;
+    if(PENDING[kt]<=0){ DB.collapsed[kt]=1; delete PENDING[kt]; changed=true; }
+    else { var el=document.querySelector('.donepop .cd[data-kt="'+kt+'"]'); if(el) el.textContent=PENDING[kt]; }
+  }
+  if(!any){ clearInterval(collapseIv); collapseIv=null; }
+  if(changed){ save(); renderDayBody(); }
+},1000); }
+function clearPending(){ PENDING={}; if(collapseIv){ clearInterval(collapseIv); collapseIv=null; } }
 function dayMinutes(d){ var m=(d.walk||0)+5; d.ex.forEach(function(e){ m+=e.t||0; }); m+=5; m+=(d.liss||5); return m; }
 function renderToday(){
   var host=document.getElementById("v-today"); host.innerHTML="";
@@ -532,7 +542,7 @@ function renderToday(){
     return '<button class="dchip'+(d.id===DB.day?" on":"")+(doneToday?" done":"")+'" data-day="'+d.id+'"><div class="ic"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round">'+ic+'</svg></div><div class="dl">'+(d.rest?"휴식":d.day.replace("DAY ","Day "))+'</div></button>';
   }).join("")+'</div>';
   host.innerHTML=prog+chips+'<div id="dayBody"></div>';
-  host.querySelectorAll(".dchip").forEach(function(b){ b.onclick=function(){ DB.day=b.getAttribute("data-day"); COMPLETE_POPUP=null; save(); renderToday(); }; });
+  host.querySelectorAll(".dchip").forEach(function(b){ b.onclick=function(){ DB.day=b.getAttribute("data-day"); clearPending(); save(); renderToday(); }; });
   renderDayBody();
 }
 function flowBlock(d,id,glyph,title,detail,min,accent){
@@ -570,6 +580,7 @@ function warmRows(ex,baseW,isFirst){
   var out='';
   var rows=[];
   if(isFirst) rows.push(['활성화','최소무게',30]);
+  else if(ex.wact) rows.push(['활성화','가벼운 무게',ex.wact]);
   if(SCHEME[ex.s]){ SCHEME[ex.s].forEach(function(p){ rows.push(['W', baseW>0?fmt(round25(baseW*p[0]))+'kg':(p[0]*100)+'%', p[1]]); }); }
   if(!rows.length) return '';
   return '<div class="warmbox"><div class="wlab">웜업 세트</div>'+rows.map(function(r,i){
@@ -586,7 +597,7 @@ function exCard(d,ex,isFirst){
   var allDone=sess.sets.length>0 && sess.sets.every(function(x){return x.done;});
   var card=document.createElement("div"); card.className="card";
   // collapsed view (완료 후 접기)
-  if(allDone && DB.collapsed[kt] && COMPLETE_POPUP!==kt){
+  if(allDone && DB.collapsed[kt] && PENDING[kt]==null){
     var bt=bestTop(sess);
     card.className="card collapsed";
     card.innerHTML='<div class="cbar"><span class="cchk">✓</span><b>'+ex.n+'</b><span class="csum">'+fmt(bt.w)+'kg × '+bt.r+' 완료</span><span class="cexp">펼치기 ▾</span></div>';
@@ -637,8 +648,10 @@ function exCard(d,ex,isFirst){
     wI.addEventListener("input",function(){ stt.w=parseFloat(wI.value)||0; persist(k,sess); });
     rI.addEventListener("input",function(){ stt.r=parseInt(rI.value)||0; persist(k,sess); });
     row.querySelector(".chk").onclick=function(){ stt.done=!stt.done; if(stt.done&&(!stt.w||!stt.r)){ toast("무게·횟수를 먼저 입력하세요"); stt.done=false; return; } persist(k,sess);
-      var nowAll=sess.sets.every(function(x){return x.done;});
-      if(stt.done && nowAll){ COMPLETE_POPUP=kt; } if(stt.done) toast("e1RM "+fmt(e1rm(stt.w,stt.r))+"kg");
+      var nowAll=sess.sets.length>0 && sess.sets.every(function(x){return x.done;});
+      if(!nowAll){ delete PENDING[kt]; delete DB.collapsed[kt]; }
+      else if(!DB.collapsed[kt] && PENDING[kt]==null){ PENDING[kt]=5; ensureCollapseIv(); }
+      if(stt.done) toast("e1RM "+fmt(e1rm(stt.w,stt.r))+"kg");
       renderDayBody(); };
     setWrap.appendChild(row);
   });
@@ -663,15 +676,12 @@ function exCard(d,ex,isFirst){
   mb.querySelector("textarea").addEventListener("input",function(){ DB.memos[k]=this.value; save(); });
   if(DB.memos[k]){ var pn=document.createElement("div"); pn.className="pinned"; pn.innerHTML='<span class="pin">📌</span><span>'+esc(DB.memos[k])+'</span>'; card.appendChild(pn); }
   if(ex.m){ var mm=document.createElement("div"); mm.className="pinned"; mm.style.background="var(--card2)"; mm.style.color="var(--sub)"; mm.innerHTML='<span class="pin">💡</span><span>'+ex.m+'</span>'; card.appendChild(mm); }
-  // 완료 팝업 (5초 뒤 자동 접기)
-  if(COMPLETE_POPUP===kt){
+  // 완료 팝업 (5초 뒤 자동 접기 · 운동별 독립)
+  if(PENDING[kt]!=null){
     var pop=document.createElement("div"); pop.className="donepop";
-    pop.innerHTML='<span>✅ <b>'+ex.n+'</b> 완료! <span class="cd">5</span>초 뒤 접혀요</span><button class="nope">아니오, 더 할래요</button>';
+    pop.innerHTML='<span>✅ <b>'+ex.n+'</b> 완료! <span class="cd" data-kt="'+kt+'">'+PENDING[kt]+'</span>초 뒤 접혀요</span><button class="nope">아니오, 더 할래요</button>';
     card.appendChild(pop);
-    var n=5, cd=pop.querySelector(".cd");
-    clearInterval(popupTimer);
-    popupTimer=setInterval(function(){ n--; if(cd) cd.textContent=n; if(n<=0){ clearInterval(popupTimer); DB.collapsed[kt]=1; COMPLETE_POPUP=null; save(); renderDayBody(); } },1000);
-    pop.querySelector(".nope").onclick=function(){ clearInterval(popupTimer); COMPLETE_POPUP=null; renderDayBody(); };
+    pop.querySelector(".nope").onclick=function(){ delete PENDING[kt]; renderDayBody(); };
   }
   return card;
 }
