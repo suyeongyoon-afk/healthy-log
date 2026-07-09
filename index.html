@@ -346,7 +346,8 @@ var PROGRAM=[
  ]},
  {id:"d4",day:"DAY 4",focus:"휴식",rest:true,cardio:"회복 걷기 40분 — 경사 0%·5.0km/h (야외 산책 대체 가능). 소파 금지, 걷기는 하는 날"},
  {id:"d5",day:"DAY 5",focus:"어깨·팔·복근",walk:8,liss:30,ex:[
-   {n:"머신 숄더프레스",bp:"어깨",s:"3set",w:"3×10",tech:"이완·수축 5초 정지",rest:"3분",t:15,main:1,m:"황철순식 3세트: ①30개 → ②이완지점 5초 정지 후 10개 → ③수축지점 5초 정지 후 10개. 인중까지 내리고 어깨 쪼개짐 확인 → 그 부위로 으쓱. 팔꿈치·손목 수직 유지."},
+   {n:"덤벨 숄더프레스",bp:"어깨",s:"3set",w:"3×6-10",tech:"프리웨이트",rest:"3분",t:12,main:1,m:"어깨 무게 증량 종목 — 무겁게 더블 프로그레션(6-10). 통증 없는 범위, 아프면 즉시 중단"},
+   {n:"머신 숄더프레스",bp:"어깨",s:"3set",w:"3×10",tech:"이완·수축 5초 정지",rest:"3분",t:15,main:1,fixed:1,m:"황철순식 · 무게 고정(예 50)·렙 판단(무게 증량 X): ①30개 → ②이완지점 5초 정지 후 10개 → ③수축지점 5초 정지 후 10개. 인중까지 내리고 어깨 쪼개짐 확인 → 으쓱, 팔꿈치·손목 수직. 통증 없는 범위·실패 직전까지만."},
    {n:"시티드 사이드 레터럴 레이즈",bp:"어깨",s:"1set",w:"3×10-15",tech:"드롭세트 1회",rest:"90초",t:8,wact:20,m:"측면 델트 2회차 · 웜업 20+ · 무겁게 2세트(10-12)+저중량 고반복 1세트(20-25). 팁: 조면으로 든다는 느낌, 팔 최대한 멀리 빼고 팔꿈치 펴기, 손등을 살짝 아래로 꺾어 손등으로 민다."},
    {n:"머신 딥",bp:"팔",s:"1set",w:"3×8-12",tech:"레스트포즈 20초",rest:"90초",t:7,main:1,m:"팔 3회차 메인 — 매스",ss:"A"},
    {n:"머신 프리처컬",bp:"팔",s:"1set",w:"3×8-12",tech:"레스트포즈 20초",rest:"90초",t:6,m:"",ss:"A"},
@@ -646,7 +647,9 @@ function exCard(d,ex,isFirst){
   var baseE=0; sessions(k).forEach(function(s){ baseE=Math.max(baseE,bestE1(s)); });
   var topW=0; sess.sets.forEach(function(s,ix){ if(ix<ps.sets&&s.w>topW) topW=s.w; }); if(topW===0&&prev) topW=bestTop(prev).w;
   var recWrap=document.createElement("div");
-  if(SCHEME[ex.s]!==undefined && baseE>0){
+  if(ex.fixed){
+    recWrap.innerHTML='<div class="recohint" style="margin-top:12px">🔒 무게 고정 종목 — 렙수로 판단 (무게 증량 X)</div>';
+  } else if(SCHEME[ex.s]!==undefined && baseE>0){
     var tr=ps.lo, base=baseE/(1+tr/30);
     recWrap.innerHTML='<div class="recos">'+recoEl("쉬움",round25(base*0.95),tr,"")+recoEl("적정",round25(base),tr,"mid")+recoEl("도전",round25(base*1.03),tr,"")+
       '</div><div class="recohint">'+tr+'회 기준 추천. 탭=채움.</div>';
