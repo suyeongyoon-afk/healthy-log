@@ -259,6 +259,11 @@
   .worklab-wrap{margin-top:12px;}
   .worklab-wrap .wlab{margin:0 0 6px 2px;}
   .setrow.bo .snum{background:var(--c-arms); color:#fff; font-size:10px; width:auto; padding:0 5px; border-radius:9px;}
+  .setctrl{display:flex; gap:6px; margin-top:10px;}
+  .setctrl button{flex:1; border:1.5px solid var(--line); background:var(--card); color:var(--sub); border-radius:9px; padding:8px 4px; font-size:11.5px; font-weight:800; cursor:pointer;}
+  .setctrl button[data-c="carry"]{flex:1.5; color:var(--blue); border-color:var(--blue);}
+  .footbtns{display:flex; gap:6px;}
+  .card.skipped{opacity:.72;}
   .hintline{font-size:11.5px; color:var(--muted); padding:6px 2px 0; line-height:1.5;}
   .hintline b{color:var(--sub); font-weight:800;}
   /* intensifier rows */
@@ -318,7 +323,7 @@ var PROGRAM=[
    {n:"머신 인클라인 프레스",bp:"가슴",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",t:15,main:1,bo:1,m:"메인 — 상부가슴 최우선"},
    {n:"플랫 덤벨 프레스",bp:"가슴",s:"1set",w:"2×8-12",tech:"프리웨이트",rest:"2분",t:9,m:"프리웨이트 — 자세 우선, 인텐시파이어 금지"},
    {n:"펙덱 플라이",bp:"가슴",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"수축 → 쉬지 않고 어깨",ss:"A"},
-   {n:"머신 사이드 레터럴",bp:"어깨",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,wact:20,m:"웜업 20+ · 무겁게 1세트(10-12) + 저중량 고반복 1세트(20-25) 마무리",ss:"A"},
+   {n:"머신 사이드 레터럴",bp:"어깨",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,wact:20,m:"웜업 20+ · 무겁게 1세트(10-12)+저중량 고반복 1세트(20-25). 팁: 조면으로 든다는 느낌, 팔 최대한 멀리 빼고 팔꿈치 펴기, 손등을 살짝 아래로 꺾어 손등으로 민다.",ss:"A"},
    {n:"케이블 푸시다운",bp:"팔",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"팔 1회차 — 길항 슈퍼세트",ss:"B"},
    {n:"EZ바 컬",bp:"팔",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"",ss:"B"},
    {n:"스탠딩 카프레이즈",bp:"카프",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",t:8,m:"바닥 스트레치 2초"}
@@ -326,7 +331,7 @@ var PROGRAM=[
  {id:"d2",day:"DAY 2",focus:"하체·복근",walk:8,ex:[
    {n:"레그 익스텐션 (사전 피로)",bp:"하체",s:"2set",w:"2×12-15",tech:"활성화",rest:"90초",t:6,m:"첫 종목 — 수축 1초 정지"},
    {n:"핵스쿼트 또는 펜듈럼 스쿼트",bp:"하체",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",t:18,main:1,bo:1,risky:1,m:"메인 — 최대 깊이, 네거티브 3-4초"},
-   {n:"레그프레스 (발 낮게·좁게)",bp:"하체",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"2분",t:10,main:1,bo:1,m:"깊은 무릎 굴곡"},
+   {n:"레그프레스 (발 낮게·좁게)",bp:"하체",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"2분",t:10,main:1,bo:1,m:"깊은 무릎 굴곡 · 웜업 램프 무겁게로 볼륨 → 본세트 자극 위주"},
    {n:"레그 익스텐션 (마무리)",bp:"하체",s:"none",w:"2×12-15",tech:"트리플 드롭",rest:"90초",t:7,m:"쿼드 완전 소진"},
    {n:"케이블 크런치",bp:"복근",s:"1set",w:"3×10-15",tech:"없음",rest:"60초",t:6,m:"중량 더블 프로그레션"}
  ]},
@@ -341,8 +346,8 @@ var PROGRAM=[
  ]},
  {id:"d4",day:"DAY 4",focus:"휴식",rest:true,cardio:"회복 걷기 40분 — 경사 0%·5.0km/h (야외 산책 대체 가능). 소파 금지, 걷기는 하는 날"},
  {id:"d5",day:"DAY 5",focus:"어깨·팔·복근",walk:8,liss:30,ex:[
-   {n:"머신 숄더프레스",bp:"어깨",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",t:15,main:1,bo:1,m:"메인 — 어깨 매스"},
-   {n:"시티드 사이드 레터럴 레이즈",bp:"어깨",s:"1set",w:"3×10-15",tech:"드롭세트 1회",rest:"90초",t:8,wact:20,m:"측면 델트 2회차 · 웜업 20+ · 무겁게 2세트(10-12) + 저중량 고반복 1세트(20-25)"},
+   {n:"머신 숄더프레스",bp:"어깨",s:"3set",w:"3×10",tech:"이완·수축 5초 정지",rest:"3분",t:15,main:1,m:"황철순식 3세트: ①30개 → ②이완지점 5초 정지 후 10개 → ③수축지점 5초 정지 후 10개. 인중까지 내리고 어깨 쪼개짐 확인 → 그 부위로 으쓱. 팔꿈치·손목 수직 유지."},
+   {n:"시티드 사이드 레터럴 레이즈",bp:"어깨",s:"1set",w:"3×10-15",tech:"드롭세트 1회",rest:"90초",t:8,wact:20,m:"측면 델트 2회차 · 웜업 20+ · 무겁게 2세트(10-12)+저중량 고반복 1세트(20-25). 팁: 조면으로 든다는 느낌, 팔 최대한 멀리 빼고 팔꿈치 펴기, 손등을 살짝 아래로 꺾어 손등으로 민다."},
    {n:"머신 딥",bp:"팔",s:"1set",w:"3×8-12",tech:"레스트포즈 20초",rest:"90초",t:7,main:1,m:"팔 3회차 메인 — 매스",ss:"A"},
    {n:"머신 프리처컬",bp:"팔",s:"1set",w:"3×8-12",tech:"레스트포즈 20초",rest:"90초",t:6,m:"",ss:"A"},
    {n:"해머 컬",bp:"팔",s:"none",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:4,m:"상완근·전완 = 팔 굵기",ss:"B"},
@@ -350,10 +355,10 @@ var PROGRAM=[
    {n:"행잉 레그레이즈",bp:"복근",s:"none",w:"3×10-15",tech:"없음",rest:"60초",t:6,m:"하복부"}
  ]},
  {id:"d6",day:"DAY 6",focus:"하체·가슴·카프",walk:8,ex:[
-   {n:"레그프레스 (발 낮게)",bp:"하체",s:"2set",w:"2×10-15",tech:"레스트포즈 20초",rest:"2분",t:11,main:1,bo:1,m:"쿼드 2회차 (무게 90%, RIR 1-2)"},
+   {n:"레그프레스 (발 낮게)",bp:"하체",s:"2set",w:"2×10-15",tech:"레스트포즈 20초",rest:"2분",t:11,main:1,bo:1,m:"쿼드 2회차 (무게 90%, RIR 1-2) · 웜업 램프 무겁게로 볼륨 확보 → 본세트는 자극 위주(깊이·수축)"},
    {n:"불가리안 스플릿 스쿼트 또는 워킹 런지",bp:"하체",s:"1set",w:"2×10-12",tech:"편측",rest:"2분",t:8,m:"좌우 교정 — 편측"},
-   {n:"머신 체스트프레스 (플랫)",bp:"가슴",s:"2set",w:"2×8-12",tech:"레스트포즈 20초",rest:"2분",t:11,main:1,bo:1,m:"가슴 2회차"},
-   {n:"케이블 크로스오버 (로우-하이)",bp:"가슴",s:"1set",w:"2×12-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"상부 라인"},
+   {n:"케이블 크로스오버 (로우-하이)",bp:"가슴",s:"1set",w:"2×12-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"먼저 — 어깨 워밍업 + 가슴 자극 (우측 어깨 보호)"},
+   {n:"머신 체스트프레스 (플랫)",bp:"가슴",s:"2set",w:"2×8-12",tech:"레스트포즈 20초",rest:"2분",t:11,main:1,bo:1,m:"가슴 메인 — 크로스오버로 예열 후"},
    {n:"스탠딩 카프레이즈",bp:"카프",s:"1set",w:"3×10-15",tech:"드롭세트 1회",rest:"90초",t:7,m:"카프 3회차"}
  ]},
  {id:"d7",day:"DAY 7",focus:"휴식",rest:true,cardio:"회복 걷기 40분 — 경사 0%·5.0km/h. 다음 헤비 세션 대비"}
@@ -443,7 +448,10 @@ var POSES={
  deadhang:{head:[50,20],torso:[50,31,50,62],
   back:'<path d="M27 9H73" stroke="#9aa1ab" stroke-width="2.8" stroke-linecap="round" opacity=".75"/>',
   limbs:[[44,32,44,12,'ua'],[44,12,44,9,'fa'],[56,32,56,12,'ua'],[56,12,56,9,'fa'],
-   [46,62,47,76,'th'],[47,76,46,90,'ca'],[54,62,53,76,'th'],[53,76,54,90,'ca']], glow:[50,45,20,12,0]}
+   [46,62,47,76,'th'],[47,76,46,90,'ca'],[54,62,53,76,'th'],[53,76,54,90,'ca']], glow:[50,45,20,12,0]},
+ yraise:{head:[50,16],torso:[50,30,50,60],
+  limbs:[[42,32,34,18,'ua'],[34,18,28,9,'fa'],[58,32,66,18,'ua'],[66,18,72,9,'fa'],
+   [45,60,45,76,'th'],[45,76,45,90,'ca'],[55,60,55,76,'th'],[55,76,55,90,'ca']], glow:[50,31,17,7,0]}
 };
 var STRETCH=[
  {d:"DAY 1 · 가슴·어깨·팔",
@@ -459,7 +467,7 @@ var STRETCH=[
   post:[["데드행잉","deadhang","20-30초 × 2",1],["스탠딩 햄스트링","hamstring","30초 × 2",0]],
   pt:"RDL이 있는 날이라 햄스트링 동적 웜업은 생략 금지."},
  {d:"DAY 5 · 어깨·팔",
-  pre:[["암 서클","armcircle","전후 각 15회",1],["밴드 풀어파트","bandpull","15회",0],["상체 로테이션","torsorotate","좌우 10회",0]],
+  pre:[["암 서클","armcircle","전후 각 15회",1],["Y 레이즈","yraise","12회",0],["밴드 풀어파트","bandpull","15회",0],["상체 로테이션","torsorotate","좌우 10회",0]],
   post:[["크로스바디 숄더","crossshoulder","30초 × 2",1],["오버헤드 삼두","tricep","30초 × 2",0]],
   pt:"팔 전용 볼륨 날 — 팔꿈치·어깨 웜업이 건염 예방의 전부."},
  {d:"DAY 6 · 하체·가슴",
@@ -478,7 +486,7 @@ var GUIDE=[
 /* ============ STORE ============ */
 var KEY="healthy_log_v2";
 var DB=load();
-function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)); if(o&&o.logs){ o.blocks=o.blocks||{}; o.collapsed=o.collapsed||{}; o.memos=o.memos||{}; migrate(o); return o; } }catch(e){} return {day:"d1",week:0,startWeek:null,logs:{},memos:{},blocks:{},collapsed:{}}; }
+function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)); if(o&&o.logs){ o.blocks=o.blocks||{}; o.collapsed=o.collapsed||{}; o.memos=o.memos||{}; o.extra=o.extra||{}; o.skipped=o.skipped||{}; migrate(o); return o; } }catch(e){} return {day:"d1",week:0,startWeek:null,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{}}; }
 function migrate(o){ var R={"d3|시티드 카프레이즈":"d3|스탠딩 카프레이즈"}; var moved=false;
   for(var k in R){ var nk=R[k];
     if(o.logs[k]){ if(!o.logs[nk]) o.logs[nk]=o.logs[k]; else o.logs[nk]=o.logs[nk].concat(o.logs[k]); delete o.logs[k]; moved=true; }
@@ -568,7 +576,11 @@ function renderDayBody(){
   host.appendChild(flowBlock(d,"walk1","🚶","웜업 걷기 (유산소)","트레드밀 · 경사 2% · 5.5km/h",d.walk||8,"#3182F6"));
   if(st) host.appendChild(flowBlock(d,"str1","🤸","운동 전 · 동적 스트레칭",st.pre.map(function(m){return m[0];}).join(" · ")+" — 스트레칭 탭에 그림",5,"#3182F6"));
   // 3) 운동
-  d.ex.forEach(function(ex,i){ host.appendChild(exCard(d,ex,i===0)); });
+  var UPPER={"가슴":1,"어깨":1,"팔":1,"등":1}, transDone=false, prevBp=null;
+  d.ex.forEach(function(ex,i){
+    if(!transDone && prevBp==="하체" && UPPER[ex.bp]){ host.appendChild(flowBlock(d,"trans","🤸","상체 전환 스트레칭 · 숨 고르기","크로스바디 숄더 · 문틀 가슴 · 팔 흔들기 — 호흡 정리 + 상체 관절 깨우기",3,"#3182F6")); transDone=true; }
+    host.appendChild(exCard(d,ex,i===0)); prevBp=ex.bp;
+  });
   // 4) 정적 스트레칭  5) 마무리 걷기
   if(st) host.appendChild(flowBlock(d,"str2","🧘","운동 후 · 정적 스트레칭",st.post.map(function(m){return m[0];}).join(" · ")+" — 30초씩",5,"#12B886"));
   host.appendChild(flowBlock(d,"walk2","🚶",d.liss?"마무리 LISS 걷기":"마무리 걷기 (선택)",d.liss?"경사 10% · 5.0km/h · 심박 60-70%":"가벼운 쿨다운",d.liss||5,"#12B886"));
@@ -591,11 +603,20 @@ function exCard(d,ex,isFirst){
   var k=keyFor(d.id,ex.n), t=todayStr(), ps=parseSets(ex.w);
   var sess=sessionOn(k,t); if(!sess){ sess={date:t,sets:[]}; }
   var prev=lastSessionBefore(k,t);
-  var want=ps.sets+(ex.bo?1:0);
-  while(sess.sets.length<want){ var i=sess.sets.length; var pv=prev&&prev.sets[i]; sess.sets.push({w:pv?pv.w:0,r:pv?pv.r:ps.lo,done:false}); }
   var kt=k+"|"+t;
+  var doneN=sess.sets.filter(function(x){return x.done;}).length;
+  var want=Math.max(1, ps.sets+(ex.bo?1:0)+(DB.extra[kt]||0), doneN);
+  while(sess.sets.length<want){ var i=sess.sets.length; var pv=prev&&prev.sets[i]; sess.sets.push({w:pv?pv.w:0,r:pv?pv.r:ps.lo,done:false}); }
+  while(sess.sets.length>want){ sess.sets.pop(); }
   var allDone=sess.sets.length>0 && sess.sets.every(function(x){return x.done;});
   var card=document.createElement("div"); card.className="card";
+  // 스킵됨 (다음 주기로 미룸)
+  if(DB.skipped[kt]){
+    card.className="card collapsed skipped";
+    card.innerHTML='<div class="cbar"><span class="cchk" style="background:var(--muted)">↷</span><b>'+ex.n+'</b><span class="csum">스킵 · 다음 주기로</span><span class="cexp">되돌리기</span></div>';
+    card.querySelector(".cbar").onclick=function(){ delete DB.skipped[kt]; save(); renderDayBody(); };
+    return card;
+  }
   // collapsed view (완료 후 접기)
   if(allDone && DB.collapsed[kt] && PENDING[kt]==null){
     var bt=bestTop(sess);
@@ -656,6 +677,18 @@ function exCard(d,ex,isFirst){
     setWrap.appendChild(row);
   });
   if(ex.bo){ var boh=document.createElement("div"); boh.className="hintline"; boh.innerHTML='↳ <b>BO</b> 마지막 세트 후 50%로 실패까지 1세트'; setWrap.appendChild(boh); }
+  // 세트 조절 + 이월
+  var ctrl=document.createElement("div"); ctrl.className="setctrl";
+  ctrl.innerHTML='<button data-c="add">＋ 세트</button><button data-c="rem">－ 세트</button><button data-c="carry">남은 볼륨 이월 ▸</button>';
+  ctrl.querySelector('[data-c="add"]').onclick=function(){ DB.extra[kt]=(DB.extra[kt]||0)+1; save(); renderDayBody(); };
+  ctrl.querySelector('[data-c="rem"]').onclick=function(){ if(want>doneN && want>1){ DB.extra[kt]=(DB.extra[kt]||0)-1; save(); renderDayBody(); } else toast("완료한 세트는 못 줄여요"); };
+  ctrl.querySelector('[data-c="carry"]').onclick=function(){ var remaining=want-doneN; if(remaining<=0){ toast("이월할 남은 세트가 없어요"); return; }
+    var idx=d.ex.indexOf(ex), tgt=null; for(var j=idx+1;j<d.ex.length;j++){ if(d.ex[j].bp===ex.bp){ tgt=d.ex[j]; break; } }
+    if(!tgt){ toast(ex.bp+" 부위 다음 운동이 없어요"); return; }
+    var tkt=keyFor(d.id,tgt.n)+"|"+t;
+    DB.extra[tkt]=(DB.extra[tkt]||0)+remaining; DB.extra[kt]=(DB.extra[kt]||0)-remaining; save();
+    toast(remaining+"세트 → "+tgt.n+" 이월"); renderDayBody(); };
+  setWrap.appendChild(ctrl);
   card.appendChild(setWrap);
   // 인텐시파이어 열 (레스트포즈 / 드롭) — 마지막 워킹세트만
   var tech=ex.tech||"";
@@ -667,12 +700,14 @@ function exCard(d,ex,isFirst){
   // foot: e1rm + memo
   var foot=document.createElement("div"); foot.className="exfoot";
   var be=bestTop(sess), e1=e1rm(be.w,be.r);
-  foot.innerHTML='<span class="e1tag">'+(e1>0?'추정 1RM <b>'+fmt(e1)+'kg</b>':'&nbsp;')+'</span><button class="memoBtn">메모 '+(DB.memos[k]?'●':'')+'</button>';
+  foot.innerHTML='<span class="e1tag">'+(e1>0?'추정 1RM <b>'+fmt(e1)+'kg</b>':'&nbsp;')+'</span><div class="footbtns">'+(allDone?'<button class="memoBtn" data-f="fold">접기 ▴</button>':'')+'<button class="memoBtn" data-f="skip">스킵</button><button class="memoBtn" data-f="memo">메모 '+(DB.memos[k]?'●':'')+'</button></div>';
   card.appendChild(foot);
   var mb=document.createElement("div"); mb.className="memoBox";
   mb.innerHTML='<textarea placeholder="자세 팁 · 기구 세팅값(핀/시트 높이) 등을 남겨두세요">'+(DB.memos[k]||"")+'</textarea>';
   card.appendChild(mb);
-  foot.querySelector(".memoBtn").onclick=function(){ mb.classList.toggle("open"); if(mb.classList.contains("open")) mb.querySelector("textarea").focus(); };
+  foot.querySelector('[data-f="memo"]').onclick=function(){ mb.classList.toggle("open"); if(mb.classList.contains("open")) mb.querySelector("textarea").focus(); };
+  foot.querySelector('[data-f="skip"]').onclick=function(){ DB.skipped[kt]=1; delete PENDING[kt]; save(); toast(ex.n+" 스킵 — 다음 주기로"); renderDayBody(); };
+  var fbtn=foot.querySelector('[data-f="fold"]'); if(fbtn) fbtn.onclick=function(){ DB.collapsed[kt]=1; delete PENDING[kt]; save(); renderDayBody(); };
   mb.querySelector("textarea").addEventListener("input",function(){ DB.memos[k]=this.value; save(); });
   if(DB.memos[k]){ var pn=document.createElement("div"); pn.className="pinned"; pn.innerHTML='<span class="pin">📌</span><span>'+esc(DB.memos[k])+'</span>'; card.appendChild(pn); }
   if(ex.m){ var mm=document.createElement("div"); mm.className="pinned"; mm.style.background="var(--card2)"; mm.style.color="var(--sub)"; mm.innerHTML='<span class="pin">💡</span><span>'+ex.m+'</span>'; card.appendChild(mm); }
@@ -778,7 +813,8 @@ var MOVE_INFO={
  "크로스바디 숄더":{t:"후면 삼각근",c:"팔을 반대편으로 끌어당겨 유지.",sec:30,sets:2},
  "쿼드 스트레칭":{t:"대퇴사두",c:"발목 잡고 무릎 모아 골반 앞으로.",sec:30,sets:2},
  "스탠딩 햄스트링":{t:"햄스트링",c:"허리 편 채 상체 숙이기(무릎 살짝 굽혀).",sec:30,sets:2},
- "데드행잉":{t:"광배·어깨",c:"바에 매달려 어깨·척추 힘 빼고 이완.",sec:30,sets:2}
+ "데드행잉":{t:"광배·어깨",c:"바에 매달려 어깨·척추 힘 빼고 이완.",sec:30,sets:2},
+ "Y 레이즈":{t:"하부 승모·후면 어깨",c:"엄지 위로, 팔을 Y자로 멀리 뻗어 올렸다 내리기. 견갑 하강.",reps:12}
 };
 function renderStretch(){
   var h=document.getElementById("v-stretch");
@@ -840,7 +876,8 @@ var POSE_KF={
  hamstring:{mode:'ping',dur:2800,frames:[V(PB.hamstring,{torso:[50,30,50,58],head:[50,16],2:[50,33,48,50,'ua'],3:[48,50,47,58,'fa'],glow:[50,45,7,10,0]}),PB.hamstring]},
  chestdoor:{mode:'ping',dur:2800,frames:[V(PB.chestdoor,{0:[58,32,68,32,'ua'],1:[68,32,74,26,'fa'],glow:[47,38,11,9,0]}),PB.chestdoor]},
  crossshoulder:{mode:'ping',dur:2800,frames:[V(PB.crossshoulder,{0:[42,32,54,34,'ua'],1:[54,34,62,34,'fa']}),PB.crossshoulder]},
- tricep:{mode:'ping',dur:2800,frames:[V(PB.tricep,{0:[58,32,64,20,'ua'],1:[64,20,58,24,'fa']}),PB.tricep]}
+ tricep:{mode:'ping',dur:2800,frames:[V(PB.tricep,{0:[58,32,64,20,'ua'],1:[64,20,58,24,'fa']}),PB.tricep]},
+ yraise:{mode:'ping',dur:2200,frames:[V(PB.yraise,{0:[42,32,40,45,'ua'],1:[40,45,39,55,'fa'],2:[58,32,60,45,'ua'],3:[60,45,61,55,'fa']}),PB.yraise]}
 };
 function startFigAnim(poseKey){ stopFigAnim(); var kf=POSE_KF[poseKey]; if(!kf) return; var fr=kf.frames,mode=kf.mode,dur=kf.dur||2000; PL.animT=0;
   PL.raf=setInterval(function(){ if(!PL||PL.paused) return; PL.animT+=55; var t=(PL.animT%dur)/dur, spec;
