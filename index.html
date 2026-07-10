@@ -330,7 +330,7 @@ var PROGRAM=[
  ]},
  {id:"d2",day:"DAY 2",focus:"하체·복근",walk:8,ex:[
    {n:"레그 익스텐션 (사전 피로)",bp:"하체",s:"2set",w:"2×12-15",tech:"활성화",rest:"90초",t:6,m:"첫 종목 — 수축 1초 정지"},
-   {n:"핵스쿼트 또는 펜듈럼 스쿼트",bp:"하체",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",t:18,main:1,bo:1,risky:1,m:"메인 — 최대 깊이, 네거티브 3-4초"},
+   {n:"바벨 스쿼트",bp:"하체",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",t:18,main:1,bo:1,risky:1,m:"메인 — 최대 깊이, 네거티브 3-4초"},
    {n:"레그프레스 (발 낮게·좁게)",bp:"하체",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"2분",t:10,main:1,bo:1,m:"깊은 무릎 굴곡 · 웜업 램프 무겁게로 볼륨 → 본세트 자극 위주"},
    {n:"레그 익스텐션 (마무리)",bp:"하체",s:"none",w:"2×12-15",tech:"트리플 드롭",rest:"90초",t:7,m:"쿼드 완전 소진"},
    {n:"케이블 크런치",bp:"복근",s:"1set",w:"3×10-15",tech:"없음",rest:"60초",t:6,m:"중량 더블 프로그레션"}
@@ -545,7 +545,7 @@ function renderToday(){
   var wkNo=CUR_WEEK-DB.startWeek+1; if(wkNo<1) wkNo=1;
   var pct=progPct();
   var prog='<div class="prog"><div class="pname">윤수영 린매스업</div><div class="pweek">'+wkNo+'주차 · 목표 근육량 40kg · 체지방 10% · 이번 주 '+pct+'% 완료</div>'+
-    '<div class="bar"><i style="width:'+pct+'%"></i></div><div class="pmeta"><span>강도 &gt; 볼륨 · 자세 우선</span><span>더블 프로그레션</span></div></div>';
+    '<div class="bar"><i style="width:'+pct+'%"></i></div><div class="pmeta"><span>강도 &gt; 볼륨 · 자세 우선</span></div></div>';
   var chips='<div class="days">'+PROGRAM.map(function(d){
     var doneToday=false; if(!d.rest){ doneToday=d.ex.every(function(ex){ var s=sessionOn(keyFor(d.id,ex.n),todayStr()); return s&&s.sets.some(function(x){return x.done;}); }); }
     var ic=d.rest? '<path d="M20 13a8 8 0 1 1-9-9 6 6 0 0 0 9 9z"/>' : (doneToday?'<path d="M5 12l5 5L20 6"/>':'<path d="M6 8v8M18 8v8M4 10h2M18 10h2M8 12h8"/>');
@@ -575,7 +575,7 @@ function renderDayBody(){
   }
   var st=STRETCH_MAP[d.id];
   // 1) 웜업 걷기  2) 동적 스트레칭
-  host.appendChild(flowBlock(d,"walk1","🚶","웜업 걷기 (유산소)","트레드밀 · 경사 2% · 5.5km/h",d.walk||8,"#3182F6"));
+  host.appendChild(flowBlock(d,"walk1","🚶","유산소","경사 2% · 5.5km/h",d.walk||8,"#3182F6"));
   if(st) host.appendChild(flowBlock(d,"str1","🤸","운동 전 · 동적 스트레칭",st.pre.map(function(m){return m[0];}).join(" · ")+" — 스트레칭 탭에 그림",5,"#3182F6"));
   // 3) 운동
   var UPPER={"가슴":1,"어깨":1,"팔":1,"등":1}, transDone=false, prevBp=null;
@@ -584,8 +584,8 @@ function renderDayBody(){
     host.appendChild(exCard(d,ex,i===0)); prevBp=ex.bp;
   });
   // 4) 정적 스트레칭  5) 마무리 걷기
-  if(st) host.appendChild(flowBlock(d,"str2","🧘","운동 후 · 정적 스트레칭",st.post.map(function(m){return m[0];}).join(" · ")+" — 30초씩",5,"#12B886"));
-  host.appendChild(flowBlock(d,"walk2","🚶",d.liss?"마무리 LISS 걷기":"마무리 걷기 (선택)",d.liss?"경사 10% · 5.0km/h · 심박 60-70%":"가벼운 쿨다운",d.liss||5,"#12B886"));
+  if(st) host.appendChild(flowBlock(d,"str2","🧘","부상방지 스트레칭",st.post.map(function(m){return m[0];}).join(" · ")+" — 30초씩",5,"#12B886"));
+  host.appendChild(flowBlock(d,"walk2","🚶","쿨다운",d.liss?"경사 10% · 5.0km/h":"가볍게 걷기",d.liss||5,"#12B886"));
   var cta=document.createElement("div"); cta.className="cta";
   var allDone=d.ex.every(function(ex){ var s=sessionOn(keyFor(d.id,ex.n),todayStr()); return s&&s.sets.every(function(x){return x.done;}); });
   cta.innerHTML='<button class="'+(allDone?"done":"")+'">'+(allDone?"오늘 운동 완료! 💪":d.day+" 진행 중")+'</button>'; host.appendChild(cta);
@@ -792,7 +792,7 @@ function renderProgram(){
   PROGRAM.forEach(function(d){
     var t=document.createElement("div"); t.className="p-day"; var col=d.rest?"var(--muted)":BPC[d.focus.split("·")[0]]||"var(--blue)";
     t.innerHTML='<span class="dot" style="background:'+col+'"></span>'+d.day+' · '+d.focus+(d.rest?'':' <span style="color:var(--muted);font-weight:600;font-size:12px">~'+dayMinutes(d)+'분</span>'); h.appendChild(t);
-    var c=document.createElement("div"); c.className="cardio"; c.style.margin="6px 0"; c.innerHTML='<span style="color:var(--muted)">🚶 </span><div>'+(d.rest?d.cardio:'웜업 걷기 '+(d.walk||8)+'분 → 동적 스트레칭 → 운동 → 정적 스트레칭'+(d.liss?' → LISS '+d.liss+'분':''))+'</div>'; h.appendChild(c);
+    var c=document.createElement("div"); c.className="cardio"; c.style.margin="6px 0"; c.innerHTML='<span style="color:var(--muted)">🚶 </span><div>'+(d.rest?d.cardio:'유산소 '+(d.walk||8)+'분 → 동적 스트레칭 → 운동 → 부상방지 스트레칭 → 쿨다운'+(d.liss?' '+d.liss+'분':''))+'</div>'; h.appendChild(c);
     if(d.rest) return;
     d.ex.forEach(function(ex){
       var e=document.createElement("div"); e.className="p-ex"; e.style.display="block";
