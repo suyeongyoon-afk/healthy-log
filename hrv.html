@@ -54,7 +54,7 @@
 <body>
 <div class="app">
   <h1>HRV 측정 실험 🫀</h1>
-  <div class="sub">손가락 + 카메라로 심박변이(HRV) 재보기 · 프로토타입 v3</div>
+  <div class="sub">손가락 + 카메라로 심박변이(HRV) 재보기 · 프로토타입 v4</div>
 
   <div class="card">
     <div class="steps">
@@ -157,9 +157,9 @@ function loop(){
     var since=t-lastBeat;
     if(!fingerLikely){ setQual('bad','손가락이 렌즈를 덮었는지 확인'); }
     else if(meanAbs<0.8){ setQual('bad','신호 약함 — 더 가볍게, 밝은 곳으로'); }
-    else if(since>2.5){ setQual('mid','박동 놓침 — 손 고정, 살짝 눌러보기'); }
-    else if(valid.length>=3){ setQual('good','측정 중… 좋아요'); }
-    else { setQual('mid','신호 잡는 중…'); }
+    else if(since>2.5){ setQual('mid','박동 놓침 — 손 고정 (잡음 '+ibis.length+' · 유효 '+valid.length+')'); }
+    else if(valid.length>=3){ setQual('good','측정 중… 좋아요 (잡음 '+ibis.length+' · 유효 '+valid.length+')'); }
+    else { setQual('mid','신호 잡는 중… (잡음 '+ibis.length+')'); }
   }
   if(valid.length>=MIN_RESULT && !earlyBtn.classList.contains('on')) earlyBtn.classList.add('on');
   if(valid.length>=TARGET){ stop(true); return; }
@@ -179,17 +179,19 @@ function detect(t,finger){
   if(!finger) return;
   var thr=Math.max(0.6, meanAbs*0.9);
   // local maximum at prev, above threshold, refractory 0.30s (<=200bpm) and <2.0s
-  if(prev>prev2 && prev>=cur && prev>thr && (t-lastBeat)>0.30){
-    if(lastBeat>SETTLE){ var ibi=(t-lastBeat)*1000; if(ibi>300&&ibi<2000){ ibis.push(ibi); pushValid(ibi); } }
+  if(prev>prev2 && prev>=cur && prev>thr && (t-lastBeat)>0.40){   // 0.40s refractory kills dicrotic double-peak (<=150bpm)
+    if(lastBeat>SETTLE){ var ibi=(t-lastBeat)*1000; if(ibi>400&&ibi<2000){ ibis.push(ibi); recomputeValid(); } }
     lastBeat=t;
   }
 }
-// valid = beats whose interval is consistent with the previous kept beat (<25% jump = no miss/false beat)
-function pushValid(ibi){
-  if(!valid.length || Math.abs(ibi-valid[valid.length-1])/valid[valid.length-1]<0.25){ valid.push(ibi); }
+function median(a){ var s=a.slice().sort(function(x,y){return x-y;}); var n=s.length; return n?(n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2):0; }
+// valid = beats within ±30% of the MEDIAN interval (median resists outliers → no anchor poisoning)
+function recomputeValid(){
+  if(ibis.length<4){ valid=ibis.slice(); }
+  else { var med=median(ibis); valid=med>0?ibis.filter(function(x){ return Math.abs(x-med)/med<0.30; }):ibis.slice(); }
   beatsEl.textContent=valid.length; liveBpm();
 }
-function liveBpm(){ if(valid.length>=3){ var k=valid.slice(-8),s=0; k.forEach(function(x){s+=x;}); bpmEl.textContent=Math.round(60000/(s/k.length)); } }
+function liveBpm(){ if(valid.length>=3){ var med=median(valid.slice(-12)); if(med>0) bpmEl.textContent=Math.round(60000/med); } }
 function drawWave(v){
   waveBuf.push(v); if(waveBuf.length>150) waveBuf.shift();
   var w=wave.width,h=wave.height; wctx.clearRect(0,0,w,h);
