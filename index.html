@@ -206,6 +206,40 @@
   .pctrl .big{width:66px; height:66px; font-size:22px; background:var(--blue); color:#fff; box-shadow:0 6px 16px rgba(49,130,246,.35);}
   .pdone .em{font-size:52px; margin-bottom:6px;}
 
+  /* HRV 측정 오버레이 + 컨디션 카드 */
+  .hrvov{position:fixed;inset:0;z-index:70;background:var(--bg);display:none;flex-direction:column;}
+  .hrvov.on{display:flex;}
+  .hv-head{display:flex;align-items:center;gap:12px;padding:calc(14px + env(safe-area-inset-top)) 16px 8px;}
+  .hv-head .hx{width:36px;height:36px;border-radius:50%;background:var(--card);border:0;box-shadow:var(--sh);font-size:16px;color:var(--sub);cursor:pointer;}
+  .hv-head .ht{font-size:16px;font-weight:800;}
+  .hv-body{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:0 22px;gap:12px;overflow-y:auto;}
+  .hv-wave{width:100%;max-width:340px;height:96px;border-radius:12px;background:#0E1420;}
+  .hv-ring{width:150px;height:150px;position:relative;}
+  .hv-ring svg{transform:rotate(-90deg);}
+  .hv-ring .t{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .hv-ring .n{font-size:34px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;}
+  .hv-ring .u{font-size:11px;color:var(--muted);font-weight:700;margin-top:3px;}
+  .hv-q{display:flex;align-items:center;gap:7px;font-size:12.5px;font-weight:700;color:var(--muted);}
+  .hv-qd{width:9px;height:9px;border-radius:50%;background:var(--muted);}
+  .hv-qd.good{background:var(--up);}.hv-qd.mid{background:#F2C94C;}.hv-qd.bad{background:var(--down);}
+  .hv-steps{font-size:13px;color:var(--sub);line-height:1.65;max-width:320px;}
+  .hv-steps b{color:var(--ink);}
+  .hv-cta{padding:14px 16px calc(20px + env(safe-area-inset-bottom));}
+  .hv-cta button{width:100%;border:0;background:var(--blue);color:#fff;font-size:16px;font-weight:800;border-radius:15px;padding:16px;box-shadow:0 6px 16px rgba(49,130,246,.32);cursor:pointer;}
+  .hv-cta button.stop{background:var(--down);box-shadow:none;}
+  .cond-row{display:flex;gap:8px;margin-top:10px;}
+  .cond-row button{flex:1;border:1.5px solid var(--line);background:var(--card);color:var(--sub);border-radius:12px;padding:11px 0;font-weight:800;font-size:14px;cursor:pointer;}
+  .cond-row button.good.on{border-color:var(--up);background:#E4F8F0;color:#0E7A55;}
+  .cond-row button.bad.on{border-color:var(--down);background:#FDECEE;color:#B4232E;}
+  .cond-stat{display:flex;align-items:center;gap:10px;background:var(--card2);border-radius:13px;padding:12px 14px;margin-top:12px;}
+  .cond-stat .cv{font-size:23px;font-weight:800;font-variant-numeric:tabular-nums;}
+  .cond-stat .cl{font-size:11.5px;color:var(--muted);font-weight:700;margin-bottom:1px;}
+  .cond-prog{height:7px;background:var(--line);border-radius:5px;overflow:hidden;margin-top:12px;}
+  .cond-prog i{display:block;height:100%;background:var(--blue);border-radius:5px;}
+  .rec-banner{border-radius:13px;padding:13px 15px;margin-top:12px;font-size:13.5px;line-height:1.55;}
+  .rec-banner b{font-weight:800;}
+  .rec-low{background:#FDECEE;color:#B4232E;}.rec-soft{background:var(--yellow);color:#8a6d1a;}.rec-norm{background:var(--blue-t);color:var(--blue-d);}.rec-go{background:#E4F8F0;color:#0E7A55;}
+
   /* more tab */
   .m-card{background:var(--card); border-radius:var(--r); padding:17px; margin:12px 0; box-shadow:var(--sh);}
   .m-card h3{margin:0 0 3px; font-size:16px;} .m-card .sb{color:var(--muted); font-size:12px; margin-bottom:13px;}
@@ -488,7 +522,7 @@ var GUIDE=[
 /* ============ STORE ============ */
 var KEY="healthy_log_v2";
 var DB=load();
-function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)); if(o&&o.logs){ o.blocks=o.blocks||{}; o.collapsed=o.collapsed||{}; o.memos=o.memos||{}; o.extra=o.extra||{}; o.skipped=o.skipped||{}; migrate(o); return o; } }catch(e){} return {day:"d1",week:0,startWeek:null,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{}}; }
+function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)); if(o&&o.logs){ o.blocks=o.blocks||{}; o.collapsed=o.collapsed||{}; o.memos=o.memos||{}; o.extra=o.extra||{}; o.skipped=o.skipped||{}; o.hrv=o.hrv||[]; o.mood=o.mood||{}; migrate(o); return o; } }catch(e){} return {day:"d1",week:0,startWeek:null,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{},hrv:[],mood:{}}; }
 function migrate(o){ var R={"d3|시티드 카프레이즈":"d3|스탠딩 카프레이즈"}; var moved=false;
   for(var k in R){ var nk=R[k];
     if(o.logs[k]){ if(!o.logs[nk]) o.logs[nk]=o.logs[k]; else o.logs[nk]=o.logs[nk].concat(o.logs[k]); delete o.logs[k]; moved=true; }
@@ -934,6 +968,7 @@ function showDone(){ stopFigAnim(); clearInterval(PL.timer); var el=document.get
 function renderMore(){
   var h=document.getElementById("v-more");
   h.innerHTML=
+  condCardHTML()+
   '<div class="m-card"><h3>1RM 계산기</h3><div class="sb">추정 최대 중량 (Epley)</div>'+
     '<div class="frow"><span class="fl">무게</span><div class="fin"><input id="e_w" type="number" inputmode="decimal" value="100"><span class="u">kg</span></div></div>'+
     '<div class="frow"><span class="fl">반복 횟수</span><div class="fin"><input id="e_r" type="number" inputmode="numeric" value="10"><span class="u">회</span></div></div>'+
@@ -959,8 +994,153 @@ function renderMore(){
   document.getElementById("ioBox").value=JSON.stringify(DB);
   document.getElementById("btnCopy").onclick=function(){ var t=document.getElementById("ioBox"); t.select(); try{document.execCommand("copy");}catch(e){} if(navigator.clipboard)navigator.clipboard.writeText(t.value); toast("클립보드에 복사됐어요"); };
   document.getElementById("btnImp").onclick=function(){ var t=document.getElementById("ioBox"); t.removeAttribute("readonly"); t.value=""; t.placeholder="백업 JSON을 붙여넣고 이 버튼을 한 번 더 누르세요"; t.focus(); this.textContent="복원 실행"; this.onclick=function(){ try{ var o=JSON.parse(t.value); if(o&&o.logs){ DB=o; save(); toast("복원 완료"); renderMore(); } else toast("형식이 올라요"); }catch(e){ toast("JSON 형식 오류"); } }; };
-  document.getElementById("btnWipe").onclick=function(){ if(this.dataset.c){ DB={day:DB.day,startWeek:CUR_WEEK,logs:{},memos:{}}; save(); toast("전체 삭제됐어요"); renderMore(); } else { this.dataset.c="1"; this.textContent="한 번 더 누르면 삭제"; var self=this; setTimeout(function(){self.textContent="전체 삭제"; delete self.dataset.c;},2500); } };
+  document.getElementById("btnWipe").onclick=function(){ if(this.dataset.c){ DB={day:DB.day,week:0,startWeek:CUR_WEEK,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{},hrv:[],mood:{}}; save(); toast("전체 삭제됐어요"); renderMore(); } else { this.dataset.c="1"; this.textContent="한 번 더 누르면 삭제"; var self=this; setTimeout(function(){self.textContent="전체 삭제"; delete self.dataset.c;},2500); } };
+  bindCondCard();
 }
+
+/* ============ HRV (심박변이 컨디션) ============ */
+var HV_TARGET=25, HV_MIN=15, HV_SETTLE=2.5, HV_MAX=180, HV=null;
+function hvAvg(a){ var s=0; a.forEach(function(x){s+=x;}); return a.length?s/a.length:0; }
+function hvMedian(a){ var s=a.slice().sort(function(x,y){return x-y;}); var n=s.length; return n?(n%2?s[(n-1)/2]:(s[n/2-1]+s[n/2])/2):0; }
+function hrvGetToday(){ var t=todayStr(); for(var i=0;i<DB.hrv.length;i++) if(DB.hrv[i].date===t) return DB.hrv[i]; return null; }
+function hrvSaveToday(rmssd,bpm){ var t=todayStr(), ex=hrvGetToday(); if(ex){ ex.rmssd=rmssd; ex.bpm=bpm; } else { DB.hrv.push({date:t,rmssd:rmssd,bpm:bpm}); } DB.hrv.sort(function(a,b){return a.date<b.date?-1:1;}); save(); }
+function hrvBaseline(){ var t=todayStr(); var prior=DB.hrv.filter(function(x){return x.date<t;}).slice(-14);
+  var vals=prior.map(function(x){return x.rmssd;}); var mean=hvAvg(vals);
+  var sd=vals.length?Math.sqrt(hvAvg(vals.map(function(v){return (v-mean)*(v-mean);}))):0;
+  return {count:prior.length, mean:mean, sd:sd, ready:prior.length>=7}; }
+function hrvLevel(today){ var b=hrvBaseline(); if(!b.ready||!today) return null;
+  if(b.sd>3){ if(today.rmssd<b.mean-0.75*b.sd) return 'low'; if(today.rmssd>b.mean+0.75*b.sd) return 'high'; return 'norm'; }
+  var r=today.rmssd/(b.mean||1); if(r<0.85) return 'low'; if(r>1.15) return 'high'; return 'norm'; }
+function hrvMood(){ return DB.mood[todayStr()]||null; }
+function hrvSetMood(m){ if(hrvMood()===m) delete DB.mood[todayStr()]; else DB.mood[todayStr()]=m; save(); renderMore(); }
+function hrvRecommend(level,mood){
+  var hv={low:-1,norm:0,high:1}[level]; if(hv===undefined||hv===null) hv=0;
+  var mv={bad:-1,good:1}[mood]; if(mv===undefined) mv=0;
+  var tot=hv+mv;
+  if(tot<=-2) return {cls:'rec-low',t:'<b>오늘은 크게 쉬어가기.</b> 회복 신호가 약해요. 무게 -10~15%, 인텐시파이어·백오프 빼고 세트도 줄이거나 가벼운 유산소만.'};
+  if(tot===-1) return {cls:'rec-soft',t:'<b>살살 가기.</b> 톱세트만 RIR 2 남기고 드롭·레스트포즈 생략. 무게는 유지.'};
+  if(tot===0) return {cls:'rec-norm',t:'<b>계획대로.</b> 워밍업 느낌 보고 판단하되 평소대로 진행.'};
+  if(tot===1) return {cls:'rec-go',t:'<b>컨디션 좋음.</b> 계획대로 밀어붙여요.'};
+  return {cls:'rec-go',t:'<b>최상 컨디션!</b> 계획대로 + 여력되면 톱세트 무게/세트 살짝 도전.'};
+}
+function condCardHTML(){
+  var today=hrvGetToday(), b=hrvBaseline(), mood=hrvMood(), have=DB.hrv.length;
+  var h='<div class="m-card" id="condCard"><h3>오늘 컨디션 (HRV)</h3><div class="sb">심박변이로 회복 상태 체크 · 손가락+카메라</div>';
+  if(!b.ready){
+    if(have<7){ h+='<div class="cond-prog"><i style="width:'+Math.round(Math.min(1,have/7)*100)+'%"></i></div>'+
+      '<div class="sb" style="margin:8px 0 0">베이스라인(내 평균) 수집 중 · <b>'+have+'/7일</b>. 매일 한 번 재면 7일 뒤부터 그날 컨디션을 판단해줘요.</div>'; }
+    else { h+='<div class="cond-stat" style="background:#E4F8F0"><div><div class="cl" style="color:#0E7A55">베이스라인 수집 완료 🎉</div><div style="font-size:13px;color:#0E7A55;font-weight:700">내일 측정부터 컨디션 판단 시작</div></div></div>'; }
+  } else {
+    h+='<div class="cond-stat"><div style="flex:1"><div class="cl">내 평균 (베이스라인)</div><div class="cv">'+Math.round(b.mean)+'<span style="font-size:13px;color:var(--muted);font-weight:700"> ms</span></div></div></div>';
+  }
+  if(!today){
+    h+='<div class="cond-row"><button class="measure" style="border-color:var(--blue);color:var(--blue)">🫀 오늘 측정하기</button></div>';
+  } else {
+    var lvl=hrvLevel(today);
+    var lvlTxt=b.ready?({low:'<span style="color:var(--down)">평균보다 낮음 ⚠️</span>',norm:'<span style="color:var(--up)">평균 수준 ✓</span>',high:'<span style="color:var(--up)">평균보다 높음 ↑</span>'}[lvl]||''):'<span style="color:var(--muted)">수집 중</span>';
+    h+='<div class="cond-stat"><div style="flex:1"><div class="cl">오늘 HRV</div><div class="cv">'+today.rmssd+'<span style="font-size:13px;color:var(--muted);font-weight:700"> ms · '+today.bpm+'bpm</span></div></div><div style="font-size:13px;font-weight:800;text-align:right">'+lvlTxt+'</div></div>'+
+      '<div class="cond-row"><button class="measure">다시 측정</button></div>';
+  }
+  h+='<div class="sb" style="margin:14px 0 0">오늘 몸 상태 (주관)</div>'+
+    '<div class="cond-row"><button class="mood good'+(mood==='good'?' on':'')+'" data-m="good">좋다 👍</button><button class="mood bad'+(mood==='bad'?' on':'')+'" data-m="bad">안좋다 👎</button></div>';
+  if(b.ready && today){ var rec=hrvRecommend(hrvLevel(today),mood); h+='<div class="rec-banner '+rec.cls+'">'+rec.t+'</div>'; }
+  else if(today && !b.ready){ h+='<div class="sb" style="margin-top:10px">✓ 오늘치 저장됨. 7일 채우면 추천이 나와요.</div>'; }
+  if(DB.hrv.length>=2){ var series=DB.hrv.slice(-10).map(function(x){return x.rmssd;}); var f=series[0],l=series[series.length-1],pct=f>0?Math.round((l-f)/f*100):0;
+    h+='<div class="sb" style="margin:14px 0 4px">최근 추이</div><div style="display:flex;align-items:center;gap:10px">'+sparkline(series,pct)+'<span style="font-size:12px;color:var(--muted);font-weight:700">최근 '+series.length+'회 · 최신 '+l+'ms</span></div>'; }
+  return h+'</div>';
+}
+function bindCondCard(){ var cc=document.getElementById('condCard'); if(!cc) return;
+  var mb=cc.querySelector('.measure'); if(mb) mb.onclick=openHRV;
+  cc.querySelectorAll('.mood').forEach(function(bt){ bt.onclick=function(){ hrvSetMood(bt.getAttribute('data-m')); }; });
+}
+function ensureHRVov(){ var el=document.getElementById('hrvov'); if(!el){ el=document.createElement('div'); el.id='hrvov'; el.className='hrvov'; document.body.appendChild(el); } return el; }
+function openHRV(){ var el=ensureHRVov(); el.classList.add('on');
+  el.innerHTML='<div class="hv-head"><button class="hx">✕</button><div class="ht">오늘 컨디션 측정</div></div>'+
+    '<div class="hv-body">'+
+    '<canvas class="hv-wave" width="340" height="96"></canvas>'+
+    '<div class="hv-ring"><svg width="150" height="150"><circle cx="75" cy="75" r="65" stroke="var(--line)" stroke-width="10" fill="none"/><circle class="hvfg" cx="75" cy="75" r="65" stroke="var(--up)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="408.4" stroke-dashoffset="408.4"/></svg><div class="t"><span class="n" id="hvn">0</span><span class="u">유효박동 / '+HV_TARGET+'</span></div></div>'+
+    '<div class="hv-q"><span class="hv-qd"></span><span class="hv-qt">대기 중 — 아래 버튼을 눌러 시작</span></div>'+
+    '<div class="hv-steps">뒷면 <b>카메라 렌즈 전체</b>를 손가락으로 가볍게 덮어요. 렌즈가 여러 개면 <b>두 손 검지</b>로 다 덮어도 OK. <b>밝은 곳</b>에서 손 고정. (아이폰은 플래시가 안 켜져 밝은 조명이 필요해요.)</div>'+
+    '</div>'+
+    '<div class="hv-cta"><button class="hvgo">측정 시작</button></div>';
+  el.querySelector('.hx').onclick=hrvClose;
+  el.querySelector('.hvgo').onclick=function(){ if(HV&&HV.running) hrvStop(false); else hrvStart(); };
+}
+function hrvStart(){ var el=ensureHRVov();
+  var old=el.querySelector('video'); if(old) old.remove();
+  var v=document.createElement('video'); v.setAttribute('playsinline',''); v.muted=true; v.style.display='none'; el.appendChild(v);
+  var cvs=document.createElement('canvas'); cvs.width=64; cvs.height=64; var cctx=cvs.getContext('2d',{willReadFrequently:true});
+  navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:320},height:{ideal:240},frameRate:{ideal:30}}}).then(function(stream){
+    var track=stream.getVideoTracks()[0]; v.srcObject=stream; v.play();
+    try{ var caps=track.getCapabilities&&track.getCapabilities(); if(caps&&caps.torch) track.applyConstraints({advanced:[{torch:true}]}); }catch(e){}
+    HV={running:true,stream:stream,track:track,video:v,cctx:cctx,samples:[],ibis:[],valid:[],start:performance.now(),lastBeat:0,meanAbs:2,waveBuf:[],raf:null};
+    var b=el.querySelector('.hvgo'); if(b){ b.textContent='측정 중지'; b.classList.add('stop'); }
+    hrvLoop();
+  }).catch(function(){ hvQual('bad','카메라 권한이 필요해요 — 허용 후 다시'); });
+}
+function hrvLoop(){ if(!HV||!HV.running) return;
+  var now=performance.now(), t=(now-HV.start)/1000;
+  HV.cctx.drawImage(HV.video,0,0,64,64);
+  var d=HV.cctx.getImageData(20,20,24,24).data, r=0,g=0,n=0;
+  for(var i=0;i<d.length;i+=4){ r+=d[i]; g+=d[i+1]; n++; }
+  var red=r/n, grn=g/n;
+  HV.samples.push({t:t,v:red}); if(HV.samples.length>240) HV.samples.shift();
+  var finger=red>60 && red>grn*1.15;
+  hrvDetect(t,finger); hrvWave(red);
+  var el=document.getElementById('hrvov'); if(!el) return;
+  var fg=el.querySelector('.hvfg'), pct=Math.min(1,HV.valid.length/HV_TARGET); if(fg) fg.setAttribute('stroke-dashoffset',(408.4*(1-pct)).toFixed(1));
+  var nn=el.querySelector('#hvn'); if(nn) nn.textContent=HV.valid.length;
+  if(t>HV_SETTLE){ var since=t-HV.lastBeat;
+    if(!finger) hvQual('bad','렌즈를 손가락으로 덮으세요 (잡음 '+HV.ibis.length+')');
+    else if(HV.meanAbs<0.8) hvQual('bad','신호 약함 — 밝은 곳, 더 가볍게');
+    else if(since>2.5) hvQual('mid','손 고정 (잡음 '+HV.ibis.length+' · 유효 '+HV.valid.length+')');
+    else if(HV.valid.length>=3) hvQual('good','측정 중… 좋아요 (유효 '+HV.valid.length+')');
+    else hvQual('mid','신호 잡는 중…'); }
+  if(HV.valid.length>=HV_TARGET){ hrvStop(true); return; }
+  if(t>=HV_MAX){ hrvStop(true); return; }
+  HV.raf=requestAnimationFrame(hrvLoop);
+}
+function hrvDetect(t,finger){ var s=HV.samples, n=s.length; if(n<10) return;
+  var sum=0,cnt=0,cut=t-1.1; for(var i=n-1;i>=0;i--){ if(s[i].t<cut) break; sum+=s[i].v; cnt++; }
+  if(cnt<6) return; var base=sum/cnt;
+  var cur=s[n-1].v-base, prev=s[n-2].v-base, prev2=s[n-3].v-base;
+  HV.meanAbs=HV.meanAbs*0.96+Math.abs(prev)*0.04;
+  if(t<HV_SETTLE){ HV.lastBeat=t; return; }
+  if(!finger) return;
+  var thr=Math.max(0.6,HV.meanAbs*0.9);
+  if(prev>prev2 && prev>=cur && prev>thr && (t-HV.lastBeat)>0.40){
+    if(HV.lastBeat>HV_SETTLE){ var ibi=(t-HV.lastBeat)*1000; if(ibi>400&&ibi<2000){ HV.ibis.push(ibi); hrvRecompute(); } }
+    HV.lastBeat=t; }
+}
+function hrvRecompute(){ if(HV.ibis.length<4){ HV.valid=HV.ibis.slice(); } else { var med=hvMedian(HV.ibis); HV.valid=med>0?HV.ibis.filter(function(x){return Math.abs(x-med)/med<0.30;}):HV.ibis.slice(); } }
+function hrvWave(v){ HV.waveBuf.push(v); if(HV.waveBuf.length>150) HV.waveBuf.shift();
+  var el=document.getElementById('hrvov'); if(!el) return; var c=el.querySelector('.hv-wave'); if(!c) return;
+  var x=c.getContext('2d'),w=c.width,h=c.height; x.clearRect(0,0,w,h);
+  var b=HV.waveBuf,mn=Math.min.apply(null,b),mx=Math.max.apply(null,b),rng=(mx-mn)||1;
+  x.strokeStyle='#3182F6'; x.lineWidth=2.5; x.beginPath();
+  for(var i=0;i<b.length;i++){ var px=i/149*w, py=h-6-((b[i]-mn)/rng)*(h-12); i?x.lineTo(px,py):x.moveTo(px,py); } x.stroke();
+}
+function hvQual(cls,txt){ var el=document.getElementById('hrvov'); if(!el) return; var dd=el.querySelector('.hv-qd'), tt=el.querySelector('.hv-qt'); if(dd) dd.className='hv-qd '+(cls||''); if(tt) tt.textContent=txt; }
+function hrvStopStream(){ if(!HV) return; if(HV.raf) cancelAnimationFrame(HV.raf);
+  if(HV.track){ try{ HV.track.applyConstraints({advanced:[{torch:false}]}); }catch(e){} }
+  if(HV.stream){ HV.stream.getTracks().forEach(function(t){t.stop();}); } HV.running=false; }
+function hrvStop(finish){ hrvStopStream(); if(finish){ hrvFinish(); } else { var el=document.getElementById('hrvov'); var b=el&&el.querySelector('.hvgo'); if(b){ b.textContent='측정 시작'; b.classList.remove('stop'); } } }
+function hrvFinish(){ var clean=HV?HV.valid.slice():[];
+  if(clean.length<HV_MIN){ hvQual('bad','신호 부족 — 유효박동 '+clean.length+'개(최소 '+HV_MIN+'). 밝은 곳에서 다시.'); var el0=document.getElementById('hrvov'); var b0=el0&&el0.querySelector('.hvgo'); if(b0){ b0.textContent='다시 측정'; b0.classList.remove('stop'); } return; }
+  var diffs=[]; for(var i=1;i<clean.length;i++) diffs.push(clean[i]-clean[i-1]);
+  var rmssd=Math.round(Math.sqrt(hvAvg(diffs.map(function(x){return x*x;}))));
+  var bpm=Math.round(60000/hvMedian(clean));
+  hrvSaveToday(rmssd,bpm);
+  var bl=hrvBaseline(), lvl=hrvLevel({rmssd:rmssd});
+  var comp = bl.ready ? ('내 평균 '+Math.round(bl.mean)+'ms · '+({low:'낮음 ⚠️',norm:'평균 수준 ✓',high:'높음 ↑'}[lvl]||'')) : ('베이스라인 수집 중 · '+DB.hrv.length+'/7일');
+  var el=document.getElementById('hrvov'); if(!el) return;
+  el.querySelector('.hv-body').innerHTML='<div style="font-size:52px">🫀</div>'+
+    '<div class="hv-ring" style="margin-top:2px"><svg width="150" height="150"><circle cx="75" cy="75" r="65" stroke="var(--line)" stroke-width="10" fill="none"/><circle cx="75" cy="75" r="65" stroke="var(--up)" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="408.4" stroke-dashoffset="0"/></svg><div class="t"><span class="n">'+rmssd+'</span><span class="u">ms · RMSSD</span></div></div>'+
+    '<div style="font-size:14px;color:var(--sub);font-weight:700">심박수 '+bpm+' bpm · '+comp+'</div>'+
+    '<div style="font-size:12px;color:var(--muted);max-width:280px;line-height:1.6">저장됐어요. 매일 <b>같은 시간(기상 직후 권장)</b>에 재야 비교가 정확해요.</div>';
+  var cta=el.querySelector('.hv-cta'); cta.innerHTML='<button class="hvgo">완료</button>'; cta.querySelector('.hvgo').onclick=hrvClose;
+}
+function hrvClose(){ hrvStopStream(); var el=document.getElementById('hrvov'); if(el){ var vid=el.querySelector('video'); if(vid) vid.remove(); el.classList.remove('on'); } HV=null; renderMore(); }
 
 /* ============ NAV ============ */
 var TABS=[
