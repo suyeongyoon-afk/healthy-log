@@ -1,0 +1,186 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#3182F6">
+<title>HRV 측정 실험 — HEALTHY</title>
+<style>
+  :root{--bg:#F2F4F6;--card:#fff;--blue:#3182F6;--blue-d:#2870E0;--blue-t:#EAF2FF;
+    --ink:#191F28;--sub:#4E5968;--muted:#8B95A1;--line:#E5E8EB;--up:#12B886;--down:#F04452;
+    --yellow:#FFF6D6;--r:18px;--sh:0 1px 3px rgba(0,20,60,.06),0 1px 2px rgba(0,20,60,.04);}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html,body{margin:0;padding:0;}
+  body{background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,"Noto Sans KR",system-ui,sans-serif;font-size:15px;line-height:1.45;letter-spacing:-.01em;-webkit-font-smoothing:antialiased;}
+  .app{max-width:480px;margin:0 auto;padding:20px 16px 60px;min-height:100vh;}
+  h1{font-size:22px;font-weight:800;letter-spacing:-.03em;margin:0 0 2px;}
+  .sub{color:var(--muted);font-size:13px;margin-bottom:16px;}
+  .card{background:var(--card);border-radius:var(--r);padding:18px;margin:12px 0;box-shadow:var(--sh);}
+  .steps{font-size:13.5px;color:var(--sub);line-height:1.7;}
+  .steps b{color:var(--ink);font-weight:800;}
+  .warn{background:var(--yellow);border-radius:12px;padding:11px 13px;font-size:12.5px;color:#8a6d1a;line-height:1.55;margin-top:12px;}
+  .status{font-size:12.5px;font-weight:700;margin-top:10px;padding:8px 11px;border-radius:10px;background:var(--card2,#F7F8FA);color:var(--sub);}
+  .status.on{background:#E4F8F0;color:#0E7A55;}
+  .status.err{background:#FDECEE;color:#B4232E;}
+  #wave{width:100%;height:120px;display:block;border-radius:12px;background:#0E1420;margin-top:6px;}
+  .live{display:flex;gap:10px;margin-top:12px;}
+  .live .o{flex:1;background:#F7F8FA;border-radius:13px;padding:12px 6px;text-align:center;}
+  .live .o .l{font-size:10.5px;color:var(--muted);font-weight:700;}
+  .live .o .v{font-size:26px;font-weight:800;margin-top:3px;font-variant-numeric:tabular-nums;}
+  .live .o .v small{font-size:12px;color:var(--muted);font-weight:800;}
+  .cta button{width:100%;border:0;background:var(--blue);color:#fff;font-size:16px;font-weight:800;border-radius:15px;padding:16px;box-shadow:0 6px 16px rgba(49,130,246,.32);cursor:pointer;margin-top:6px;}
+  .cta button:active{background:var(--blue-d);}
+  .cta button:disabled{opacity:.5;}
+  .cta button.stop{background:var(--down);box-shadow:none;}
+  .result{text-align:center;padding:8px 0 4px;display:none;}
+  .result.on{display:block;}
+  .result .big{font-size:44px;font-weight:800;letter-spacing:-.03em;}
+  .result .big small{font-size:18px;color:var(--muted);}
+  .result .rlabel{font-size:13px;color:var(--muted);font-weight:700;}
+  .result .interp{font-size:13.5px;color:var(--sub);margin-top:8px;line-height:1.6;}
+  .ring{width:120px;height:120px;margin:2px auto;position:relative;}
+  .ring svg{transform:rotate(-90deg);}
+  .ring .t{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;}
+  video{display:none;}
+  .note{font-size:11.5px;color:var(--muted);margin-top:14px;line-height:1.6;}
+</style>
+</head>
+<body>
+<div class="app">
+  <h1>HRV 측정 실험 🫀</h1>
+  <div class="sub">손가락 + 카메라로 심박변이(HRV) 재보기 · 프로토타입</div>
+
+  <div class="card">
+    <div class="steps">
+      <b>측정법</b><br>
+      ① <b>뒷면 카메라</b>에 검지 끝을 살짝 덮어요 (렌즈+플래시 같이).<br>
+      ② 너무 세게 누르지 말고 <b>가볍게</b>. 화면이 빨갛게 차면 OK.<br>
+      ③ <b>60초</b> 가만히 — 숨은 편하게, 손 안 움직이기.<br>
+      ④ 파형이 규칙적으로 뛰면 정상 측정 중이에요.
+    </div>
+    <div class="warn" id="warn">📱 <b>아이폰 사파리</b>는 웹에서 플래시를 못 켜요(애플 제한). 그래서 <b>밝은 조명 아래</b>에서 하거나, 잘 안 잡히면 정상입니다 — 네이티브 앱 단계에서 플래시 켜고 제대로 됩니다.</div>
+    <div class="status" id="status">대기 중 — 아래 버튼을 눌러 시작</div>
+  </div>
+
+  <div class="card">
+    <canvas id="wave" width="440" height="120"></canvas>
+    <div class="live">
+      <div class="o"><div class="l">심박수</div><div class="v"><span id="bpm">--</span><small> bpm</small></div></div>
+      <div class="o"><div class="l">잡은 박동</div><div class="v"><span id="beats">0</span></div></div>
+      <div class="o"><div class="l">남은 시간</div><div class="v"><span id="left">60</span><small>s</small></div></div>
+    </div>
+    <div class="result" id="result">
+      <div class="rlabel">HRV (RMSSD)</div>
+      <div class="ring"><svg width="120" height="120"><circle cx="60" cy="60" r="52" stroke="#E5E8EB" stroke-width="10" fill="none"/><circle id="rfg" cx="60" cy="60" r="52" stroke="#12B886" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg><div class="t"><span id="rmssd">--</span></div></div>
+      <div class="interp" id="interp"></div>
+    </div>
+  </div>
+
+  <div class="cta"><button id="go">측정 시작</button></div>
+  <div class="note">이건 <b>실험용 페이지</b>예요. HRV는 매일 같은 조건(기상 직후 등)으로 재서 <b>본인 평균 대비 변화</b>를 봐야 의미 있어요. 절대값 하나로는 판단 못 함. 웹에선 정밀도가 떨어지고, 최종은 iOS 네이티브 앱에서 플래시 켜고 측정하는 게 목표.</div>
+</div>
+
+<video id="v" playsinline muted></video>
+<script>
+(function(){
+"use strict";
+var video=document.getElementById('v'), wave=document.getElementById('wave'), wctx=wave.getContext('2d');
+var statusEl=document.getElementById('status'), goBtn=document.getElementById('go');
+var bpmEl=document.getElementById('bpm'), beatsEl=document.getElementById('beats'), leftEl=document.getElementById('left');
+var resultEl=document.getElementById('result'), rmssdEl=document.getElementById('rmssd'), interpEl=document.getElementById('interp'), rfg=document.getElementById('rfg');
+var cvs=document.createElement('canvas'); cvs.width=64; cvs.height=64; var cctx=cvs.getContext('2d',{willReadFrequently:true});
+var stream=null, track=null, raf=null, running=false;
+var DUR=60; // seconds
+var samples=[], beats=[], startT=0, lastBeat=0;
+var waveBuf=[];
+
+function setStatus(t,cls){ statusEl.textContent=t; statusEl.className='status'+(cls?' '+cls:''); }
+
+async function start(){
+  resultEl.classList.remove('on');
+  try{
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:320},height:{ideal:240}}});
+  }catch(e){ setStatus('카메라 접근 거부됨 — 권한 허용 후 다시 시도','err'); return; }
+  track=stream.getVideoTracks()[0];
+  video.srcObject=stream; await video.play();
+  // try torch
+  var torch=false;
+  try{ var caps=track.getCapabilities&&track.getCapabilities(); if(caps&&caps.torch){ await track.applyConstraints({advanced:[{torch:true}]}); torch=true; } }catch(e){}
+  setStatus(torch?'플래시 켜짐 · 손가락 대고 60초 유지':'플래시 미지원(iOS 추정) · 밝은 곳에서 손가락 대기','on');
+  samples=[]; beats=[]; waveBuf=[]; lastBeat=0; startT=performance.now();
+  running=true; goBtn.textContent='측정 중지'; goBtn.className='stop';
+  loop();
+}
+function stop(finish){
+  running=false; if(raf) cancelAnimationFrame(raf);
+  if(track){ try{ track.applyConstraints({advanced:[{torch:false}]}); }catch(e){} }
+  if(stream){ stream.getTracks().forEach(function(t){t.stop();}); stream=null; }
+  goBtn.textContent='측정 시작'; goBtn.className='';
+  if(finish) computeResult(); else setStatus('중지됨','');
+}
+function loop(){
+  if(!running) return;
+  var now=performance.now(), t=(now-startT)/1000;
+  cctx.drawImage(video,0,0,64,64);
+  var d=cctx.getImageData(22,22,20,20).data; // center 20x20
+  var r=0,n=0; for(var i=0;i<d.length;i+=4){ r+=d[i]; n++; }
+  var red=r/n;
+  samples.push({t:t,v:red});
+  if(samples.length>300) samples.shift();
+  detect(t);
+  drawWave(red);
+  var left=Math.max(0,DUR-t); leftEl.textContent=Math.ceil(left);
+  var pct=Math.min(1,t/DUR); rfg.style.strokeDashoffset=(326.7*(1-pct)).toFixed(1);
+  if(t>=DUR){ stop(true); return; }
+  raf=requestAnimationFrame(loop);
+}
+function detect(t){
+  var n=samples.length; if(n<12) return;
+  // baseline = moving avg of last ~0.9s
+  var win=[], cutoff=t-0.9;
+  for(var i=n-1;i>=0;i--){ if(samples[i].t<cutoff) break; win.push(samples[i].v); }
+  if(win.length<6) return;
+  var mean=0; win.forEach(function(x){mean+=x;}); mean/=win.length;
+  var cur=samples[n-1].v-mean, prev=samples[n-2].v-mean, prev2=samples[n-3].v-mean;
+  // amplitude check
+  var amp=0; win.forEach(function(x){ amp=Math.max(amp,Math.abs(x-mean)); });
+  // local peak: prev is max, above small threshold, refractory 0.33s (<=180bpm)
+  if(prev>prev2 && prev>cur && prev>amp*0.35 && (t-lastBeat)>0.33){
+    if(lastBeat>0){ var ibi=(t-lastBeat)*1000; if(ibi>300&&ibi<1600) beats.push(ibi); }
+    lastBeat=t; beatsEl.textContent=beats.length;
+    // live bpm from last 6 ibis
+    if(beats.length>=3){ var k=beats.slice(-6), s=0; k.forEach(function(x){s+=x;}); bpmEl.textContent=Math.round(60000/(s/k.length)); }
+  }
+}
+function drawWave(v){
+  waveBuf.push(v); if(waveBuf.length>140) waveBuf.shift();
+  var w=wave.width,h=wave.height; wctx.clearRect(0,0,w,h);
+  var mn=Math.min.apply(null,waveBuf), mx=Math.max.apply(null,waveBuf), rng=(mx-mn)||1;
+  wctx.strokeStyle='#3182F6'; wctx.lineWidth=2.5; wctx.beginPath();
+  for(var i=0;i<waveBuf.length;i++){ var x=i/(140-1)*w, y=h-8-((waveBuf[i]-mn)/rng)*(h-16); i?wctx.lineTo(x,y):wctx.moveTo(x,y); }
+  wctx.stroke();
+}
+function computeResult(){
+  // clean IBIs: remove >20% jumps
+  var ib=beats.filter(function(x){return x>350&&x<1500;});
+  var clean=[]; for(var i=0;i<ib.length;i++){ if(i===0){clean.push(ib[i]);continue;} if(Math.abs(ib[i]-ib[i-1])/ib[i-1]<0.25) clean.push(ib[i]); }
+  if(clean.length<8){ setStatus('신호 부족 — 손가락 위치/밝기 조정 후 다시. (잡은 박동 '+clean.length+'개)','err'); return; }
+  var diffs=[]; for(var j=1;j<clean.length;j++) diffs.push(clean[j]-clean[j-1]);
+  var sq=0; diffs.forEach(function(x){sq+=x*x;}); var rmssd=Math.sqrt(sq/diffs.length);
+  var mHR=0; clean.forEach(function(x){mHR+=x;}); mHR=Math.round(60000/(mHR/clean.length));
+  bpmEl.textContent=mHR;
+  rmssdEl.textContent=Math.round(rmssd);
+  resultEl.classList.add('on');
+  var g;
+  if(rmssd<20) g='낮음 — 피로/스트레스 신호일 수 있어요. 오늘은 강도 낮추거나 볼륨 줄이는 걸 고려.';
+  else if(rmssd<45) g='보통 범위. 평소랑 비슷하면 계획대로 진행.';
+  else g='높음 — 회복이 잘 된 편. 컨디션 좋으면 계획대로/약간 도전.';
+  interpEl.innerHTML=g+'<br><span style="color:#8B95A1;font-size:11.5px">※ 웹 측정은 오차 큼. 며칠 재서 본인 평균 잡은 뒤 비교하세요.</span>';
+  setStatus('측정 완료 · 유효 박동 '+clean.length+'개','on');
+}
+goBtn.onclick=function(){ if(running) stop(false); else start(); };
+})();
+</script>
+</body>
+</html>
