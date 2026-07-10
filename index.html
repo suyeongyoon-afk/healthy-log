@@ -323,7 +323,7 @@ var PROGRAM=[
    {n:"머신 인클라인 프레스",bp:"가슴",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",t:15,main:1,bo:1,m:"메인 — 상부가슴 최우선 · 네거티브 3초 받고 → 폭발적으로 빵! (황철순식 가슴 템포)"},
    {n:"플랫 덤벨 프레스",bp:"가슴",s:"1set",w:"2×8-12",tech:"프리웨이트",rest:"2분",t:9,m:"프리웨이트 — 자세 우선 · 3초 받고 폭발적으로. 인텐시파이어 금지"},
    {n:"펙덱 플라이",bp:"가슴",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"수축 → 쉬지 않고 어깨",ss:"A"},
-   {n:"머신 사이드 레터럴",bp:"어깨",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,wact:20,m:"웜업 20+ · 무겁게 1세트(10-12)+저중량 고반복 1세트(20-25). 팁: 조면으로 든다는 느낌, 팔 최대한 멀리 빼고 팔꿈치 펴기, 손등을 살짝 아래로 꺾어 손등으로 민다.",ss:"A"},
+   {n:"덤벨 사이드 레터럴",bp:"어깨",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,wact:20,m:"웜업 20+ · 무겁게 1세트(10-12)+저중량 고반복 1세트(20-25). 팁: 조면으로 든다는 느낌, 팔 최대한 멀리 빼고 팔꿈치 펴기, 손등을 살짝 아래로 꺾어 손등으로 민다.",ss:"A"},
    {n:"케이블 푸시다운",bp:"팔",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"팔 1회차 — 길항 슈퍼세트",ss:"B"},
    {n:"EZ바 컬",bp:"팔",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"",ss:"B"},
    {n:"스탠딩 카프레이즈",bp:"카프",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",t:8,m:"바닥 스트레치 2초"}
@@ -585,7 +585,7 @@ function renderDayBody(){
   });
   // 4) 정적 스트레칭  5) 마무리 걷기
   if(st) host.appendChild(flowBlock(d,"str2","🧘","부상방지 스트레칭",st.post.map(function(m){return m[0];}).join(" · ")+" — 30초씩",5,"#12B886"));
-  host.appendChild(flowBlock(d,"walk2","🚶","쿨다운",d.liss?"경사 10% · 5.0km/h":"가볍게 걷기",d.liss||5,"#12B886"));
+  host.appendChild(flowBlock(d,"walk2","🚶","쿨다운",d.liss?"경사 10% · 5.0km/h":"경사 0% · 4.5km/h",d.liss||5,"#12B886"));
   var cta=document.createElement("div"); cta.className="cta";
   var allDone=d.ex.every(function(ex){ var s=sessionOn(keyFor(d.id,ex.n),todayStr()); return s&&s.sets.every(function(x){return x.done;}); });
   cta.innerHTML='<button class="'+(allDone?"done":"")+'">'+(allDone?"오늘 운동 완료! 💪":d.day+" 진행 중")+'</button>'; host.appendChild(cta);
