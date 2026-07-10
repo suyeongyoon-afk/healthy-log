@@ -54,15 +54,15 @@
 <body>
 <div class="app">
   <h1>HRV 측정 실험 🫀</h1>
-  <div class="sub">손가락 + 카메라로 심박변이(HRV) 재보기 · 프로토타입 v2</div>
+  <div class="sub">손가락 + 카메라로 심박변이(HRV) 재보기 · 프로토타입 v3</div>
 
   <div class="card">
     <div class="steps">
       <b>측정법</b><br>
-      ① <b>뒷면 카메라</b> 렌즈를 검지 끝으로 <b>완전히</b> 덮어요.<br>
+      ① 뒷면 <b>카메라 렌즈 전체</b>를 손가락으로 덮어요. 렌즈가 여러 개면 <b>두 손 검지로 다 덮어도 OK</b> — 실제 쓰는 렌즈만 가려지면 돼요.<br>
       ② <b>아주 가볍게</b> — 세게 누르면 피가 안 통해 신호 사라져요.<br>
-      ③ 손·팔 <b>고정</b>, 숨은 편하게. 파형이 규칙적으로 뛰면 OK.<br>
-      ④ <b>목표 박동 수를 채우면 자동 완료</b> (시간 제한 없음).
+      ③ 손·팔 <b>고정</b>, 숨은 편하게. 아래 <b>점이 초록</b>이 될 때까지 위치·압력 조절.<br>
+      ④ <b>유효박동을 다 채우면 자동 완료</b> (시간 제한 없음).
     </div>
     <div class="warn">📱 <b>아이폰 사파리</b>는 웹에서 플래시를 못 켜요(애플 제한). <b>밝은 조명 아래</b>(창가·전등 밑)에서 하세요. 그래도 안 잡히면 정상 — 이 한계 확인이 이 테스트 목적이고, 네이티브 앱에선 플래시 켜져 잘 됩니다.</div>
     <div class="status" id="status">대기 중 — 아래 버튼을 눌러 시작</div>
@@ -73,7 +73,7 @@
     <div class="qual"><span class="qdot" id="qdot"></span><span id="qtxt">신호 없음</span></div>
     <div class="live">
       <div class="o"><div class="l">심박수</div><div class="v"><span id="bpm">--</span><small> bpm</small></div></div>
-      <div class="o"><div class="l">잡은 박동</div><div class="v"><span id="beats">0</span><small> /<span id="tgt">30</span></small></div></div>
+      <div class="o"><div class="l">유효박동</div><div class="v"><span id="beats">0</span><small> /<span id="tgt">25</span></small></div></div>
       <div class="o"><div class="l">경과</div><div class="v"><span id="elapsed">0</span><small>s</small></div></div>
     </div>
     <div class="result" id="result">
@@ -102,13 +102,13 @@ var qdot=document.getElementById('qdot'), qtxt=document.getElementById('qtxt');
 var cvs=document.createElement('canvas'); cvs.width=64; cvs.height=64; var cctx=cvs.getContext('2d',{willReadFrequently:true});
 var stream=null, track=null, raf=null, running=false;
 
-var TARGET=30;            // clean beats to auto-finish
-var MIN_RESULT=15;        // min clean beats to allow a (rough) result
+var TARGET=25;            // VALID beats to auto-finish
+var MIN_RESULT=15;        // min valid beats to allow a (rough) result
 var SETTLE=2.5;           // ignore first seconds (exposure settling)
 var MAXT=180;             // safety cap seconds
 document.getElementById('tgt').textContent=TARGET;
 
-var samples=[], ibis=[], startT=0, lastBeat=0, meanAbs=2, lastBeatWall=0, torchOn=false;
+var samples=[], ibis=[], valid=[], startT=0, lastBeat=0, meanAbs=2, torchOn=false;
 var waveBuf=[];
 
 function setStatus(t,cls){ statusEl.textContent=t; statusEl.className='status'+(cls?' '+cls:''); }
@@ -124,7 +124,7 @@ async function start(){
   torchOn=false;
   try{ var caps=track.getCapabilities&&track.getCapabilities(); if(caps&&caps.torch){ await track.applyConstraints({advanced:[{torch:true}]}); torchOn=true; } }catch(e){}
   setStatus(torchOn?'플래시 켜짐 · 렌즈를 손가락으로 덮으세요':'플래시 미지원(iOS 추정) · 밝은 곳에서 렌즈 덮기','on');
-  samples=[]; ibis=[]; waveBuf=[]; lastBeat=0; lastBeatWall=0; meanAbs=2; startT=performance.now();
+  samples=[]; ibis=[]; valid=[]; waveBuf=[]; lastBeat=0; meanAbs=2; startT=performance.now();
   running=true; goBtn.textContent='측정 중지'; goBtn.className='stop';
   beatsEl.textContent='0'; bpmEl.textContent='--';
   loop();
@@ -135,7 +135,7 @@ function stop(finish){
   if(stream){ stream.getTracks().forEach(function(t){t.stop();}); stream=null; }
   goBtn.textContent='측정 시작'; goBtn.className=''; earlyBtn.classList.remove('on');
   if(finish) computeResult();
-  else setStatus('중지됨 · 박동 '+ibis.length+'개','');
+  else setStatus('중지됨 · 유효박동 '+valid.length+'개','');
 }
 function loop(){
   if(!running) return;
@@ -150,19 +150,19 @@ function loop(){
   detect(t,fingerLikely);
   drawWave(red);
   elapsedEl.textContent=Math.floor(t);
-  ecntEl.textContent=ibis.length;
-  var pct=Math.min(1,ibis.length/TARGET); rfg.style.strokeDashoffset=(351.9*(1-pct)).toFixed(1);
+  ecntEl.textContent=valid.length;
+  var pct=Math.min(1,valid.length/TARGET); rfg.style.strokeDashoffset=(351.9*(1-pct)).toFixed(1);
   // quality feedback
   if(t>SETTLE){
     var since=t-lastBeat;
     if(!fingerLikely){ setQual('bad','손가락이 렌즈를 덮었는지 확인'); }
     else if(meanAbs<0.8){ setQual('bad','신호 약함 — 더 가볍게, 밝은 곳으로'); }
     else if(since>2.5){ setQual('mid','박동 놓침 — 손 고정, 살짝 눌러보기'); }
-    else if(ibis.length>=3){ setQual('good','측정 중… 좋아요'); }
+    else if(valid.length>=3){ setQual('good','측정 중… 좋아요'); }
     else { setQual('mid','신호 잡는 중…'); }
   }
-  if(ibis.length>=MIN_RESULT && !earlyBtn.classList.contains('on')) earlyBtn.classList.add('on');
-  if(ibis.length>=TARGET){ stop(true); return; }
+  if(valid.length>=MIN_RESULT && !earlyBtn.classList.contains('on')) earlyBtn.classList.add('on');
+  if(valid.length>=TARGET){ stop(true); return; }
   if(t>=MAXT){ stop(true); return; }
   raf=requestAnimationFrame(loop);
 }
@@ -180,11 +180,16 @@ function detect(t,finger){
   var thr=Math.max(0.6, meanAbs*0.9);
   // local maximum at prev, above threshold, refractory 0.30s (<=200bpm) and <2.0s
   if(prev>prev2 && prev>=cur && prev>thr && (t-lastBeat)>0.30){
-    if(lastBeat>SETTLE){ var ibi=(t-lastBeat)*1000; if(ibi>300&&ibi<2000){ ibis.push(ibi); beatsEl.textContent=ibis.length; liveBpm(); } }
+    if(lastBeat>SETTLE){ var ibi=(t-lastBeat)*1000; if(ibi>300&&ibi<2000){ ibis.push(ibi); pushValid(ibi); } }
     lastBeat=t;
   }
 }
-function liveBpm(){ if(ibis.length>=3){ var k=ibis.slice(-8),s=0; k.forEach(function(x){s+=x;}); bpmEl.textContent=Math.round(60000/(s/k.length)); } }
+// valid = beats whose interval is consistent with the previous kept beat (<25% jump = no miss/false beat)
+function pushValid(ibi){
+  if(!valid.length || Math.abs(ibi-valid[valid.length-1])/valid[valid.length-1]<0.25){ valid.push(ibi); }
+  beatsEl.textContent=valid.length; liveBpm();
+}
+function liveBpm(){ if(valid.length>=3){ var k=valid.slice(-8),s=0; k.forEach(function(x){s+=x;}); bpmEl.textContent=Math.round(60000/(s/k.length)); } }
 function drawWave(v){
   waveBuf.push(v); if(waveBuf.length>150) waveBuf.shift();
   var w=wave.width,h=wave.height; wctx.clearRect(0,0,w,h);
@@ -194,8 +199,7 @@ function drawWave(v){
   wctx.stroke();
 }
 function computeResult(){
-  // outlier filter: drop IBIs jumping >25% from previous kept value
-  var clean=[]; for(var i=0;i<ibis.length;i++){ if(!clean.length){clean.push(ibis[i]);continue;} if(Math.abs(ibis[i]-clean[clean.length-1])/clean[clean.length-1]<0.25) clean.push(ibis[i]); }
+  var clean=valid.slice();   // already consistency-filtered during capture
   if(clean.length<MIN_RESULT){
     setStatus('신호 부족 — 유효 박동 '+clean.length+'개(최소 '+MIN_RESULT+'개 필요). 렌즈 완전히 덮고 손 고정 후 다시.','err');
     setQual('bad','신호 부족'); return;
