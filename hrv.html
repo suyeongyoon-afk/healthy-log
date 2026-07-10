@@ -20,28 +20,33 @@
   .steps{font-size:13.5px;color:var(--sub);line-height:1.7;}
   .steps b{color:var(--ink);font-weight:800;}
   .warn{background:var(--yellow);border-radius:12px;padding:11px 13px;font-size:12.5px;color:#8a6d1a;line-height:1.55;margin-top:12px;}
-  .status{font-size:12.5px;font-weight:700;margin-top:10px;padding:8px 11px;border-radius:10px;background:var(--card2,#F7F8FA);color:var(--sub);}
+  .status{font-size:12.5px;font-weight:700;margin-top:10px;padding:8px 11px;border-radius:10px;background:#F7F8FA;color:var(--sub);}
   .status.on{background:#E4F8F0;color:#0E7A55;}
   .status.err{background:#FDECEE;color:#B4232E;}
+  .status.hint{background:var(--blue-t);color:var(--blue-d);}
   #wave{width:100%;height:120px;display:block;border-radius:12px;background:#0E1420;margin-top:6px;}
+  .qual{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;color:var(--muted);margin-top:8px;}
+  .qdot{width:9px;height:9px;border-radius:50%;background:var(--muted);}
+  .qdot.good{background:var(--up);} .qdot.mid{background:#F2C94C;} .qdot.bad{background:var(--down);}
   .live{display:flex;gap:10px;margin-top:12px;}
   .live .o{flex:1;background:#F7F8FA;border-radius:13px;padding:12px 6px;text-align:center;}
   .live .o .l{font-size:10.5px;color:var(--muted);font-weight:700;}
-  .live .o .v{font-size:26px;font-weight:800;margin-top:3px;font-variant-numeric:tabular-nums;}
+  .live .o .v{font-size:24px;font-weight:800;margin-top:3px;font-variant-numeric:tabular-nums;}
   .live .o .v small{font-size:12px;color:var(--muted);font-weight:800;}
   .cta button{width:100%;border:0;background:var(--blue);color:#fff;font-size:16px;font-weight:800;border-radius:15px;padding:16px;box-shadow:0 6px 16px rgba(49,130,246,.32);cursor:pointer;margin-top:6px;}
   .cta button:active{background:var(--blue-d);}
-  .cta button:disabled{opacity:.5;}
   .cta button.stop{background:var(--down);box-shadow:none;}
+  .cta .early{width:100%;border:1.5px solid var(--line);background:var(--card);color:var(--sub);font-size:13.5px;font-weight:700;border-radius:12px;padding:11px;cursor:pointer;margin-top:8px;display:none;}
+  .cta .early.on{display:block;}
   .result{text-align:center;padding:8px 0 4px;display:none;}
   .result.on{display:block;}
-  .result .big{font-size:44px;font-weight:800;letter-spacing:-.03em;}
-  .result .big small{font-size:18px;color:var(--muted);}
   .result .rlabel{font-size:13px;color:var(--muted);font-weight:700;}
   .result .interp{font-size:13.5px;color:var(--sub);margin-top:8px;line-height:1.6;}
-  .ring{width:120px;height:120px;margin:2px auto;position:relative;}
+  .ring{width:130px;height:130px;margin:2px auto;position:relative;}
   .ring svg{transform:rotate(-90deg);}
-  .ring .t{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;font-variant-numeric:tabular-nums;}
+  .ring .t{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  .ring .t .n{font-size:30px;font-weight:800;font-variant-numeric:tabular-nums;line-height:1;}
+  .ring .t .u{font-size:11px;color:var(--muted);font-weight:700;margin-top:2px;}
   video{display:none;}
   .note{font-size:11.5px;color:var(--muted);margin-top:14px;line-height:1.6;}
 </style>
@@ -49,36 +54,40 @@
 <body>
 <div class="app">
   <h1>HRV 측정 실험 🫀</h1>
-  <div class="sub">손가락 + 카메라로 심박변이(HRV) 재보기 · 프로토타입</div>
+  <div class="sub">손가락 + 카메라로 심박변이(HRV) 재보기 · 프로토타입 v2</div>
 
   <div class="card">
     <div class="steps">
       <b>측정법</b><br>
-      ① <b>뒷면 카메라</b>에 검지 끝을 살짝 덮어요 (렌즈+플래시 같이).<br>
-      ② 너무 세게 누르지 말고 <b>가볍게</b>. 화면이 빨갛게 차면 OK.<br>
-      ③ <b>60초</b> 가만히 — 숨은 편하게, 손 안 움직이기.<br>
-      ④ 파형이 규칙적으로 뛰면 정상 측정 중이에요.
+      ① <b>뒷면 카메라</b> 렌즈를 검지 끝으로 <b>완전히</b> 덮어요.<br>
+      ② <b>아주 가볍게</b> — 세게 누르면 피가 안 통해 신호 사라져요.<br>
+      ③ 손·팔 <b>고정</b>, 숨은 편하게. 파형이 규칙적으로 뛰면 OK.<br>
+      ④ <b>목표 박동 수를 채우면 자동 완료</b> (시간 제한 없음).
     </div>
-    <div class="warn" id="warn">📱 <b>아이폰 사파리</b>는 웹에서 플래시를 못 켜요(애플 제한). 그래서 <b>밝은 조명 아래</b>에서 하거나, 잘 안 잡히면 정상입니다 — 네이티브 앱 단계에서 플래시 켜고 제대로 됩니다.</div>
+    <div class="warn">📱 <b>아이폰 사파리</b>는 웹에서 플래시를 못 켜요(애플 제한). <b>밝은 조명 아래</b>(창가·전등 밑)에서 하세요. 그래도 안 잡히면 정상 — 이 한계 확인이 이 테스트 목적이고, 네이티브 앱에선 플래시 켜져 잘 됩니다.</div>
     <div class="status" id="status">대기 중 — 아래 버튼을 눌러 시작</div>
   </div>
 
   <div class="card">
     <canvas id="wave" width="440" height="120"></canvas>
+    <div class="qual"><span class="qdot" id="qdot"></span><span id="qtxt">신호 없음</span></div>
     <div class="live">
       <div class="o"><div class="l">심박수</div><div class="v"><span id="bpm">--</span><small> bpm</small></div></div>
-      <div class="o"><div class="l">잡은 박동</div><div class="v"><span id="beats">0</span></div></div>
-      <div class="o"><div class="l">남은 시간</div><div class="v"><span id="left">60</span><small>s</small></div></div>
+      <div class="o"><div class="l">잡은 박동</div><div class="v"><span id="beats">0</span><small> /<span id="tgt">30</span></small></div></div>
+      <div class="o"><div class="l">경과</div><div class="v"><span id="elapsed">0</span><small>s</small></div></div>
     </div>
     <div class="result" id="result">
       <div class="rlabel">HRV (RMSSD)</div>
-      <div class="ring"><svg width="120" height="120"><circle cx="60" cy="60" r="52" stroke="#E5E8EB" stroke-width="10" fill="none"/><circle id="rfg" cx="60" cy="60" r="52" stroke="#12B886" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"/></svg><div class="t"><span id="rmssd">--</span></div></div>
+      <div class="ring"><svg width="130" height="130"><circle cx="65" cy="65" r="56" stroke="#E5E8EB" stroke-width="10" fill="none"/><circle id="rfg" cx="65" cy="65" r="56" stroke="#12B886" stroke-width="10" fill="none" stroke-linecap="round" stroke-dasharray="351.9" stroke-dashoffset="351.9"/></svg><div class="t"><span class="n" id="rmssd">--</span><span class="u">ms</span></div></div>
       <div class="interp" id="interp"></div>
     </div>
   </div>
 
-  <div class="cta"><button id="go">측정 시작</button></div>
-  <div class="note">이건 <b>실험용 페이지</b>예요. HRV는 매일 같은 조건(기상 직후 등)으로 재서 <b>본인 평균 대비 변화</b>를 봐야 의미 있어요. 절대값 하나로는 판단 못 함. 웹에선 정밀도가 떨어지고, 최종은 iOS 네이티브 앱에서 플래시 켜고 측정하는 게 목표.</div>
+  <div class="cta">
+    <button id="go">측정 시작</button>
+    <button class="early" id="early">지금까지 값으로 계산 (박동 <span id="ecnt">0</span>개)</button>
+  </div>
+  <div class="note">이건 <b>실험용 페이지</b>예요. HRV는 매일 같은 조건(기상 직후 등)에서 재서 <b>본인 평균 대비 변화</b>를 봐야 의미 있어요 — 절대값 하나로는 판단 못 함. 최종은 iOS 네이티브 앱에서 플래시 켜고 측정하는 게 목표.</div>
 </div>
 
 <video id="v" playsinline muted></video>
@@ -86,100 +95,125 @@
 (function(){
 "use strict";
 var video=document.getElementById('v'), wave=document.getElementById('wave'), wctx=wave.getContext('2d');
-var statusEl=document.getElementById('status'), goBtn=document.getElementById('go');
-var bpmEl=document.getElementById('bpm'), beatsEl=document.getElementById('beats'), leftEl=document.getElementById('left');
+var statusEl=document.getElementById('status'), goBtn=document.getElementById('go'), earlyBtn=document.getElementById('early');
+var bpmEl=document.getElementById('bpm'), beatsEl=document.getElementById('beats'), elapsedEl=document.getElementById('elapsed'), ecntEl=document.getElementById('ecnt');
 var resultEl=document.getElementById('result'), rmssdEl=document.getElementById('rmssd'), interpEl=document.getElementById('interp'), rfg=document.getElementById('rfg');
+var qdot=document.getElementById('qdot'), qtxt=document.getElementById('qtxt');
 var cvs=document.createElement('canvas'); cvs.width=64; cvs.height=64; var cctx=cvs.getContext('2d',{willReadFrequently:true});
 var stream=null, track=null, raf=null, running=false;
-var DUR=60; // seconds
-var samples=[], beats=[], startT=0, lastBeat=0;
+
+var TARGET=30;            // clean beats to auto-finish
+var MIN_RESULT=15;        // min clean beats to allow a (rough) result
+var SETTLE=2.5;           // ignore first seconds (exposure settling)
+var MAXT=180;             // safety cap seconds
+document.getElementById('tgt').textContent=TARGET;
+
+var samples=[], ibis=[], startT=0, lastBeat=0, meanAbs=2, lastBeatWall=0, torchOn=false;
 var waveBuf=[];
 
 function setStatus(t,cls){ statusEl.textContent=t; statusEl.className='status'+(cls?' '+cls:''); }
+function setQual(cls,txt){ qdot.className='qdot'+(cls?' '+cls:''); qtxt.textContent=txt; }
 
 async function start(){
-  resultEl.classList.remove('on');
+  resultEl.classList.remove('on'); earlyBtn.classList.remove('on');
   try{
-    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:320},height:{ideal:240}}});
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:320},height:{ideal:240},frameRate:{ideal:30}}});
   }catch(e){ setStatus('카메라 접근 거부됨 — 권한 허용 후 다시 시도','err'); return; }
   track=stream.getVideoTracks()[0];
   video.srcObject=stream; await video.play();
-  // try torch
-  var torch=false;
-  try{ var caps=track.getCapabilities&&track.getCapabilities(); if(caps&&caps.torch){ await track.applyConstraints({advanced:[{torch:true}]}); torch=true; } }catch(e){}
-  setStatus(torch?'플래시 켜짐 · 손가락 대고 60초 유지':'플래시 미지원(iOS 추정) · 밝은 곳에서 손가락 대기','on');
-  samples=[]; beats=[]; waveBuf=[]; lastBeat=0; startT=performance.now();
+  torchOn=false;
+  try{ var caps=track.getCapabilities&&track.getCapabilities(); if(caps&&caps.torch){ await track.applyConstraints({advanced:[{torch:true}]}); torchOn=true; } }catch(e){}
+  setStatus(torchOn?'플래시 켜짐 · 렌즈를 손가락으로 덮으세요':'플래시 미지원(iOS 추정) · 밝은 곳에서 렌즈 덮기','on');
+  samples=[]; ibis=[]; waveBuf=[]; lastBeat=0; lastBeatWall=0; meanAbs=2; startT=performance.now();
   running=true; goBtn.textContent='측정 중지'; goBtn.className='stop';
+  beatsEl.textContent='0'; bpmEl.textContent='--';
   loop();
 }
 function stop(finish){
   running=false; if(raf) cancelAnimationFrame(raf);
   if(track){ try{ track.applyConstraints({advanced:[{torch:false}]}); }catch(e){} }
   if(stream){ stream.getTracks().forEach(function(t){t.stop();}); stream=null; }
-  goBtn.textContent='측정 시작'; goBtn.className='';
-  if(finish) computeResult(); else setStatus('중지됨','');
+  goBtn.textContent='측정 시작'; goBtn.className=''; earlyBtn.classList.remove('on');
+  if(finish) computeResult();
+  else setStatus('중지됨 · 박동 '+ibis.length+'개','');
 }
 function loop(){
   if(!running) return;
   var now=performance.now(), t=(now-startT)/1000;
   cctx.drawImage(video,0,0,64,64);
-  var d=cctx.getImageData(22,22,20,20).data; // center 20x20
-  var r=0,n=0; for(var i=0;i<d.length;i+=4){ r+=d[i]; n++; }
-  var red=r/n;
+  var d=cctx.getImageData(20,20,24,24).data;
+  var r=0,g=0,n=0; for(var i=0;i<d.length;i+=4){ r+=d[i]; g+=d[i+1]; n++; }
+  var red=r/n, grn=g/n;
   samples.push({t:t,v:red});
-  if(samples.length>300) samples.shift();
-  detect(t);
+  if(samples.length>240) samples.shift();
+  var fingerLikely = red>60 && red>grn*1.15;   // finger over lens: red-dominant & bright
+  detect(t,fingerLikely);
   drawWave(red);
-  var left=Math.max(0,DUR-t); leftEl.textContent=Math.ceil(left);
-  var pct=Math.min(1,t/DUR); rfg.style.strokeDashoffset=(326.7*(1-pct)).toFixed(1);
-  if(t>=DUR){ stop(true); return; }
+  elapsedEl.textContent=Math.floor(t);
+  ecntEl.textContent=ibis.length;
+  var pct=Math.min(1,ibis.length/TARGET); rfg.style.strokeDashoffset=(351.9*(1-pct)).toFixed(1);
+  // quality feedback
+  if(t>SETTLE){
+    var since=t-lastBeat;
+    if(!fingerLikely){ setQual('bad','손가락이 렌즈를 덮었는지 확인'); }
+    else if(meanAbs<0.8){ setQual('bad','신호 약함 — 더 가볍게, 밝은 곳으로'); }
+    else if(since>2.5){ setQual('mid','박동 놓침 — 손 고정, 살짝 눌러보기'); }
+    else if(ibis.length>=3){ setQual('good','측정 중… 좋아요'); }
+    else { setQual('mid','신호 잡는 중…'); }
+  }
+  if(ibis.length>=MIN_RESULT && !earlyBtn.classList.contains('on')) earlyBtn.classList.add('on');
+  if(ibis.length>=TARGET){ stop(true); return; }
+  if(t>=MAXT){ stop(true); return; }
   raf=requestAnimationFrame(loop);
 }
-function detect(t){
-  var n=samples.length; if(n<12) return;
-  // baseline = moving avg of last ~0.9s
-  var win=[], cutoff=t-0.9;
-  for(var i=n-1;i>=0;i--){ if(samples[i].t<cutoff) break; win.push(samples[i].v); }
-  if(win.length<6) return;
-  var mean=0; win.forEach(function(x){mean+=x;}); mean/=win.length;
-  var cur=samples[n-1].v-mean, prev=samples[n-2].v-mean, prev2=samples[n-3].v-mean;
-  // amplitude check
-  var amp=0; win.forEach(function(x){ amp=Math.max(amp,Math.abs(x-mean)); });
-  // local peak: prev is max, above small threshold, refractory 0.33s (<=180bpm)
-  if(prev>prev2 && prev>cur && prev>amp*0.35 && (t-lastBeat)>0.33){
-    if(lastBeat>0){ var ibi=(t-lastBeat)*1000; if(ibi>300&&ibi<1600) beats.push(ibi); }
-    lastBeat=t; beatsEl.textContent=beats.length;
-    // live bpm from last 6 ibis
-    if(beats.length>=3){ var k=beats.slice(-6), s=0; k.forEach(function(x){s+=x;}); bpmEl.textContent=Math.round(60000/(s/k.length)); }
+function detect(t,finger){
+  var n=samples.length; if(n<10) return;
+  // baseline = moving avg of last ~1.1s
+  var sum=0,cnt=0, cutoff=t-1.1;
+  for(var i=n-1;i>=0;i--){ if(samples[i].t<cutoff) break; sum+=samples[i].v; cnt++; }
+  if(cnt<6) return;
+  var base=sum/cnt;
+  var cur=samples[n-1].v-base, prev=samples[n-2].v-base, prev2=samples[n-3].v-base;
+  meanAbs=meanAbs*0.96+Math.abs(prev)*0.04;   // running amplitude
+  if(t<SETTLE) { lastBeat=t; return; }         // let exposure settle
+  if(!finger) return;
+  var thr=Math.max(0.6, meanAbs*0.9);
+  // local maximum at prev, above threshold, refractory 0.30s (<=200bpm) and <2.0s
+  if(prev>prev2 && prev>=cur && prev>thr && (t-lastBeat)>0.30){
+    if(lastBeat>SETTLE){ var ibi=(t-lastBeat)*1000; if(ibi>300&&ibi<2000){ ibis.push(ibi); beatsEl.textContent=ibis.length; liveBpm(); } }
+    lastBeat=t;
   }
 }
+function liveBpm(){ if(ibis.length>=3){ var k=ibis.slice(-8),s=0; k.forEach(function(x){s+=x;}); bpmEl.textContent=Math.round(60000/(s/k.length)); } }
 function drawWave(v){
-  waveBuf.push(v); if(waveBuf.length>140) waveBuf.shift();
+  waveBuf.push(v); if(waveBuf.length>150) waveBuf.shift();
   var w=wave.width,h=wave.height; wctx.clearRect(0,0,w,h);
   var mn=Math.min.apply(null,waveBuf), mx=Math.max.apply(null,waveBuf), rng=(mx-mn)||1;
   wctx.strokeStyle='#3182F6'; wctx.lineWidth=2.5; wctx.beginPath();
-  for(var i=0;i<waveBuf.length;i++){ var x=i/(140-1)*w, y=h-8-((waveBuf[i]-mn)/rng)*(h-16); i?wctx.lineTo(x,y):wctx.moveTo(x,y); }
+  for(var i=0;i<waveBuf.length;i++){ var x=i/149*w, y=h-8-((waveBuf[i]-mn)/rng)*(h-16); i?wctx.lineTo(x,y):wctx.moveTo(x,y); }
   wctx.stroke();
 }
 function computeResult(){
-  // clean IBIs: remove >20% jumps
-  var ib=beats.filter(function(x){return x>350&&x<1500;});
-  var clean=[]; for(var i=0;i<ib.length;i++){ if(i===0){clean.push(ib[i]);continue;} if(Math.abs(ib[i]-ib[i-1])/ib[i-1]<0.25) clean.push(ib[i]); }
-  if(clean.length<8){ setStatus('신호 부족 — 손가락 위치/밝기 조정 후 다시. (잡은 박동 '+clean.length+'개)','err'); return; }
+  // outlier filter: drop IBIs jumping >25% from previous kept value
+  var clean=[]; for(var i=0;i<ibis.length;i++){ if(!clean.length){clean.push(ibis[i]);continue;} if(Math.abs(ibis[i]-clean[clean.length-1])/clean[clean.length-1]<0.25) clean.push(ibis[i]); }
+  if(clean.length<MIN_RESULT){
+    setStatus('신호 부족 — 유효 박동 '+clean.length+'개(최소 '+MIN_RESULT+'개 필요). 렌즈 완전히 덮고 손 고정 후 다시.','err');
+    setQual('bad','신호 부족'); return;
+  }
   var diffs=[]; for(var j=1;j<clean.length;j++) diffs.push(clean[j]-clean[j-1]);
   var sq=0; diffs.forEach(function(x){sq+=x*x;}); var rmssd=Math.sqrt(sq/diffs.length);
   var mHR=0; clean.forEach(function(x){mHR+=x;}); mHR=Math.round(60000/(mHR/clean.length));
-  bpmEl.textContent=mHR;
-  rmssdEl.textContent=Math.round(rmssd);
-  resultEl.classList.add('on');
+  bpmEl.textContent=mHR; rmssdEl.textContent=Math.round(rmssd);
+  resultEl.classList.add('on'); rfg.style.strokeDashoffset='0';
   var g;
-  if(rmssd<20) g='낮음 — 피로/스트레스 신호일 수 있어요. 오늘은 강도 낮추거나 볼륨 줄이는 걸 고려.';
-  else if(rmssd<45) g='보통 범위. 평소랑 비슷하면 계획대로 진행.';
-  else g='높음 — 회복이 잘 된 편. 컨디션 좋으면 계획대로/약간 도전.';
-  interpEl.innerHTML=g+'<br><span style="color:#8B95A1;font-size:11.5px">※ 웹 측정은 오차 큼. 며칠 재서 본인 평균 잡은 뒤 비교하세요.</span>';
-  setStatus('측정 완료 · 유효 박동 '+clean.length+'개','on');
+  if(rmssd<20) g='낮음 — 피로/스트레스 신호일 수 있어요. 강도↓ 또는 볼륨↓ 고려.';
+  else if(rmssd<45) g='보통 범위. 평소랑 비슷하면 계획대로.';
+  else g='높음 — 회복 잘 된 편. 컨디션 좋으면 계획대로/약간 도전.';
+  interpEl.innerHTML=g+'<br><span style="color:#8B95A1;font-size:11.5px">유효 박동 '+clean.length+'개 · 웹 측정은 오차 큼. 며칠 재서 본인 평균부터 잡으세요.</span>';
+  setStatus('측정 완료 · 유효 박동 '+clean.length+'개','on'); setQual('good','완료');
 }
 goBtn.onclick=function(){ if(running) stop(false); else start(); };
+earlyBtn.onclick=function(){ if(running) stop(true); };
 })();
 </script>
 </body>
