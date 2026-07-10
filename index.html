@@ -242,6 +242,17 @@
   .rec-banner b{font-weight:800;}
   .rec-low{background:#FDECEE;color:#B4232E;}.rec-soft{background:var(--yellow);color:#8a6d1a;}.rec-norm{background:var(--blue-t);color:var(--blue-d);}.rec-go{background:#E4F8F0;color:#0E7A55;}
 
+  /* 스트레칭 사진 확대 라이트박스 */
+  .lightbox{position:fixed; inset:0; z-index:80; background:rgba(10,12,16,.95); display:none; flex-direction:column; align-items:center; justify-content:center; gap:16px; padding:24px 16px calc(24px + env(safe-area-inset-bottom));}
+  .lightbox.on{display:flex;}
+  .lb-media{width:100%; max-width:560px; flex:1; min-height:0; display:flex; align-items:center; justify-content:center;}
+  .lb-media img.fig{width:auto; height:auto; max-width:100%; max-height:100%; border-radius:16px; object-fit:contain; display:block;}
+  .lb-media svg.fig{width:min(84vw,340px); height:min(84vw,340px); background:#EDEFF2; border-radius:16px;}
+  .lb-cap{text-align:center; color:#fff; flex:0 0 auto;}
+  .lb-name{font-size:19px; font-weight:800; letter-spacing:-.02em;}
+  .lb-sub{font-size:13.5px; color:#c8ccd2; margin-top:4px;}
+  .lb-x{position:fixed; top:calc(14px + env(safe-area-inset-top)); right:16px; width:40px; height:40px; border-radius:50%; border:0; background:rgba(255,255,255,.16); color:#fff; font-size:18px; cursor:pointer; z-index:81;}
+
   /* more tab */
   .m-card{background:var(--card); border-radius:var(--r); padding:17px; margin:12px 0; box-shadow:var(--sh);}
   .m-card h3{margin:0 0 3px; font-size:16px;} .m-card .sb{color:var(--muted); font-size:12px; margin-bottom:13px;}
@@ -870,7 +881,7 @@ function renderStretch(){
   });
   h.innerHTML=html;
   h.querySelectorAll(".play").forEach(function(b){ b.onclick=function(){ openPlayer(b.getAttribute("data-d"),b.getAttribute("data-sec"),0); }; });
-  h.querySelectorAll(".pose").forEach(function(p){ p.onclick=function(){ openPlayer(p.getAttribute("data-d"),p.getAttribute("data-sec"),+p.getAttribute("data-i")); }; });
+  h.querySelectorAll(".pose").forEach(function(p){ p.onclick=function(){ openLightbox(p.getAttribute("data-d"),p.getAttribute("data-sec"),+p.getAttribute("data-i")); }; });
 }
 function poseVisual(key){ if(typeof SPHOTO!=="undefined"&&SPHOTO[key]) return '<img class="fig" src="'+SPHOTO[key]+'" alt="" loading="lazy">'; return buildFig(POSES[key]||POSES.armcircle); }
 function poseRow(dayId,sec,list,cls){ return '<div class="poses">'+list.map(function(m,i){ var info=MOVE_INFO[m[0]]||{};
@@ -879,6 +890,16 @@ function poseRow(dayId,sec,list,cls){ return '<div class="poses">'+list.map(func
    '<div class="pd">'+(info.sec?info.sec+'초 × '+(info.sets||2):(info.reps||m[2])+'회')+'</div>'+
    (info.t?'<div class="pdetail">'+info.t+'</div>':'')+'</div></div>';
 }).join("")+'</div>'; }
+function poseCaption(m){ var info=MOVE_INFO[m[0]]||{}; return info.sec?(info.sec+'초 × '+(info.sets||2)):((info.reps||m[2])+'회'); }
+function openLightbox(dayId,sec,i){ var day=STRETCH_MAP[dayId]; if(!day) return; var m=(day[sec]||[])[i]; if(!m) return;
+  var el=document.getElementById("lightbox"); if(!el){ el=document.createElement("div"); el.id="lightbox"; el.className="lightbox"; document.body.appendChild(el); }
+  var info=MOVE_INFO[m[0]]||{};
+  var vis=(typeof SPHOTO!=="undefined"&&SPHOTO[m[1]])?'<img class="fig" src="'+SPHOTO[m[1]]+'">':buildFig(POSES[m[1]]||POSES.armcircle);
+  el.innerHTML='<button class="lb-x">✕</button><div class="lb-media">'+vis+'</div>'+
+    '<div class="lb-cap"><div class="lb-name">'+m[0]+'</div><div class="lb-sub">'+poseCaption(m)+(info.t?' · '+info.t:'')+'</div></div>';
+  el.classList.add("on");
+  el.onclick=function(){ el.classList.remove("on"); };
+}
 
 /* ===== 동작 애니메이션 (마네킹이 실제로 움직임) ===== */
 function V(base,edits){ var s={}; for(var kk in base) s[kk]=base[kk];
