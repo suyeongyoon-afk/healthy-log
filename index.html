@@ -894,9 +894,11 @@ function poseCaption(m){ var info=MOVE_INFO[m[0]]||{}; return info.sec?(info.sec
 function openLightbox(dayId,sec,i){ var day=STRETCH_MAP[dayId]; if(!day) return; var m=(day[sec]||[])[i]; if(!m) return;
   var el=document.getElementById("lightbox"); if(!el){ el=document.createElement("div"); el.id="lightbox"; el.className="lightbox"; document.body.appendChild(el); }
   var info=MOVE_INFO[m[0]]||{};
-  var vis=(typeof SPHOTO!=="undefined"&&SPHOTO[m[1]])?'<img class="fig" src="'+SPHOTO[m[1]]+'">':buildFig(POSES[m[1]]||POSES.armcircle);
+  var hasPhoto=(typeof SPHOTO!=="undefined"&&SPHOTO[m[1]]);
+  var vis=hasPhoto?'<img class="fig" src="poses/'+m[1]+'.jpg">':buildFig(POSES[m[1]]||POSES.armcircle);
   el.innerHTML='<button class="lb-x">✕</button><div class="lb-media">'+vis+'</div>'+
     '<div class="lb-cap"><div class="lb-name">'+m[0]+'</div><div class="lb-sub">'+poseCaption(m)+(info.t?' · '+info.t:'')+'</div></div>';
+  if(hasPhoto){ var im=el.querySelector(".lb-media img.fig"); if(im) im.onerror=function(){ this.onerror=null; this.src=SPHOTO[m[1]]; }; }  // 오프라인이면 인라인 저해상도로 폴백
   el.classList.add("on");
   el.onclick=function(){ el.classList.remove("on"); };
 }
