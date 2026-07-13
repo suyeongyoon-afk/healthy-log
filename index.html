@@ -281,6 +281,18 @@
   .bd-reset{width:100%; border:1.5px solid var(--line); background:var(--card); color:var(--sub); font-weight:700; font-size:12.5px; border-radius:10px; padding:11px; cursor:pointer; margin-top:16px;}
   .bd-hint{font-size:11.5px; color:var(--muted); text-align:center; margin:10px 4px 4px; line-height:1.5;}
 
+  /* 첫 실행 환영 */
+  .welcome{position:fixed; inset:0; z-index:90; background:rgba(10,12,16,.6); display:none; align-items:center; justify-content:center; padding:24px;}
+  .welcome.on{display:flex;}
+  .wc-card{background:var(--card); border-radius:22px; padding:26px 22px 22px; max-width:400px; width:100%; box-shadow:0 20px 60px rgba(0,0,0,.3);}
+  .wc-emoji{font-size:44px; text-align:center;}
+  .wc-h{font-size:21px; font-weight:800; text-align:center; margin:8px 0 16px; letter-spacing:-.02em;}
+  .wc-list{display:flex; flex-direction:column; gap:13px; margin-bottom:18px;}
+  .wc-item{display:flex; gap:11px; font-size:13.5px; color:var(--sub); line-height:1.55;}
+  .wc-item .ic{flex:0 0 auto; font-size:20px; line-height:1.3;}
+  .wc-item b{color:var(--ink); font-weight:800;}
+  .wc-btn{width:100%; border:0; background:var(--blue); color:#fff; font-size:16px; font-weight:800; border-radius:14px; padding:15px; cursor:pointer; box-shadow:0 6px 16px rgba(49,130,246,.32);}
+
   /* more tab */
   .m-card{background:var(--card); border-radius:var(--r); padding:17px; margin:12px 0; box-shadow:var(--sh);}
   .m-card h3{margin:0 0 3px; font-size:16px;} .m-card .sb{color:var(--muted); font-size:12px; margin-bottom:13px;}
@@ -564,7 +576,7 @@ var GUIDE=[
 /* ============ STORE ============ */
 var KEY="healthy_log_v2";
 var DB=load();
-function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)); if(o&&o.logs){ o.blocks=o.blocks||{}; o.collapsed=o.collapsed||{}; o.memos=o.memos||{}; o.extra=o.extra||{}; o.skipped=o.skipped||{}; o.hrv=o.hrv||[]; o.mood=o.mood||{}; if(o.program===undefined) o.program=null; migrate(o); return o; } }catch(e){} return {day:"d1",week:0,startWeek:null,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{},hrv:[],mood:{},program:null}; }
+function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)); if(o&&o.logs){ o.blocks=o.blocks||{}; o.collapsed=o.collapsed||{}; o.memos=o.memos||{}; o.extra=o.extra||{}; o.skipped=o.skipped||{}; o.hrv=o.hrv||[]; o.mood=o.mood||{}; if(o.program===undefined) o.program=null; o.welcomed=o.welcomed||false; migrate(o); return o; } }catch(e){} return {day:"d1",week:0,startWeek:null,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{},hrv:[],mood:{},program:null,welcomed:false}; }
 function migrate(o){ var R={"d3|시티드 카프레이즈":"d3|스탠딩 카프레이즈"}; var moved=false;
   for(var k in R){ var nk=R[k];
     if(o.logs[k]){ if(!o.logs[nk]) o.logs[nk]=o.logs[k]; else o.logs[nk]=o.logs[nk].concat(o.logs[k]); delete o.logs[k]; moved=true; }
@@ -1056,7 +1068,7 @@ function renderMore(){
   document.getElementById("ioBox").value=JSON.stringify(DB);
   document.getElementById("btnCopy").onclick=function(){ var t=document.getElementById("ioBox"); t.select(); try{document.execCommand("copy");}catch(e){} if(navigator.clipboard)navigator.clipboard.writeText(t.value); toast("클립보드에 복사됐어요"); };
   document.getElementById("btnImp").onclick=function(){ var t=document.getElementById("ioBox"); t.removeAttribute("readonly"); t.value=""; t.placeholder="백업 JSON을 붙여넣고 이 버튼을 한 번 더 누르세요"; t.focus(); this.textContent="복원 실행"; this.onclick=function(){ try{ var o=JSON.parse(t.value); if(o&&o.logs){ DB=o; save(); toast("복원 완료"); renderMore(); } else toast("형식이 올라요"); }catch(e){ toast("JSON 형식 오류"); } }; };
-  document.getElementById("btnWipe").onclick=function(){ if(this.dataset.c){ DB={day:"d1",week:0,startWeek:CUR_WEEK,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{},hrv:[],mood:{},program:null}; PROGRAM=DEFAULT_PROGRAM; save(); toast("전체 삭제됐어요"); renderMore(); } else { this.dataset.c="1"; this.textContent="한 번 더 누르면 삭제"; var self=this; setTimeout(function(){self.textContent="전체 삭제"; delete self.dataset.c;},2500); } };
+  document.getElementById("btnWipe").onclick=function(){ if(this.dataset.c){ DB={day:"d1",week:0,startWeek:CUR_WEEK,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{},hrv:[],mood:{},program:null,welcomed:true}; PROGRAM=DEFAULT_PROGRAM; save(); toast("전체 삭제됐어요"); renderMore(); } else { this.dataset.c="1"; this.textContent="한 번 더 누르면 삭제"; var self=this; setTimeout(function(){self.textContent="전체 삭제"; delete self.dataset.c;},2500); } };
   bindCondCard();
   var bb=document.getElementById("btnBuilder"); if(bb) bb.onclick=openBuilder;
 }
@@ -1284,6 +1296,20 @@ function saveBuilder(){
   renderToday();
 }
 
+/* ============ 첫 실행 환영 ============ */
+function maybeWelcome(){ if(!DB.welcomed && Object.keys(DB.logs).length===0){ showWelcome(); } }
+function showWelcome(){ var el=document.getElementById("welcome"); if(!el){ el=document.createElement("div"); el.id="welcome"; el.className="welcome"; document.body.appendChild(el); }
+  el.innerHTML='<div class="wc-card"><div class="wc-emoji">💪</div><div class="wc-h">환영해요!</div>'+
+    '<div class="wc-list">'+
+    '<div class="wc-item"><span class="ic">🏗️</span><span>지금 보이는 운동은 <b>예시 프로그램</b>이에요. <b>더보기 → 프로그램 편집</b>에서 내 운동으로 바꿔보세요.</span></div>'+
+    '<div class="wc-item"><span class="ic">📲</span><span>브라우저 <b>공유 → 홈 화면에 추가</b>하면 앱처럼 쓸 수 있어요.</span></div>'+
+    '<div class="wc-item"><span class="ic">💾</span><span>기록은 <b>이 폰에만</b> 저장돼요(서버 없음). <b>더보기 → 백업</b>을 가끔 해두세요.</span></div>'+
+    '</div>'+
+    '<button class="wc-btn">시작하기</button></div>';
+  el.classList.add("on");
+  el.querySelector(".wc-btn").onclick=function(){ DB.welcomed=true; save(); el.classList.remove("on"); };
+}
+
 /* ============ NAV ============ */
 var TABS=[
  {id:"today",label:"오늘",title:"오늘",icon:'<path d="M3 11l9-8 9 8"/><path d="M5 10v10h5v-6h4v6h5V10"/>'},
@@ -1307,7 +1333,7 @@ function go(id){
 var toastT; function toast(m){ var t=document.getElementById("toast"); t.textContent=m; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(function(){t.classList.remove("show");},1700); }
 function esc(s){ return (s||"").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
 
-renderNav(); document.getElementById("hSub").textContent=SUB.today; renderToday();
+renderNav(); document.getElementById("hSub").textContent=SUB.today; renderToday(); maybeWelcome();
 })();
 </script>
 
