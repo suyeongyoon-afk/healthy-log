@@ -253,6 +253,34 @@
   .lb-sub{font-size:13.5px; color:#c8ccd2; margin-top:4px;}
   .lb-x{position:fixed; top:calc(14px + env(safe-area-inset-top)); right:16px; width:40px; height:40px; border-radius:50%; border:0; background:rgba(255,255,255,.16); color:#fff; font-size:18px; cursor:pointer; z-index:81;}
 
+  /* 프로그램 빌더 */
+  .builder{position:fixed; inset:0; z-index:75; background:var(--bg); display:none; flex-direction:column;}
+  .builder.on{display:flex;}
+  .bd-head{display:flex; align-items:center; gap:10px; padding:calc(12px + env(safe-area-inset-top)) 16px 10px; background:var(--card); box-shadow:var(--sh);}
+  .bd-head .bx{width:34px; height:34px; border-radius:50%; border:0; background:var(--card2); font-size:15px; color:var(--sub); cursor:pointer;}
+  .bd-head .bt{flex:1; font-size:16px; font-weight:800;}
+  .bd-head .bsave{border:0; background:var(--blue); color:#fff; font-weight:800; font-size:13.5px; border-radius:10px; padding:9px 16px; cursor:pointer;}
+  .bd-body{flex:1; overflow-y:auto; padding:14px 14px calc(40px + env(safe-area-inset-bottom)); max-width:480px; margin:0 auto; width:100%;}
+  .bd-day{background:var(--card); border-radius:16px; padding:13px; margin-bottom:14px; box-shadow:var(--sh);}
+  .bd-drow{display:flex; align-items:center; gap:7px; margin-bottom:9px;}
+  .bd-drow input.dtitle{flex:1; min-width:0; font-weight:800; font-size:15px; border:0; border-bottom:2px solid var(--line); background:transparent; padding:4px 2px; color:var(--ink);}
+  .bd-mini{width:30px; height:30px; border-radius:8px; border:1.5px solid var(--line); background:var(--card); color:var(--sub); font-size:12px; cursor:pointer; flex:0 0 auto;}
+  .bd-mini.del{color:var(--down); border-color:#f3c2c7;}
+  .bd-focus{width:100%; border:1px solid var(--line); border-radius:9px; padding:7px 9px; font-size:12.5px; color:var(--sub); background:var(--card2); margin-bottom:8px;}
+  .bd-restrow{display:flex; align-items:center; gap:7px; font-size:12.5px; color:var(--sub); margin-bottom:2px;}
+  .bd-ex{background:var(--card2); border-radius:11px; padding:9px 10px; margin-top:8px;}
+  .bd-ex .r1{display:flex; gap:6px; align-items:center;}
+  .bd-ex .exn{flex:1; min-width:0; border:0; border-bottom:1.5px solid var(--line); background:transparent; font-weight:700; font-size:13.5px; padding:3px 2px; color:var(--ink);}
+  .bd-ex select{border:1px solid var(--line); border-radius:8px; padding:5px 4px; font-size:12px; background:var(--card); color:var(--ink); flex:0 0 auto;}
+  .bd-ex .r2{display:flex; gap:8px; align-items:center; margin-top:8px; flex-wrap:wrap;}
+  .bd-ex .r2 label{font-size:11px; color:var(--muted); font-weight:700; display:flex; align-items:center; gap:4px;}
+  .bd-ex .r2 input{width:44px; border:1px solid var(--line); border-radius:7px; padding:5px; text-align:center; font-size:12.5px; background:var(--card); color:var(--ink);}
+  .bd-ex .r2 input.wide{width:88px; text-align:left;}
+  .bd-addex{width:100%; border:1.5px dashed var(--line); background:transparent; color:var(--blue); font-weight:700; font-size:12.5px; border-radius:10px; padding:9px; cursor:pointer; margin-top:9px;}
+  .bd-addday{width:100%; border:1.5px dashed var(--blue); background:var(--blue-t); color:var(--blue); font-weight:800; font-size:14px; border-radius:12px; padding:13px; cursor:pointer;}
+  .bd-reset{width:100%; border:1.5px solid var(--line); background:var(--card); color:var(--sub); font-weight:700; font-size:12.5px; border-radius:10px; padding:11px; cursor:pointer; margin-top:16px;}
+  .bd-hint{font-size:11.5px; color:var(--muted); text-align:center; margin:10px 4px 4px; line-height:1.5;}
+
   /* more tab */
   .m-card{background:var(--card); border-radius:var(--r); padding:17px; margin:12px 0; box-shadow:var(--sh);}
   .m-card h3{margin:0 0 3px; font-size:16px;} .m-card .sb{color:var(--muted); font-size:12px; margin-bottom:13px;}
@@ -365,7 +393,7 @@ var SCHEME_LABEL={ "3set":"40·60·80%", "2set":"50·75%", "1set":"60%", "none":
 var BPC={ "가슴":"var(--c-chest)","등":"var(--c-back)","어깨":"var(--c-shoulder)","하체":"var(--c-legs)","팔":"var(--c-arms)","복근":"var(--c-abs)","카프":"var(--c-calf)" };
 var BPS=["가슴","등","어깨","하체","팔","복근","카프"];
 
-var PROGRAM=[
+var DEFAULT_PROGRAM=[
  {id:"d1",day:"DAY 1",focus:"가슴·어깨·팔·카프",walk:8,liss:30,ex:[
    {n:"머신 인클라인 프레스",bp:"가슴",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",t:15,main:1,bo:1,m:"메인 — 상부가슴 최우선 · 네거티브 3초 받고 → 폭발적으로 빵! (황철순식 가슴 템포)"},
    {n:"플랫 덤벨 프레스",bp:"가슴",s:"1set",w:"2×8-12",tech:"프리웨이트",rest:"2분",t:9,m:"프리웨이트 — 자세 우선 · 3초 받고 폭발적으로. 인텐시파이어 금지"},
@@ -536,7 +564,7 @@ var GUIDE=[
 /* ============ STORE ============ */
 var KEY="healthy_log_v2";
 var DB=load();
-function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)); if(o&&o.logs){ o.blocks=o.blocks||{}; o.collapsed=o.collapsed||{}; o.memos=o.memos||{}; o.extra=o.extra||{}; o.skipped=o.skipped||{}; o.hrv=o.hrv||[]; o.mood=o.mood||{}; migrate(o); return o; } }catch(e){} return {day:"d1",week:0,startWeek:null,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{},hrv:[],mood:{}}; }
+function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)); if(o&&o.logs){ o.blocks=o.blocks||{}; o.collapsed=o.collapsed||{}; o.memos=o.memos||{}; o.extra=o.extra||{}; o.skipped=o.skipped||{}; o.hrv=o.hrv||[]; o.mood=o.mood||{}; if(o.program===undefined) o.program=null; migrate(o); return o; } }catch(e){} return {day:"d1",week:0,startWeek:null,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{},hrv:[],mood:{},program:null}; }
 function migrate(o){ var R={"d3|시티드 카프레이즈":"d3|스탠딩 카프레이즈"}; var moved=false;
   for(var k in R){ var nk=R[k];
     if(o.logs[k]){ if(!o.logs[nk]) o.logs[nk]=o.logs[k]; else o.logs[nk]=o.logs[nk].concat(o.logs[k]); delete o.logs[k]; moved=true; }
@@ -552,6 +580,9 @@ function parseD(s){ var a=s.split("-"); return new Date(+a[0],+a[1]-1,+a[2],12,0
 function weekIdx(s){ var d=parseD(s); var day=(d.getDay()+6)%7; var mon=new Date(d); mon.setDate(d.getDate()-day); return Math.round(mon.getTime()/6.048e8); }
 var CUR_WEEK=weekIdx(todayStr());
 if(DB.startWeek==null){ DB.startWeek=CUR_WEEK; save(); }
+function pgClone(o){ return JSON.parse(JSON.stringify(o)); }
+var PROGRAM = (DB.program && DB.program.length) ? DB.program : DEFAULT_PROGRAM;
+function useProgram(arr){ DB.program=arr; PROGRAM=arr; if(!PROGRAM.some(function(d){return d.id===DB.day;})) DB.day=PROGRAM[0]?PROGRAM[0].id:"d1"; save(); }
 
 function e1rm(w,r){ return w>0&&r>0? w*(1+r/30):0; }
 function round25(x){ return Math.round(x/2.5)*2.5; }
@@ -999,6 +1030,7 @@ function renderMore(){
   var h=document.getElementById("v-more");
   h.innerHTML=
   condCardHTML()+
+  '<div class="m-card"><h3>내 프로그램</h3><div class="sb">종목·세트·요일을 내 방식대로 편집</div><button id="btnBuilder" style="width:100%;border:0;background:var(--blue-t);color:var(--blue);font-weight:800;font-size:14px;border-radius:12px;padding:13px;cursor:pointer;">🏗️ 프로그램 편집하기</button></div>'+
   '<div class="m-card"><h3>1RM 계산기</h3><div class="sb">추정 최대 중량 (Epley)</div>'+
     '<div class="frow"><span class="fl">무게</span><div class="fin"><input id="e_w" type="number" inputmode="decimal" value="100"><span class="u">kg</span></div></div>'+
     '<div class="frow"><span class="fl">반복 횟수</span><div class="fin"><input id="e_r" type="number" inputmode="numeric" value="10"><span class="u">회</span></div></div>'+
@@ -1024,8 +1056,9 @@ function renderMore(){
   document.getElementById("ioBox").value=JSON.stringify(DB);
   document.getElementById("btnCopy").onclick=function(){ var t=document.getElementById("ioBox"); t.select(); try{document.execCommand("copy");}catch(e){} if(navigator.clipboard)navigator.clipboard.writeText(t.value); toast("클립보드에 복사됐어요"); };
   document.getElementById("btnImp").onclick=function(){ var t=document.getElementById("ioBox"); t.removeAttribute("readonly"); t.value=""; t.placeholder="백업 JSON을 붙여넣고 이 버튼을 한 번 더 누르세요"; t.focus(); this.textContent="복원 실행"; this.onclick=function(){ try{ var o=JSON.parse(t.value); if(o&&o.logs){ DB=o; save(); toast("복원 완료"); renderMore(); } else toast("형식이 올라요"); }catch(e){ toast("JSON 형식 오류"); } }; };
-  document.getElementById("btnWipe").onclick=function(){ if(this.dataset.c){ DB={day:DB.day,week:0,startWeek:CUR_WEEK,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{},hrv:[],mood:{}}; save(); toast("전체 삭제됐어요"); renderMore(); } else { this.dataset.c="1"; this.textContent="한 번 더 누르면 삭제"; var self=this; setTimeout(function(){self.textContent="전체 삭제"; delete self.dataset.c;},2500); } };
+  document.getElementById("btnWipe").onclick=function(){ if(this.dataset.c){ DB={day:"d1",week:0,startWeek:CUR_WEEK,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{},hrv:[],mood:{},program:null}; PROGRAM=DEFAULT_PROGRAM; save(); toast("전체 삭제됐어요"); renderMore(); } else { this.dataset.c="1"; this.textContent="한 번 더 누르면 삭제"; var self=this; setTimeout(function(){self.textContent="전체 삭제"; delete self.dataset.c;},2500); } };
   bindCondCard();
+  var bb=document.getElementById("btnBuilder"); if(bb) bb.onclick=openBuilder;
 }
 
 /* ============ HRV (심박변이 컨디션) ============ */
@@ -1171,6 +1204,85 @@ function hrvFinish(){ var clean=HV?HV.valid.slice():[];
   var cta=el.querySelector('.hv-cta'); cta.innerHTML='<button class="hvgo">완료</button>'; cta.querySelector('.hvgo').onclick=hrvClose;
 }
 function hrvClose(){ hrvStopStream(); var el=document.getElementById('hrvov'); if(el){ var vid=el.querySelector('video'); if(vid) vid.remove(); el.classList.remove('on'); } HV=null; renderMore(); }
+
+/* ============ 프로그램 빌더 ============ */
+function escA(s){ return (s||"").replace(/&/g,"&amp;").replace(/"/g,"&quot;").replace(/</g,"&lt;").replace(/>/g,"&gt;"); }
+var BP=null, dayCounter=0;
+function openBuilder(){ BP=pgClone(PROGRAM); var el=document.getElementById("builder"); if(!el){ el=document.createElement("div"); el.id="builder"; el.className="builder"; document.body.appendChild(el); } el.classList.add("on"); renderBuilder(); }
+function closeBuilder(){ var el=document.getElementById("builder"); if(el) el.classList.remove("on"); BP=null; }
+function renderBuilder(){
+  var el=document.getElementById("builder");
+  var html='<div class="bd-head"><button class="bx" data-act="close">✕</button><div class="bt">내 프로그램 편집</div><button class="bsave" data-act="save">저장</button></div><div class="bd-body">';
+  BP.forEach(function(d,di){
+    html+='<div class="bd-day">';
+    html+='<div class="bd-drow"><input class="dtitle" data-d="'+di+'" data-f="day" value="'+escA(d.day)+'" placeholder="DAY 이름"><button class="bd-mini" data-act="dayup" data-d="'+di+'">↑</button><button class="bd-mini" data-act="daydown" data-d="'+di+'">↓</button><button class="bd-mini del" data-act="delday" data-d="'+di+'">🗑</button></div>';
+    html+='<input class="bd-focus" data-d="'+di+'" data-f="focus" placeholder="부위 요약 (예: 가슴·어깨·팔)" value="'+escA(d.focus)+'">';
+    html+='<div class="bd-restrow"><label><input type="checkbox" data-act="togglerest" data-d="'+di+'"'+(d.rest?" checked":"")+'> 휴식일</label></div>';
+    if(d.rest){
+      html+='<input class="bd-focus" style="margin-top:8px" data-d="'+di+'" data-f="cardio" placeholder="휴식일 안내 (예: 회복 걷기 40분)" value="'+escA(d.cardio)+'">';
+    } else {
+      (d.ex||[]).forEach(function(ex,ei){
+        var ps=parseSets(ex.w||""); var sets=ex.sets!=null?ex.sets:ps.sets, lo=ex.lo!=null?ex.lo:ps.lo, hi=ex.hi!=null?ex.hi:ps.hi;
+        html+='<div class="bd-ex"><div class="r1"><input class="exn" data-d="'+di+'" data-e="'+ei+'" data-f="n" value="'+escA(ex.n)+'" placeholder="종목명">'+
+          '<select data-d="'+di+'" data-e="'+ei+'" data-f="bp">'+BPS.map(function(b){return '<option'+(ex.bp===b?" selected":"")+'>'+b+'</option>';}).join("")+'</select>'+
+          '<button class="bd-mini" data-act="exup" data-d="'+di+'" data-e="'+ei+'">↑</button><button class="bd-mini" data-act="exdown" data-d="'+di+'" data-e="'+ei+'">↓</button><button class="bd-mini del" data-act="delex" data-d="'+di+'" data-e="'+ei+'">🗑</button></div>'+
+          '<div class="r2"><label>세트<input type="number" inputmode="numeric" data-d="'+di+'" data-e="'+ei+'" data-f="sets" value="'+sets+'"></label>'+
+          '<label>반복<input type="number" inputmode="numeric" data-d="'+di+'" data-e="'+ei+'" data-f="lo" value="'+lo+'">~<input type="number" inputmode="numeric" data-d="'+di+'" data-e="'+ei+'" data-f="hi" value="'+hi+'"></label>'+
+          '<label>휴식<input class="wide" data-d="'+di+'" data-e="'+ei+'" data-f="rest" value="'+escA(ex.rest)+'" placeholder="2분"></label></div>'+
+          '<div class="r2"><label style="flex:1; width:100%">메모<input class="wide" style="width:100%; flex:1" data-d="'+di+'" data-e="'+ei+'" data-f="m" value="'+escA(ex.m)+'" placeholder="자세·팁 (선택)"></label></div></div>';
+      });
+      html+='<button class="bd-addex" data-act="addex" data-d="'+di+'">＋ 종목 추가</button>';
+    }
+    html+='</div>';
+  });
+  html+='<button class="bd-addday" data-act="addday">＋ 데이(요일) 추가</button>';
+  html+='<div class="bd-hint">종목명은 기록의 기준이라, 이름을 바꾸면 그 종목은 새 기록으로 시작돼요.</div>';
+  html+='<button class="bd-reset" data-act="reset">기본 프로그램으로 초기화</button>';
+  html+='</div>';
+  el.innerHTML=html;
+  el.querySelectorAll("[data-f]").forEach(function(inp){
+    var handler=function(){ var di=+inp.getAttribute("data-d"), f=inp.getAttribute("data-f"), ea=inp.getAttribute("data-e");
+      if(ea===null){ BP[di][f]=inp.value; }
+      else { var ex=BP[di].ex[+ea]; if(f==="sets"||f==="lo"||f==="hi") ex[f]=parseInt(inp.value)||0; else ex[f]=inp.value; }
+    };
+    inp.oninput=handler; if(inp.tagName==="SELECT") inp.onchange=handler;
+  });
+  el.querySelectorAll("[data-act]").forEach(function(b){ b.onclick=function(){ builderAct(b.getAttribute("data-act"), b.getAttribute("data-d"), b.getAttribute("data-e")); }; });
+}
+function builderAct(act,d,e){ d=(d!=null)?+d:null; e=(e!=null)?+e:null;
+  if(act==="close"){ closeBuilder(); return; }
+  if(act==="save"){ saveBuilder(); return; }
+  if(act==="togglerest"){ BP[d].rest=!BP[d].rest; if(BP[d].rest){ if(!BP[d].cardio) BP[d].cardio="회복 걷기 40분"; } else { if(!BP[d].ex) BP[d].ex=[]; } renderBuilder(); return; }
+  if(act==="addex"){ if(!BP[d].ex) BP[d].ex=[]; BP[d].ex.push({n:"새 종목",bp:"가슴",sets:3,lo:8,hi:12,rest:"2분",t:8,m:""}); renderBuilder(); return; }
+  if(act==="delex"){ BP[d].ex.splice(e,1); renderBuilder(); return; }
+  if(act==="exup"){ var a=BP[d].ex; if(e>0){ var t=a[e]; a[e]=a[e-1]; a[e-1]=t; } renderBuilder(); return; }
+  if(act==="exdown"){ var a=BP[d].ex; if(e<a.length-1){ var t=a[e]; a[e]=a[e+1]; a[e+1]=t; } renderBuilder(); return; }
+  if(act==="delday"){ if(BP.length<=1){ toast("최소 1개 데이는 있어야 해요"); return; } BP.splice(d,1); renderBuilder(); return; }
+  if(act==="dayup"){ if(d>0){ var t=BP[d]; BP[d]=BP[d-1]; BP[d-1]=t; } renderBuilder(); return; }
+  if(act==="daydown"){ if(d<BP.length-1){ var t=BP[d]; BP[d]=BP[d+1]; BP[d+1]=t; } renderBuilder(); return; }
+  if(act==="addday"){ dayCounter++; BP.push({id:"c"+dayCounter+"_"+(BP.length+1),day:"DAY "+(BP.length+1),focus:"",walk:8,ex:[]}); renderBuilder(); return; }
+  if(act==="reset"){ BP=pgClone(DEFAULT_PROGRAM); renderBuilder(); toast("기본값 불러옴 — 저장해야 적용돼요"); return; }
+}
+function saveBuilder(){
+  var used={};
+  BP.forEach(function(d,i){
+    if(!d.id || used[d.id]){ dayCounter++; d.id="c"+dayCounter+"_"+i; } used[d.id]=1;
+    if(d.rest){ d.ex=d.ex||[]; return; }
+    (d.ex||[]).forEach(function(ex){
+      var ps=parseSets(ex.w||"");
+      var s=ex.sets!=null?ex.sets:ps.sets, lo=ex.lo!=null?ex.lo:ps.lo, hi=ex.hi!=null?ex.hi:ps.hi;
+      s=s||1; if(s<1)s=1; if(lo<1)lo=1; if(hi<lo)hi=lo;
+      ex.w=s+"×"+(lo===hi?(""+lo):(lo+"-"+hi));
+      ex.s=s>=3?"3set":(s===2?"2set":(s===1?"1set":"none"));
+      if(ex.t==null) ex.t=8;
+      delete ex.sets; delete ex.lo; delete ex.hi;
+    });
+  });
+  useProgram(pgClone(BP));
+  toast("프로그램이 저장됐어요 💪");
+  closeBuilder();
+  renderToday();
+}
 
 /* ============ NAV ============ */
 var TABS=[
