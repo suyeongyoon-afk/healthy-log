@@ -358,6 +358,7 @@
   .intens .ilab{flex:0 0 auto; font-weight:800;}
   .intens.rp{background:#FEECEC; color:#C0392B;}
   .intens.drop{background:#EAF2FF; color:#2E6BDE;}
+  .intens.lp{background:#F3EDFF; color:#6B45C7;}
   /* collapsed completed card */
   .card.collapsed{padding:0;}
   .cbar{display:flex; align-items:center; gap:9px; padding:13px 15px; cursor:pointer;}
@@ -412,7 +413,7 @@ var DEFAULT_PROGRAM=[
    {n:"머신 인클라인 프레스",bp:"가슴",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",t:15,main:1,bo:1,m:"메인 — 상부가슴 최우선 · 네거티브 3초 받고 → 폭발적으로 빵! (황철순식 가슴 템포)"},
    {n:"플랫 덤벨 프레스",bp:"가슴",s:"1set",w:"2×8-12",tech:"프리웨이트",rest:"2분",t:9,m:"프리웨이트 — 자세 우선 · 3초 받고 폭발적으로. 인텐시파이어 금지"},
    {n:"펙덱 플라이",bp:"가슴",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"수축 → 쉬지 않고 어깨",ss:"A"},
-   {n:"덤벨 사이드 레터럴",bp:"어깨",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,wact:20,m:"웜업 20+ · 무겁게 1세트(10-12)+저중량 고반복 1세트(20-25). 팁: 조면으로 든다는 느낌, 팔 최대한 멀리 빼고 팔꿈치 펴기, 손등을 살짝 아래로 꺾어 손등으로 민다.",ss:"A"},
+   {n:"덤벨 사이드 레터럴",bp:"어깨",s:"1set",w:"2×10-15",tech:"레닥 파셜",rest:"90초",t:6,wact:20,m:"웜업 20+ · 무겁게 1세트(10-12)+저중량 고반복 1세트(20-25). 팁: 조면으로 든다는 느낌, 팔 최대한 멀리 빼고 팔꿈치 펴기, 손등을 살짝 아래로 꺾어 손등으로 민다.",ss:"A"},
    {n:"오버헤드 케이블 익스텐션",bp:"팔",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"팔 1회차 — 길항 슈퍼세트 (팔꿈치 안 걸리게 삼두 장두 늘리기)",ss:"B"},
    {n:"EZ바 컬",bp:"팔",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"",ss:"B"},
    {n:"스탠딩 카프레이즈",bp:"카프",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",t:8,m:"바닥 스트레치 2초"}
@@ -421,12 +422,12 @@ var DEFAULT_PROGRAM=[
    {n:"레그 익스텐션 (사전 피로)",bp:"하체",s:"2set",w:"2×12-15",tech:"활성화",rest:"90초",t:6,m:"첫 종목 — 수축 1초 정지"},
    {n:"바벨 스쿼트",bp:"하체",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",t:18,main:1,bo:1,risky:1,m:"메인 — 최대 깊이, 네거티브 3-4초"},
    {n:"레그프레스 (발 낮게·좁게)",bp:"하체",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"2분",t:10,main:1,bo:1,m:"깊은 무릎 굴곡 · 웜업 램프 무겁게로 볼륨 → 본세트 자극 위주"},
-   {n:"레그 익스텐션 (마무리)",bp:"하체",s:"none",w:"2×12-15",tech:"트리플 드롭",rest:"90초",t:7,m:"쿼드 완전 소진"},
+   {n:"레그 익스텐션 (마무리)",bp:"하체",s:"none",w:"2×12-15",tech:"레닥 파셜",rest:"90초",t:7,m:"쿼드 완전 소진 — 신장 파셜로 마무리(닉 워커 stretch)"},
    {n:"케이블 크런치",bp:"복근",s:"1set",w:"3×10-15",tech:"없음",rest:"60초",t:6,m:"중량 더블 프로그레션"}
  ]},
  {id:"d3",day:"DAY 3",focus:"등·팔·카프",stype:"전신",walk:8,ex:[
-   {n:"랫 풀다운",bp:"등",s:"2set",w:"2×8-12",tech:"없음",rest:"2분",t:9,main:1,m:"안전한 머신 — 마지막 세트 실패지점까지. 광배 쥐어짜며 끝까지."},
-   {n:"체스트서포티드 로우",bp:"등",s:"1set",w:"2×8-12",tech:"없음",rest:"2분",t:7,main:1,m:"안전한 머신 (가슴 받쳐서 허리 부담 0) — 마지막 세트 실패지점까지."},
+   {n:"랫 풀다운",bp:"등",s:"2set",w:"2×8-12",tech:"없음",rest:"2분",t:9,maint:1,m:"유지 볼륨 (RIR 1-2) — 커팅+주6일이라 안 털어도 됨. 실패는 메인만."},
+   {n:"체스트서포티드 로우",bp:"등",s:"1set",w:"2×8-12",tech:"없음",rest:"2분",t:7,maint:1,m:"유지 볼륨 (RIR 1-2) · 가슴 받쳐 허리 부담 0"},
    {n:"루마니안 데드리프트",bp:"하체",s:"2set",w:"2×8-10",tech:"없음",rest:"2분",t:10,risky:1,m:"힌지 패턴 — 무게보다 자세. RIR 1-2"},
    {n:"라잉 레그컬",bp:"하체",s:"1set",w:"2×10-12",tech:"없음",rest:"90초",t:6,m:"햄 유지"},
    {n:"인클라인 덤벨 컬",bp:"팔",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",t:6,m:"팔 2회차 — 이두 스트레치",ss:"A"},
@@ -437,9 +438,9 @@ var DEFAULT_PROGRAM=[
  {id:"d5",day:"DAY 5",focus:"어깨·팔·복근",stype:"상체",walk:8,liss:30,ex:[
    {n:"머신 숄더프레스",bp:"어깨",s:"3set",w:"3×10",tech:"이완·수축 5초 정지",rest:"3분",t:15,main:1,fixed:1,m:"황철순식 · 무게 고정(예 50)·렙 판단(무게 증량 X): ①30개 → ②이완지점 5초 정지 후 10개 → ③수축지점 5초 정지 후 10개. 인중까지 내리고 어깨 쪼개짐 확인 → 으쓱, 팔꿈치·손목 수직. 통증 없는 범위·실패 직전까지만."},
    {n:"덤벨 숄더프레스",bp:"어깨",s:"3set",w:"3×6-10",tech:"프리웨이트",rest:"3분",t:12,main:1,m:"어깨 무게 증량 종목 — 무겁게 더블 프로그레션(6-10). 통증 없는 범위, 아프면 즉시 중단"},
-   {n:"시티드 사이드 레터럴 레이즈",bp:"어깨",s:"1set",w:"3×10-15",tech:"드롭세트 1회",rest:"90초",t:8,wact:20,m:"측면 델트 2회차 · 웜업 20+ · 무겁게 2세트(10-12)+저중량 고반복 1세트(20-25). 팁: 조면으로 든다는 느낌, 팔 최대한 멀리 빼고 팔꿈치 펴기, 손등을 살짝 아래로 꺾어 손등으로 민다."},
+   {n:"시티드 사이드 레터럴 레이즈",bp:"어깨",s:"1set",w:"3×10-15",tech:"레닥 파셜",rest:"90초",t:8,wact:20,m:"측면 델트 2회차 · 웜업 20+ · 무겁게 2세트(10-12)+저중량 고반복 1세트(20-25). 팁: 조면으로 든다는 느낌, 팔 최대한 멀리 빼고 팔꿈치 펴기, 손등을 살짝 아래로 꺾어 손등으로 민다."},
    {n:"머신 딥",bp:"팔",s:"1set",w:"3×8-12",tech:"레스트포즈 20초",rest:"90초",t:7,main:1,m:"팔 3회차 메인 — 매스",ss:"A"},
-   {n:"머신 프리처컬",bp:"팔",s:"1set",w:"3×8-12",tech:"레스트포즈 20초",rest:"90초",t:6,m:"",ss:"A"},
+   {n:"머신 프리처컬",bp:"팔",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",t:6,m:"고립 — 10-15회로 느낌 위주 (닉 워커식)",ss:"A"},
    {n:"해머 컬",bp:"팔",s:"none",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:4,m:"상완근·전완 = 팔 굵기",ss:"B"},
    {n:"오버헤드 케이블 익스텐션 (로프)",bp:"팔",s:"none",w:"2×10-15",tech:"드롭세트 1회",rest:"90초",t:4,m:"팔꿈치 안 걸리게 삼두 장두 늘리기",ss:"B"},
    {n:"행잉 레그레이즈",bp:"복근",s:"none",w:"3×10-15",tech:"없음",rest:"60초",t:6,m:"하복부"}
@@ -793,6 +794,8 @@ function exCard(d,ex,isFirst){
   if(tech.indexOf("드롭")>=0){ var dr=document.createElement("div"); dr.className="intens drop";
     var trip=tech.indexOf("트리플")>=0;
     dr.innerHTML='<span class="ilab">🔻 '+(trip?'트리플 드롭':'드롭')+'</span><span>마지막 세트만 · 20-30%↓ 실패까지'+(trip?' ×3':'')+'</span>'; card.appendChild(dr); }
+  if(tech.indexOf("파셜")>=0){ var lp=document.createElement("div"); lp.className="intens lp";
+    lp.innerHTML='<span class="ilab">🟣 레닥 파셜</span><span>마지막 세트만 · 풀 ROM 실패 후 <b>신장(늘어난) 구간</b>에서 부분반복 5-10개 더 (닉 워커식 stretch 파셜)</span>'; card.appendChild(lp); }
   // foot: e1rm + memo
   var foot=document.createElement("div"); foot.className="exfoot";
   var be=bestTop(sess), e1=e1rm(be.w,be.r);
