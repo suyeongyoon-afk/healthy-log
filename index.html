@@ -425,8 +425,8 @@ var DEFAULT_PROGRAM=[
    {n:"케이블 크런치",bp:"복근",s:"1set",w:"3×10-15",tech:"없음",rest:"60초",t:6,m:"중량 더블 프로그레션"}
  ]},
  {id:"d3",day:"DAY 3",focus:"등·팔·카프",stype:"전신",walk:8,ex:[
-   {n:"랫 풀다운",bp:"등",s:"2set",w:"2×8-12",tech:"없음",rest:"2분",t:9,maint:1,m:"유지 볼륨 (RIR 1-2) — 안 털어도 됨"},
-   {n:"체스트서포티드 로우",bp:"등",s:"1set",w:"2×8-12",tech:"없음",rest:"2분",t:7,maint:1,m:"유지 볼륨"},
+   {n:"랫 풀다운",bp:"등",s:"2set",w:"2×8-12",tech:"없음",rest:"2분",t:9,main:1,m:"안전한 머신 — 마지막 세트 실패지점까지. 광배 쥐어짜며 끝까지."},
+   {n:"체스트서포티드 로우",bp:"등",s:"1set",w:"2×8-12",tech:"없음",rest:"2분",t:7,main:1,m:"안전한 머신 (가슴 받쳐서 허리 부담 0) — 마지막 세트 실패지점까지."},
    {n:"루마니안 데드리프트",bp:"하체",s:"2set",w:"2×8-10",tech:"없음",rest:"2분",t:10,risky:1,m:"힌지 패턴 — 무게보다 자세. RIR 1-2"},
    {n:"라잉 레그컬",bp:"하체",s:"1set",w:"2×10-12",tech:"없음",rest:"90초",t:6,m:"햄 유지"},
    {n:"인클라인 덤벨 컬",bp:"팔",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",t:6,m:"팔 2회차 — 이두 스트레치",ss:"A"},
@@ -732,7 +732,7 @@ function exCard(d,ex,isFirst){
     sb.innerHTML='⚠️ <b>무게 욕심 버려.</b> 자세·호흡·근육인지.<br><span class="prime">선행: 브레이싱 → 힙힌지 5회 → 맥길빅3(버드독·데드버그·사이드플랭크 10초씩)</span>';
     card.appendChild(sb); }
   else if(ex.main){ var mn=document.createElement("div"); mn.className="banner ok";
-    mn.innerHTML='🔥 <b>안전 기구.</b> 마지막 세트는 <b>실패지점까지.</b>'; card.appendChild(mn); }
+    mn.innerHTML='🔥 <b>안전한 머신 — 마지막 세트는 무조건 실패지점까지</b> 쥐어짜기. (관절 부담 적어 끝까지 밀어도 OK)'; card.appendChild(mn); }
   else if(ex.maint){ var mt=document.createElement("div"); mt.className="banner maint";
     mt.innerHTML='🟦 <b>유지.</b> RIR 1-2, 무게만 지켜.'; card.appendChild(mt); }
   // recommendation
@@ -1302,16 +1302,31 @@ function saveBuilder(){
 function celebrate(cx,cy,level){
   var c=document.getElementById("fxcanvas");
   if(!c){ c=document.createElement("canvas"); c.id="fxcanvas"; c.style.cssText="position:fixed;inset:0;width:100%;height:100%;pointer-events:none;z-index:100"; document.body.appendChild(c); }
-  var dpr=Math.min(2,window.devicePixelRatio||1);
-  c.width=window.innerWidth*dpr; c.height=window.innerHeight*dpr; var ctx=c.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0);
-  var cols=["#3182F6","#12B886","#FFC93C","#FF6B6B","#9775FA","#FF922B"];
-  var n=level>=3?120:(level===2?58:24), spread=level>=3?17:(level===2?12:8), parts=[];
-  for(var i=0;i<n;i++){ var a=Math.random()*Math.PI*2, sp=Math.random()*spread+2;
-    parts.push({x:cx,y:cy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-(Math.random()*4+2),col:cols[(Math.random()*cols.length)|0],sz:Math.random()*5+3,rot:Math.random()*6,vr:(Math.random()-0.5)*0.4,life:1}); }
-  if(navigator.vibrate){ try{ navigator.vibrate(level>=3?[30,40,30,40,60]:(level===2?[20,30,25]:18)); }catch(e){} }
+  var W=window.innerWidth, H=window.innerHeight, dpr=Math.min(2,window.devicePixelRatio||1);
+  c.width=W*dpr; c.height=H*dpr; var ctx=c.getContext("2d"); ctx.setTransform(dpr,0,0,dpr,0,0);
+  var cols=["#3182F6","#12B886","#FFC93C","#FF6B6B","#9775FA","#FF922B","#FF5EC6","#4CE0B3","#FFD93D","#5B8DEF"];
+  var parts=[];
+  function spawn(ox,oy,count,power,dir){
+    for(var i=0;i<count;i++){
+      var a=(dir==null)?Math.random()*6.283:dir+(Math.random()-0.5)*1.15, sp=Math.random()*power+power*0.35;
+      var r=Math.random(), shape=r<0.5?"rect":(r<0.8?"circ":"strip");
+      parts.push({x:ox,y:oy,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-(dir==null?Math.random()*3:0),rot:Math.random()*6.28,vr:(Math.random()-0.5)*0.55,
+        sz:shape==="strip"?(Math.random()*4+3):(Math.random()*7+4),col:cols[(Math.random()*cols.length)|0],shape:shape,life:1,decay:0.005+Math.random()*0.006,t:Math.random()*100,flut:Math.random()*1.6+0.4});
+    }
+  }
+  if(level>=3){ spawn(cx,cy,100,18,null); spawn(6,H,80,27,-Math.PI/2.5); spawn(W-6,H,80,27,-Math.PI+Math.PI/2.5); spawn(cx,cy,50,9,null); }
+  else if(level===2){ spawn(cx,cy,85,15,null); spawn(cx,cy,40,7,null); }
+  else { spawn(cx,cy,48,12,null); }
+  if(navigator.vibrate){ try{ navigator.vibrate(level>=3?[30,40,30,40,30,40,90]:(level===2?[25,35,30]:20)); }catch(e){} }
   function frame(){ ctx.clearRect(0,0,c.width,c.height); var alive=false;
-    parts.forEach(function(p){ if(p.life<=0) return; alive=true; p.vy+=0.28; p.x+=p.vx; p.y+=p.vy; p.vx*=0.99; p.rot+=p.vr; p.life-=0.012;
-      ctx.save(); ctx.globalAlpha=Math.max(0,p.life); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.fillStyle=p.col; ctx.fillRect(-p.sz/2,-p.sz/2,p.sz,p.sz*0.62); ctx.restore(); });
+    for(var i=0;i<parts.length;i++){ var p=parts[i]; if(p.life<=0) continue; alive=true;
+      p.t++; p.vy+=0.32; p.vx*=0.985; p.x+=p.vx+Math.sin(p.t*0.1)*p.flut; p.y+=p.vy; p.rot+=p.vr; p.life-=p.decay;
+      ctx.save(); ctx.globalAlpha=Math.max(0,Math.min(1,p.life*1.4)); ctx.translate(p.x,p.y); ctx.rotate(p.rot); ctx.fillStyle=p.col;
+      if(p.shape==="circ"){ ctx.beginPath(); ctx.arc(0,0,p.sz*0.5,0,6.283); ctx.fill(); }
+      else if(p.shape==="strip"){ ctx.fillRect(-p.sz*0.4,-p.sz*1.7,p.sz*0.8,p.sz*3.4); }
+      else { ctx.fillRect(-p.sz/2,-p.sz/2,p.sz,p.sz*0.62); }
+      ctx.restore();
+    }
     if(alive) requestAnimationFrame(frame); else ctx.clearRect(0,0,c.width,c.height);
   }
   requestAnimationFrame(frame);
