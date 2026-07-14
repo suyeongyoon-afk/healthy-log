@@ -336,6 +336,7 @@
   .banner.danger .prime{color:#8a2b32; font-size:11.5px;}
   .banner.ok{background:#E4F8F0; color:#0E7A55;}
   .banner.maint{background:var(--card2); color:var(--sub);}
+  .banner.free{background:#FFF3E0; color:#B4640E;}
   /* warmup box */
   .warmbox{background:var(--card2); border-radius:12px; padding:9px 12px; margin:12px 0 4px;}
   .wlab{font-size:10.5px; font-weight:800; color:var(--muted); letter-spacing:.04em; margin-bottom:5px;}
@@ -732,6 +733,8 @@ function exCard(d,ex,isFirst){
   if(ex.risky){ var sb=document.createElement("div"); sb.className="banner danger";
     sb.innerHTML='⚠️ <b>무게 욕심 버려.</b> 자세·호흡·근육인지.<br><span class="prime">선행: 브레이싱 → 힙힌지 5회 → 맥길빅3(버드독·데드버그·사이드플랭크 10초씩)</span>';
     card.appendChild(sb); }
+  else if(ex.tech && ex.tech.indexOf("프리웨이트")>=0){ var fw=document.createElement("div"); fw.className="banner free";
+    fw.innerHTML='🟠 <b>프리웨이트 — 자세 우선.</b> 실패까지 밀지 말고 <b>RIR 1</b>(1개 남기고), 통증 없는 범위. 인텐시파이어 금지.'; card.appendChild(fw); }
   else if(ex.main){ var mn=document.createElement("div"); mn.className="banner ok";
     mn.innerHTML='🔥 <b>안전한 머신 — 마지막 세트는 무조건 실패지점까지</b> 쥐어짜기. (관절 부담 적어 끝까지 밀어도 OK)'; card.appendChild(mn); }
   else if(ex.maint){ var mt=document.createElement("div"); mt.className="banner maint";
