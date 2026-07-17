@@ -348,6 +348,8 @@
   .worklab-wrap .wlab{margin:0 0 6px 2px;}
   .setrow.bo .snum{background:var(--c-arms); color:#fff; font-size:10px; width:auto; padding:0 5px; border-radius:9px;}
   .setrow.ds .snum{background:#F2994A; color:#fff; font-size:10px; width:auto; padding:0 5px; border-radius:9px;}
+  .setrow.carry .snum{background:#12B886; color:#fff;}
+  .setrow{touch-action:pan-y;}
   .setctrl{display:flex; gap:6px; margin-top:10px;}
   .setctrl button{flex:1; border:1.5px solid var(--line); background:var(--card); color:var(--sub); border-radius:9px; padding:8px 4px; font-size:11.5px; font-weight:800; cursor:pointer;}
   .setctrl button[data-c="carry"]{flex:1.5; color:var(--blue); border-color:var(--blue);}
@@ -431,8 +433,8 @@ var DEFAULT_PROGRAM=[
    {n:"랫 풀다운",bp:"등",s:"2set",w:"2×8-12",tech:"없음",rest:"2분",t:9,main:1,m:"Day3 메인 — 광배 쥐어짜며 마지막 세트 실패까지."},
    {n:"체스트서포티드 로우",bp:"등",s:"1set",w:"2×8-12",tech:"없음",rest:"2분",t:7,maint:1,m:"유지 볼륨 (RIR 1-2) · 가슴 받쳐 허리 부담 0"},
    {n:"루마니안 데드리프트",bp:"하체",s:"2set",w:"2×8-10",tech:"없음",rest:"2분",t:10,risky:1,m:"힌지 패턴 — 무게보다 자세. RIR 1-2"},
-   {n:"라잉 레그컬",bp:"하체",s:"1set",w:"2×10-12",tech:"없음",rest:"90초",t:6,m:"햄 유지"},
-   {n:"인클라인 덤벨 컬",bp:"팔",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",t:6,m:"팔 2회차 — 이두 스트레치",ss:"A"},
+   {n:"라잉 레그컬",bp:"하체",s:"1set",w:"2×10-12",tech:"없음",rest:"90초",t:6,m:"햄스트링(허벅지 뒤) — 수축 1초 쥐어짜고, 내릴 때 천천히 버티며 늘리기."},
+   {n:"해머 컬",bp:"팔",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",t:6,m:"팔 2회차 — 상완근·전완(팔 굵기). 손 세로로 잡고.",ss:"A"},
    {n:"오버헤드 케이블 익스텐션",bp:"팔",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",t:6,m:"삼두 장두",ss:"A"},
    {n:"스탠딩 카프레이즈",bp:"카프",s:"1set",w:"3×12-15",tech:"드롭세트 1회",rest:"90초",t:7,m:"카프 2회차 — 풀 스트레치"}
  ]},
@@ -574,7 +576,7 @@ var GUIDE=[
 /* ============ STORE ============ */
 var KEY="healthy_log_v2";
 var DB=load();
-function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)); if(o&&o.logs){ o.blocks=o.blocks||{}; o.collapsed=o.collapsed||{}; o.memos=o.memos||{}; o.extra=o.extra||{}; o.skipped=o.skipped||{}; o.hrv=o.hrv||[]; o.mood=o.mood||{}; if(o.program===undefined) o.program=null; o.welcomed=o.welcomed||false; migrate(o); return o; } }catch(e){} return {day:"d1",week:0,startWeek:null,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{},hrv:[],mood:{},program:null,welcomed:false}; }
+function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)); if(o&&o.logs){ o.blocks=o.blocks||{}; o.collapsed=o.collapsed||{}; o.memos=o.memos||{}; o.extra=o.extra||{}; o.skipped=o.skipped||{}; o.hrv=o.hrv||[]; o.mood=o.mood||{}; if(o.program===undefined) o.program=null; o.welcomed=o.welcomed||false; o.carry=o.carry||{}; migrate(o); return o; } }catch(e){} return {day:"d1",week:0,startWeek:null,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{},hrv:[],mood:{},program:null,welcomed:false,carry:{}}; }
 function migrate(o){ var R={"d3|시티드 카프레이즈":"d3|스탠딩 카프레이즈"}; var moved=false;
   for(var k in R){ var nk=R[k];
     if(o.logs[k]){ if(!o.logs[nk]) o.logs[nk]=o.logs[k]; else o.logs[nk]=o.logs[nk].concat(o.logs[k]); delete o.logs[k]; moved=true; }
@@ -704,7 +706,8 @@ function exCard(d,ex,isFirst){
   var doneN=sess.sets.filter(function(x){return x.done;}).length;
   var boN=ex.bo?1:0;
   var dropN=(ex.tech&&ex.tech.indexOf("드롭")>=0)?((ex.tech.indexOf("트리플")>=0)?3:1):0;
-  var want=Math.max(1, ps.sets+boN+dropN+(DB.extra[kt]||0), doneN);
+  var carryAdd=(DB.carry[k] && DB.carry[k].from < t)?DB.carry[k].n:0;
+  var want=Math.max(1, ps.sets+boN+dropN+carryAdd+(DB.extra[kt]||0), doneN);
   while(sess.sets.length<want){ var i=sess.sets.length; var pv=prev&&prev.sets[i]; sess.sets.push({w:pv?pv.w:0,r:pv?pv.r:ps.lo,done:false}); }
   while(sess.sets.length>want){ sess.sets.pop(); }
   var allDone=sess.sets.length>0 && sess.sets.every(function(x){return x.done;});
@@ -760,14 +763,15 @@ function exCard(d,ex,isFirst){
   var wm=document.createElement("div"); wm.innerHTML=warmRows(ex,topW,isFirst); if(wm.firstChild) card.appendChild(wm.firstChild);
   // 워킹 세트 (+백오프)
   var setWrap=document.createElement("div"); setWrap.className="worklab-wrap";
-  var wl=document.createElement("div"); wl.className="wlab"; wl.textContent="워킹 세트"; setWrap.appendChild(wl);
+  var wl=document.createElement("div"); wl.className="wlab"; wl.textContent="워킹 세트 · ← 밀면 삭제"; setWrap.appendChild(wl);
   var bw=(ex.bp==="복근");
   sess.sets.forEach(function(stt,idx){
-    var typ = idx<ps.sets ? "work" : (idx<ps.sets+boN ? "bo" : (idx<ps.sets+boN+dropN ? "ds" : "extra"));
-    var row=document.createElement("div"); row.className="setrow"+(stt.done?" done":"")+(typ==="bo"?" bo":"")+(typ==="ds"?" ds":"");
+    var typ = idx<ps.sets ? "work" : (idx<ps.sets+boN ? "bo" : (idx<ps.sets+boN+dropN ? "ds" : (idx<ps.sets+boN+dropN+carryAdd ? "carry" : "extra")));
+    var row=document.createElement("div"); row.className="setrow"+(stt.done?" done":"")+(typ==="bo"?" bo":"")+(typ==="ds"?" ds":"")+(typ==="carry"?" carry":"");
     if(typ==="bo" && !stt.w && topW) stt.w=round25(topW*0.5);
     if(typ==="ds" && !stt.w && topW) stt.w=round25(topW*0.7);
-    row.innerHTML='<div class="snum">'+(typ==="bo"?"BO":(typ==="ds"?"DS":(typ==="extra"?"＋":(idx+1))))+'</div>'+
+    var lbl=typ==="bo"?"BO":(typ==="ds"?"DS":(typ==="carry"?"↩":(typ==="extra"?"＋":(idx+1))));
+    row.innerHTML='<div class="snum">'+lbl+'</div>'+
       (bw?'':stp("w",stt.w,2.5)+'<span class="unit">kg</span>')+
       stp("r",stt.r,1)+'<span class="unit">회</span>'+
       '<button class="chk"><svg viewBox="0 0 24 24" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5L20 6"/></svg></button>';
@@ -778,29 +782,36 @@ function exCard(d,ex,isFirst){
       var nowAll=sess.sets.length>0 && sess.sets.every(function(x){return x.done;});
       if(!nowAll){ delete PENDING[kt]; delete DB.collapsed[kt]; }
       else if(!DB.collapsed[kt] && PENDING[kt]==null){ PENDING[kt]=5; ensureCollapseIv(); }
+      if(nowAll && DB.carry[k] && DB.carry[k].from<t){ delete DB.carry[k]; save(); }
       if(stt.done){ toast(bw?(stt.r+"회 기록 ✓"):("e1RM "+fmt(e1rm(stt.w,stt.r))+"kg")); celebrateAt(this, nowAll?2:1); if(nowAll) checkWorkoutDone(); }
       renderDayBody(); };
+    (function(rowEl,i){ var x0,y0,drag=false,dx=0;
+      rowEl.addEventListener("pointerdown",function(e){ if(e.target.closest("input,button")) return; x0=e.clientX; y0=e.clientY; drag=true; dx=0; rowEl.style.transition="none"; });
+      rowEl.addEventListener("pointermove",function(e){ if(!drag) return; var a=e.clientX-x0,b=e.clientY-y0; if(Math.abs(b)>Math.abs(a)&&Math.abs(b)>8){ drag=false; rowEl.style.transform=""; rowEl.style.opacity=""; return; } if(a<0){ dx=Math.max(a,-110); rowEl.style.transform="translateX("+dx+"px)"; rowEl.style.opacity=String(Math.max(0.3,1+dx/160)); } });
+      rowEl.addEventListener("pointerup",function(){ if(!drag) return; drag=false; rowEl.style.transition=".18s"; if(dx<-70){ rowEl.style.transform="translateX(-110%)"; rowEl.style.opacity="0"; setTimeout(function(){ sess.sets.splice(i,1); DB.extra[kt]=(DB.extra[kt]||0)-1; persist(k,sess); toast("세트 삭제"); renderDayBody(); },140); } else { rowEl.style.transform=""; rowEl.style.opacity=""; } });
+      rowEl.addEventListener("pointercancel",function(){ if(!drag) return; drag=false; rowEl.style.transition=".18s"; rowEl.style.transform=""; rowEl.style.opacity=""; });
+    })(row, idx);
     setWrap.appendChild(row);
   });
   if(ex.bo){ var boh=document.createElement("div"); boh.className="hintline"; boh.innerHTML='↳ <b>BO</b> 마지막 세트 후 50%로 실패까지 1세트'; setWrap.appendChild(boh); }
   if(dropN){ var dsh=document.createElement("div"); dsh.className="hintline"; dsh.innerHTML='↳ <b>DS</b> 무게 20-30% 낮춰 실패까지'+(dropN>1?' (연속 '+dropN+'번)':''); setWrap.appendChild(dsh); }
-  // 세트 조절 + 이월
-  var ctrl=document.createElement("div"); ctrl.className="setctrl";
-  ctrl.innerHTML='<button data-c="carry">남은 볼륨 다음 종목으로 이월 ▸</button>';
-  ctrl.querySelector('[data-c="carry"]').onclick=function(){ var remaining=want-doneN; if(remaining<=0){ toast("이월할 남은 세트가 없어요"); return; }
-    var idx=d.ex.indexOf(ex), tgt=null; for(var j=idx+1;j<d.ex.length;j++){ if(d.ex[j].bp===ex.bp){ tgt=d.ex[j]; break; } }
-    if(!tgt){ toast(ex.bp+" 부위 다음 운동이 없어요"); return; }
-    var tkt=keyFor(d.id,tgt.n)+"|"+t;
-    DB.extra[tkt]=(DB.extra[tkt]||0)+remaining; DB.extra[kt]=(DB.extra[kt]||0)-remaining; save();
-    toast(remaining+"세트 → "+tgt.n+" 이월"); renderDayBody(); };
-  setWrap.appendChild(ctrl);
-  card.appendChild(setWrap);
-  // 강도 기법 열 (레스트포즈 / 드롭) — 마지막 워킹세트만
+  if(carryAdd){ var ch=document.createElement("div"); ch.className="hintline"; ch.innerHTML='↩ <b>이월</b> 지난 세션에서 넘어온 '+carryAdd+'세트'; setWrap.appendChild(ch); }
+  // 강도 기법 — 워킹세트 바로 밑(가시성)
   var tech=ex.tech||"";
   if(tech.indexOf("레스트포즈")>=0){ var rp=document.createElement("div"); rp.className="intens rp";
-    rp.innerHTML='<span class="ilab">🔴 레스트포즈</span><span>마지막 세트: 실패까지 → 20초 쉬고 3-5회 더 (2번 반복)</span>'; card.appendChild(rp); }
+    rp.innerHTML='<span class="ilab">🔴 실패 후 추가반복</span><span>마지막 세트: 실패까지 → 20초 쉬고 3-5회 더 (2번)</span>'; setWrap.appendChild(rp); }
   if(tech.indexOf("부분반복")>=0){ var lp=document.createElement("div"); lp.className="intens lp";
-    lp.innerHTML='<span class="ilab">🟣 부분반복</span><span>마지막 세트 · 풀ROM 진행 후 신장 구간에서 부분반복 10개</span>'; card.appendChild(lp); }
+    lp.innerHTML='<span class="ilab">🟣 부분반복</span><span>마지막 세트 · 풀ROM 후 신장 구간에서 부분반복 10개</span>'; setWrap.appendChild(lp); }
+  // 이월 (다음 세션으로)
+  var ctrl=document.createElement("div"); ctrl.className="setctrl";
+  ctrl.innerHTML='<button data-c="carry">남은 세트 다음 세션으로 이월 ↩</button>';
+  ctrl.querySelector('[data-c="carry"]').onclick=function(){ var remaining=want-doneN; if(remaining<=0){ toast("이월할 남은 세트가 없어요"); return; }
+    DB.carry[k]={n:((DB.carry[k]&&DB.carry[k].from===t)?DB.carry[k].n:0)+remaining, from:t};
+    var doneSets=sess.sets.filter(function(x){return x.done;}); sess.sets.length=0; doneSets.forEach(function(x){ sess.sets.push(x); });
+    DB.extra[kt]=doneN-(ps.sets+boN+dropN); save(); persist(k,sess);
+    toast(remaining+"세트 → 다음 세션으로 이월"); renderDayBody(); };
+  setWrap.appendChild(ctrl);
+  card.appendChild(setWrap);
   // foot: e1rm + memo
   var foot=document.createElement("div"); foot.className="exfoot";
   var be=bestTop(sess), e1=e1rm(be.w,be.r);
@@ -1078,7 +1089,7 @@ function renderMore(){
   document.getElementById("ioBox").value=JSON.stringify(DB);
   document.getElementById("btnCopy").onclick=function(){ var t=document.getElementById("ioBox"); t.select(); try{document.execCommand("copy");}catch(e){} if(navigator.clipboard)navigator.clipboard.writeText(t.value); toast("클립보드에 복사됐어요"); };
   document.getElementById("btnImp").onclick=function(){ var t=document.getElementById("ioBox"); t.removeAttribute("readonly"); t.value=""; t.placeholder="백업 JSON을 붙여넣고 이 버튼을 한 번 더 누르세요"; t.focus(); this.textContent="복원 실행"; this.onclick=function(){ try{ var o=JSON.parse(t.value); if(o&&o.logs){ DB=o; save(); toast("복원 완료"); renderMore(); } else toast("형식이 올라요"); }catch(e){ toast("JSON 형식 오류"); } }; };
-  document.getElementById("btnWipe").onclick=function(){ if(this.dataset.c){ DB={day:"d1",week:0,startWeek:CUR_WEEK,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{},hrv:[],mood:{},program:null,welcomed:true}; PROGRAM=DEFAULT_PROGRAM; save(); toast("전체 삭제됐어요"); renderMore(); } else { this.dataset.c="1"; this.textContent="한 번 더 누르면 삭제"; var self=this; setTimeout(function(){self.textContent="전체 삭제"; delete self.dataset.c;},2500); } };
+  document.getElementById("btnWipe").onclick=function(){ if(this.dataset.c){ DB={day:"d1",week:0,startWeek:CUR_WEEK,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{},hrv:[],mood:{},program:null,welcomed:true,carry:{}}; PROGRAM=DEFAULT_PROGRAM; save(); toast("전체 삭제됐어요"); renderMore(); } else { this.dataset.c="1"; this.textContent="한 번 더 누르면 삭제"; var self=this; setTimeout(function(){self.textContent="전체 삭제"; delete self.dataset.c;},2500); } };
   bindCondCard();
   var bb=document.getElementById("btnBuilder"); if(bb) bb.onclick=openBuilder;
 }
