@@ -424,7 +424,7 @@ var DEFAULT_PROGRAM=[
  ]},
  {id:"d2",day:"DAY 2",focus:"하체·복근",stype:"하체",walk:8,ex:[
    {n:"레그 익스텐션 (사전 피로)",bp:"하체",s:"2set",w:"2×12-15",tech:"활성화",rest:"90초",t:6,m:"첫 종목 — 수축 1초 정지"},
-   {n:"바벨 스쿼트",bp:"하체",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",t:18,main:1,bo:1,risky:1,m:"메인 — 최대 깊이, 네거티브 3-4초"},
+   {n:"바벨 스쿼트",bp:"하체",s:"2set",w:"3×8-10",tech:"프리웨이트",rest:"2분",t:10,risky:1,m:"패턴 유지용 — 가볍게 RIR 3-4, 실패 금지. 깊이는 자세 유지되는 범위까지만."},
    {n:"레그프레스 (발 낮게·좁게)",bp:"하체",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"2분",t:10,main:1,m:"3초 이완, 1초 수축 · 깊은 무릎 굴곡"},
    {n:"레그 익스텐션 (마무리)",bp:"하체",s:"none",w:"2×12-15",tech:"부분반복",rest:"90초",t:7,m:"쿼드 완전 소진 — 마지막에 신장 구간 부분반복으로 마무리"},
    {n:"케이블 크런치",bp:"복근",s:"1set",w:"3×10-15",tech:"없음",rest:"60초",t:6,m:"중량 더블 프로그레션"}
@@ -432,7 +432,7 @@ var DEFAULT_PROGRAM=[
  {id:"d3",day:"DAY 3",focus:"등·팔·카프",stype:"전신",walk:8,ex:[
    {n:"랫 풀다운",bp:"등",s:"2set",w:"2×8-12",tech:"없음",rest:"2분",t:9,main:1,m:"Day3 메인 — 광배 쥐어짜며 마지막 세트 실패까지."},
    {n:"체스트서포티드 로우",bp:"등",s:"1set",w:"2×8-12",tech:"없음",rest:"2분",t:7,maint:1,m:"유지 볼륨 (RIR 1-2) · 가슴 받쳐 허리 부담 0"},
-   {n:"루마니안 데드리프트",bp:"하체",s:"2set",w:"2×8-10",tech:"없음",rest:"2분",t:10,risky:1,m:"힌지 패턴 — 무게보다 자세. RIR 1-2"},
+   {n:"루마니안 데드리프트",bp:"하체",s:"2set",w:"2×8-10",tech:"프리웨이트",rest:"2분",t:9,risky:1,m:"힌지 패턴 유지용 — 가볍게 RIR 3-4, 실패 금지. 무게보다 자세."},
    {n:"라잉 레그컬",bp:"하체",s:"1set",w:"2×10-12",tech:"없음",rest:"90초",t:6,m:"햄스트링(허벅지 뒤) — 수축 1초 쥐어짜고, 내릴 때 천천히 버티며 늘리기."},
    {n:"해머 컬",bp:"팔",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",t:6,m:"팔 2회차 — 상완근·전완(팔 굵기). 손 세로로 잡고.",ss:"A"},
    {n:"오버헤드 케이블 익스텐션",bp:"팔",s:"1set",w:"3×10-15",tech:"레스트포즈 20초",rest:"90초",t:6,m:"삼두 장두",ss:"A"},
@@ -744,7 +744,7 @@ function exCard(d,ex,isFirst){
   })();
   // 안전/메인 배너
   if(ex.risky){ var sb=document.createElement("div"); sb.className="banner danger";
-    sb.innerHTML='⚠️ <b>무게 욕심 버려.</b> 자세·호흡·근육인지.<br><span class="prime">선행: 브레이싱 → 힙힌지 5회 → 맥길빅3(버드독·데드버그·사이드플랭크 10초씩)</span>';
+    sb.innerHTML='⚠️ <b>패턴 유지용 — 가볍게, 실패 금지 (RIR 3-4).</b> 디스크 이력 있으니 무게 욕심 버리고 자세·브레이싱만.<br><span class="prime">선행: 브레이싱 → 힙힌지 5회 → 맥길빅3(버드독·데드버그·사이드플랭크 10초씩)</span>';
     card.appendChild(sb); }
   else if(ex.tech && ex.tech.indexOf("프리웨이트")>=0){ var fw=document.createElement("div"); fw.className="banner free";
     fw.innerHTML='🟠 <b>프리웨이트 — 자세 우선.</b> 1개 남기고(RIR 1), 통증 없는 범위.'; card.appendChild(fw); }
