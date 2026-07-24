@@ -576,7 +576,7 @@ var GUIDE=[
 /* ============ STORE ============ */
 var KEY="healthy_log_v2";
 var DB=load();
-function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)); if(o&&o.logs){ o.blocks=o.blocks||{}; o.collapsed=o.collapsed||{}; o.memos=o.memos||{}; o.extra=o.extra||{}; o.skipped=o.skipped||{}; o.hrv=o.hrv||[]; o.mood=o.mood||{}; if(o.program===undefined) o.program=null; o.welcomed=o.welcomed||false; o.carry=o.carry||{}; migrate(o); return o; } }catch(e){} return {day:"d1",week:0,startWeek:null,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{},hrv:[],mood:{},program:null,welcomed:false,carry:{}}; }
+function load(){ try{ var o=JSON.parse(localStorage.getItem(KEY)); if(o&&o.logs){ o.blocks=o.blocks||{}; o.collapsed=o.collapsed||{}; o.memos=o.memos||{}; o.extra=o.extra||{}; o.skipped=o.skipped||{}; o.hrv=o.hrv||[]; o.mood=o.mood||{}; if(o.program===undefined) o.program=null; o.welcomed=o.welcomed||false; o.carry=o.carry||{}; if(o.gymReset===undefined) o.gymReset=null; migrate(o); return o; } }catch(e){} return {day:"d1",week:0,startWeek:null,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{},hrv:[],mood:{},program:null,welcomed:false,carry:{},gymReset:null}; }
 function migrate(o){ var R={"d3|시티드 카프레이즈":"d3|스탠딩 카프레이즈"}; var moved=false;
   for(var k in R){ var nk=R[k];
     if(o.logs[k]){ if(!o.logs[nk]) o.logs[nk]=o.logs[k]; else o.logs[nk]=o.logs[nk].concat(o.logs[k]); delete o.logs[k]; moved=true; }
@@ -605,7 +605,8 @@ function sessions(k){ return DB.logs[k]||[]; }
 function sessionOn(k,date){ var a=sessions(k); for(var i=0;i<a.length;i++) if(a[i].date===date) return a[i]; return null; }
 function bestE1(sess){ if(!sess||!sess.sets) return 0; var b=0; sess.sets.forEach(function(s){ b=Math.max(b,e1rm(s.w,s.r)); }); return b; }
 function weekBestE1(k,wi){ var b=0; sessions(k).forEach(function(s){ if(weekIdx(s.date)===wi) b=Math.max(b,bestE1(s)); }); return b; }
-function lastSessionBefore(k,date){ var a=sessions(k),r=null; a.forEach(function(s){ if(s.date<date) r=s; }); return r; }
+function afterReset(dateStr){ return !DB.gymReset || dateStr>=DB.gymReset; }
+function lastSessionBefore(k,date){ var a=sessions(k),r=null; a.forEach(function(s){ if(s.date<date && afterReset(s.date)) r=s; }); return r; }
 
 /* ============ TODAY ============ */
 function progPct(){
@@ -753,7 +754,7 @@ function exCard(d,ex,isFirst){
   else if(ex.maint){ var mt=document.createElement("div"); mt.className="banner maint";
     mt.innerHTML='🟦 <b>유지.</b> RIR 1-2, 무게만 지켜.'; card.appendChild(mt); }
   // recommendation
-  var baseE=0; sessions(k).forEach(function(s){ baseE=Math.max(baseE,bestE1(s)); });
+  var baseE=0; sessions(k).forEach(function(s){ if(!afterReset(s.date)) return; baseE=Math.max(baseE,bestE1(s)); });
   var topW=0; sess.sets.forEach(function(s,ix){ if(ix<ps.sets&&s.w>topW) topW=s.w; }); if(topW===0&&prev) topW=bestTop(prev).w;
   var recWrap=document.createElement("div");
   if(ex.fixed){
@@ -761,7 +762,7 @@ function exCard(d,ex,isFirst){
   } else if(SCHEME[ex.s]!==undefined && baseE>0){
     var tr=ps.lo, base=baseE/(1+tr/30);
     recWrap.innerHTML='<div class="recos">'+recoEl("쉬움",round25(base*0.95),tr,"")+recoEl("적정",round25(base),tr,"mid")+recoEl("도전",round25(base*1.03),tr,"")+
-      '</div><div class="recohint">'+tr+'회 기준 추천. 탭=채움.</div>';
+      '</div><div class="recohint">'+tr+'회 기준 추천. 탭=채움.'+(DB.gymReset?' · 짐 변경('+DB.gymReset+') 이후 기록 기준':'')+'</div>';
   } else recWrap.innerHTML='<div class="recohint" style="margin-top:12px">첫 세트 넣으면 다음부턴 무게 추천.</div>';
   if(ex.bp==="복근") recWrap.innerHTML='<div class="recohint" style="margin-top:12px">복근 — 무게 없이 횟수만 (정자세 실패까지)</div>';
   card.appendChild(recWrap);
@@ -1061,6 +1062,10 @@ function renderMore(){
   h.innerHTML=
   condCardHTML()+
   '<div class="m-card"><h3>내 프로그램</h3><div class="sb">종목·세트·요일을 내 방식대로 편집</div><button id="btnBuilder" style="width:100%;border:0;background:var(--blue-t);color:var(--blue);font-weight:800;font-size:14px;border-radius:12px;padding:13px;cursor:pointer;">🏗️ 프로그램 편집하기</button></div>'+
+  '<div class="m-card"><h3>짐(기구) 변경 기준</h3><div class="sb">짐을 옮기면 기구마다 무게가 달라요. 기준 날짜를 정하면 <b>그 날짜 이후 기록으로만</b> 무게를 추천해요. (기록은 안 지워져요)</div>'+
+    '<div class="frow"><span class="fl">기준 날짜</span><input id="gymDate" type="date" value="'+(DB.gymReset||"")+'" style="border:0;background:var(--card2);border-radius:9px;padding:9px 10px;font-size:14px;font-weight:700;color:var(--ink);"></div>'+
+    '<div class="rowbtns"><button id="gymSet">적용</button><button id="gymClear" class="warn">해제</button></div>'+
+    (DB.gymReset?'<div class="sb" style="margin:10px 0 0;color:var(--blue)">현재 기준: <b>'+DB.gymReset+'</b> 이후 기록으로 추천 중</div>':'<div class="sb" style="margin:10px 0 0">지금은 <b>전체 기록</b>으로 추천 중</div>')+'</div>'+
   '<div class="m-card"><h3>1RM 계산기</h3><div class="sb">추정 최대 중량 (Epley)</div>'+
     '<div class="frow"><span class="fl">무게</span><div class="fin"><input id="e_w" type="number" inputmode="decimal" value="100"><span class="u">kg</span></div></div>'+
     '<div class="frow"><span class="fl">반복 횟수</span><div class="fin"><input id="e_r" type="number" inputmode="numeric" value="10"><span class="u">회</span></div></div>'+
@@ -1086,9 +1091,11 @@ function renderMore(){
   document.getElementById("ioBox").value=JSON.stringify(DB);
   document.getElementById("btnCopy").onclick=function(){ var t=document.getElementById("ioBox"); t.select(); try{document.execCommand("copy");}catch(e){} if(navigator.clipboard)navigator.clipboard.writeText(t.value); toast("클립보드에 복사됐어요"); };
   document.getElementById("btnImp").onclick=function(){ var t=document.getElementById("ioBox"); t.removeAttribute("readonly"); t.value=""; t.placeholder="백업 JSON을 붙여넣고 이 버튼을 한 번 더 누르세요"; t.focus(); this.textContent="복원 실행"; this.onclick=function(){ try{ var o=JSON.parse(t.value); if(o&&o.logs){ DB=o; save(); toast("복원 완료"); renderMore(); } else toast("형식이 올라요"); }catch(e){ toast("JSON 형식 오류"); } }; };
-  document.getElementById("btnWipe").onclick=function(){ if(this.dataset.c){ DB={day:"d1",week:0,startWeek:CUR_WEEK,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{},hrv:[],mood:{},program:null,welcomed:true,carry:{}}; PROGRAM=DEFAULT_PROGRAM; save(); toast("전체 삭제됐어요"); renderMore(); } else { this.dataset.c="1"; this.textContent="한 번 더 누르면 삭제"; var self=this; setTimeout(function(){self.textContent="전체 삭제"; delete self.dataset.c;},2500); } };
+  document.getElementById("btnWipe").onclick=function(){ if(this.dataset.c){ DB={day:"d1",week:0,startWeek:CUR_WEEK,logs:{},memos:{},blocks:{},collapsed:{},extra:{},skipped:{},hrv:[],mood:{},program:null,welcomed:true,carry:{},gymReset:null}; PROGRAM=DEFAULT_PROGRAM; save(); toast("전체 삭제됐어요"); renderMore(); } else { this.dataset.c="1"; this.textContent="한 번 더 누르면 삭제"; var self=this; setTimeout(function(){self.textContent="전체 삭제"; delete self.dataset.c;},2500); } };
   bindCondCard();
   var bb=document.getElementById("btnBuilder"); if(bb) bb.onclick=openBuilder;
+  var gs=document.getElementById("gymSet"); if(gs) gs.onclick=function(){ var v=document.getElementById("gymDate").value; if(!v){ toast("날짜를 먼저 선택하세요"); return; } DB.gymReset=v; save(); toast("짐 변경 기준 "+v+" 적용"); renderMore(); };
+  var gc=document.getElementById("gymClear"); if(gc) gc.onclick=function(){ DB.gymReset=null; save(); toast("기준 해제 — 전체 기록으로 추천"); renderMore(); };
 }
 
 /* ============ HRV (심박변이 컨디션) ============ */
