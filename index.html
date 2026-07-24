@@ -425,7 +425,7 @@ var DEFAULT_PROGRAM=[
  {id:"d2",day:"DAY 2",focus:"하체·복근",stype:"하체",walk:8,ex:[
    {n:"레그 익스텐션 (사전 피로)",bp:"하체",s:"2set",w:"2×12-15",tech:"활성화",rest:"90초",t:6,m:"첫 종목 — 수축 1초 정지"},
    {n:"바벨 스쿼트",bp:"하체",s:"3set",w:"3×8-12",tech:"레스트포즈 20초",rest:"3분",t:18,main:1,bo:1,risky:1,m:"메인 — 최대 깊이, 네거티브 3-4초"},
-   {n:"레그프레스 (발 낮게·좁게)",bp:"하체",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"2분",t:10,main:1,bo:1,m:"깊은 무릎 굴곡 · 웜업 램프 무겁게로 볼륨 → 본세트 자극 위주"},
+   {n:"레그프레스 (발 낮게·좁게)",bp:"하체",s:"1set",w:"2×10-15",tech:"드롭세트 1회",rest:"2분",t:10,main:1,m:"3초 이완, 1초 수축 · 깊은 무릎 굴곡"},
    {n:"레그 익스텐션 (마무리)",bp:"하체",s:"none",w:"2×12-15",tech:"부분반복",rest:"90초",t:7,m:"쿼드 완전 소진 — 마지막에 신장 구간 부분반복으로 마무리"},
    {n:"케이블 크런치",bp:"복근",s:"1set",w:"3×10-15",tech:"없음",rest:"60초",t:6,m:"중량 더블 프로그레션"}
  ]},
@@ -450,7 +450,7 @@ var DEFAULT_PROGRAM=[
    {n:"행잉 레그레이즈",bp:"복근",s:"none",w:"3×10-15",tech:"없음",rest:"60초",t:6,m:"하복부"}
  ]},
  {id:"d6",day:"DAY 6",focus:"하체·가슴·카프",stype:"전신",walk:8,ex:[
-   {n:"레그프레스 (발 낮게)",bp:"하체",s:"2set",w:"2×10-15",tech:"레스트포즈 20초",rest:"2분",t:11,main:1,bo:1,m:"쿼드 2회차 (무게 90%, RIR 1-2) · 웜업 램프 무겁게로 볼륨 확보 → 본세트는 자극 위주(깊이·수축)"},
+   {n:"레그프레스 (발 낮게)",bp:"하체",s:"2set",w:"2×10-15",tech:"레스트포즈 20초",rest:"2분",t:11,main:1,bo:1,m:"쿼드 2회차 (무게 90%, RIR 1-2) · 3초 이완, 1초 수축"},
    {n:"불가리안 스플릿 스쿼트 또는 워킹 런지",bp:"하체",s:"1set",w:"2×10-12",tech:"편측",rest:"2분",t:8,m:"좌우 교정 — 편측"},
    {n:"케이블 크로스오버 (로우-하이)",bp:"가슴",s:"1set",w:"2×12-15",tech:"드롭세트 1회",rest:"90초",t:6,m:"먼저 — 어깨 워밍업 + 가슴 자극 (우측 어깨 보호)"},
    {n:"머신 체스트프레스 (플랫)",bp:"가슴",s:"2set",w:"2×8-12",tech:"레스트포즈 20초",rest:"2분",t:11,main:1,bo:1,m:"가슴 메인 — 크로스오버로 예열 후 · 네거티브 3초 받고 → 폭발적으로 빵!"},
@@ -706,8 +706,7 @@ function exCard(d,ex,isFirst){
   var doneN=sess.sets.filter(function(x){return x.done;}).length;
   var boN=ex.bo?1:0;
   var dropN=(ex.tech&&ex.tech.indexOf("드롭")>=0)?((ex.tech.indexOf("트리플")>=0)?3:1):0;
-  var carryAdd=(DB.carry[k] && DB.carry[k].from < t)?DB.carry[k].n:0;
-  var want=Math.max(1, ps.sets+boN+dropN+carryAdd+(DB.extra[kt]||0), doneN);
+  var want=Math.max(1, ps.sets+boN+dropN+(DB.extra[kt]||0), doneN);
   while(sess.sets.length<want){ var i=sess.sets.length; var pv=prev&&prev.sets[i]; sess.sets.push({w:pv?pv.w:0,r:pv?pv.r:ps.lo,done:false}); }
   while(sess.sets.length>want){ sess.sets.pop(); }
   var allDone=sess.sets.length>0 && sess.sets.every(function(x){return x.done;});
@@ -715,7 +714,7 @@ function exCard(d,ex,isFirst){
   // 스킵됨 (다음 주기로 미룸)
   if(DB.skipped[kt]){
     card.className="card collapsed skipped";
-    card.innerHTML='<div class="cbar"><span class="cchk" style="background:var(--muted)">↷</span><b>'+ex.n+'</b><span class="csum">스킵 · 다음 주기로</span><span class="cexp">되돌리기</span></div>';
+    card.innerHTML='<div class="cbar"><span class="cchk" style="background:var(--up)">↩</span><b>'+ex.n+'</b><span class="csum">다음 세션으로 이월됨</span><span class="cexp">되돌리기</span></div>';
     card.querySelector(".cbar").onclick=function(){ delete DB.skipped[kt]; save(); renderDayBody(); };
     return card;
   }
@@ -735,6 +734,14 @@ function exCard(d,ex,isFirst){
   card.innerHTML='<div class="exhead"><div class="exmeta"><div class="exname">'+(ex.ss?'<span class="ss">슈퍼 '+ex.ss+'</span>':'')+ex.n+'</div>'+
     '<div class="exsub">'+ex.w.replace("×","세트 ")+'회 · 휴식 '+ex.rest+' · ⏱~'+ex.t+'분 · <span class="last">'+lastTxt+'</span></div></div>'+
     '<div class="badge">'+wow+'</div></div>';
+  // 종목 헤더를 왼쪽으로 밀면 → 통째로 다음 세션 이월
+  (function(){ var head=card.querySelector(".exhead"); if(!head) return; var x0,y0,drag=false,dx=0;
+    head.style.touchAction="pan-y";
+    head.addEventListener("pointerdown",function(e){ if(e.target.closest("input,button")) return; x0=e.clientX; y0=e.clientY; drag=true; dx=0; card.style.transition="none"; });
+    head.addEventListener("pointermove",function(e){ if(!drag) return; var a=e.clientX-x0,b=e.clientY-y0; if(Math.abs(b)>Math.abs(a)&&Math.abs(b)>8){ drag=false; card.style.transform=""; card.style.opacity=""; return; } if(a<0){ dx=Math.max(a,-130); card.style.transform="translateX("+dx+"px)"; card.style.opacity=String(Math.max(0.3,1+dx/190)); } });
+    head.addEventListener("pointerup",function(){ if(!drag) return; drag=false; card.style.transition=".2s"; if(dx<-80){ card.style.transform="translateX(-110%)"; card.style.opacity="0"; setTimeout(function(){ DB.skipped[kt]=1; delete PENDING[kt]; save(); toast(ex.n+" → 다음 세션으로 이월"); renderDayBody(); },160); } else { card.style.transform=""; card.style.opacity=""; } });
+    head.addEventListener("pointercancel",function(){ if(!drag) return; drag=false; card.style.transition=".2s"; card.style.transform=""; card.style.opacity=""; });
+  })();
   // 안전/메인 배너
   if(ex.risky){ var sb=document.createElement("div"); sb.className="banner danger";
     sb.innerHTML='⚠️ <b>무게 욕심 버려.</b> 자세·호흡·근육인지.<br><span class="prime">선행: 브레이싱 → 힙힌지 5회 → 맥길빅3(버드독·데드버그·사이드플랭크 10초씩)</span>';
@@ -766,11 +773,11 @@ function exCard(d,ex,isFirst){
   var wl=document.createElement("div"); wl.className="wlab"; wl.textContent="워킹 세트 · ← 밀면 삭제"; setWrap.appendChild(wl);
   var bw=(ex.bp==="복근");
   sess.sets.forEach(function(stt,idx){
-    var typ = idx<ps.sets ? "work" : (idx<ps.sets+boN ? "bo" : (idx<ps.sets+boN+dropN ? "ds" : (idx<ps.sets+boN+dropN+carryAdd ? "carry" : "extra")));
-    var row=document.createElement("div"); row.className="setrow"+(stt.done?" done":"")+(typ==="bo"?" bo":"")+(typ==="ds"?" ds":"")+(typ==="carry"?" carry":"");
+    var typ = idx<ps.sets ? "work" : (idx<ps.sets+boN ? "bo" : (idx<ps.sets+boN+dropN ? "ds" : "extra"));
+    var row=document.createElement("div"); row.className="setrow"+(stt.done?" done":"")+(typ==="bo"?" bo":"")+(typ==="ds"?" ds":"");
     if(typ==="bo" && !stt.w && topW) stt.w=round25(topW*0.5);
     if(typ==="ds" && !stt.w && topW) stt.w=round25(topW*0.7);
-    var lbl=typ==="bo"?"BO":(typ==="ds"?"DS":(typ==="carry"?"↩":(typ==="extra"?"＋":(idx+1))));
+    var lbl=typ==="bo"?"BO":(typ==="ds"?"DS":(typ==="extra"?"＋":(idx+1)));
     row.innerHTML='<div class="snum">'+lbl+'</div>'+
       (bw?'':stp("w",stt.w,2.5)+'<span class="unit">kg</span>')+
       stp("r",stt.r,1)+'<span class="unit">회</span>'+
@@ -795,33 +802,23 @@ function exCard(d,ex,isFirst){
   });
   if(ex.bo){ var boh=document.createElement("div"); boh.className="hintline"; boh.innerHTML='↳ <b>BO</b> 마지막 세트 후 50%로 실패까지 1세트'; setWrap.appendChild(boh); }
   if(dropN){ var dsh=document.createElement("div"); dsh.className="hintline"; dsh.innerHTML='↳ <b>DS</b> 무게 20-30% 낮춰 실패까지'+(dropN>1?' (연속 '+dropN+'번)':''); setWrap.appendChild(dsh); }
-  if(carryAdd){ var ch=document.createElement("div"); ch.className="hintline"; ch.innerHTML='↩ <b>이월</b> 지난 세션에서 넘어온 '+carryAdd+'세트'; setWrap.appendChild(ch); }
   // 강도 기법 — 워킹세트 바로 밑(가시성)
   var tech=ex.tech||"";
   if(tech.indexOf("레스트포즈")>=0){ var rp=document.createElement("div"); rp.className="intens rp";
     rp.innerHTML='<span class="ilab">🔴 실패 후 추가반복</span><span>마지막 세트: 실패까지 → 20초 쉬고 3-5회 더 (2번)</span>'; setWrap.appendChild(rp); }
   if(tech.indexOf("부분반복")>=0){ var lp=document.createElement("div"); lp.className="intens lp";
     lp.innerHTML='<span class="ilab">🟣 부분반복</span><span>마지막 세트 · 풀ROM 후 신장 구간에서 부분반복 10개</span>'; setWrap.appendChild(lp); }
-  // 이월 (다음 세션으로)
-  var ctrl=document.createElement("div"); ctrl.className="setctrl";
-  ctrl.innerHTML='<button data-c="carry">남은 세트 다음 세션으로 이월 ↩</button>';
-  ctrl.querySelector('[data-c="carry"]').onclick=function(){ var remaining=want-doneN; if(remaining<=0){ toast("이월할 남은 세트가 없어요"); return; }
-    DB.carry[k]={n:((DB.carry[k]&&DB.carry[k].from===t)?DB.carry[k].n:0)+remaining, from:t};
-    var doneSets=sess.sets.filter(function(x){return x.done;}); sess.sets.length=0; doneSets.forEach(function(x){ sess.sets.push(x); });
-    DB.extra[kt]=doneN-(ps.sets+boN+dropN); save(); persist(k,sess);
-    toast(remaining+"세트 → 다음 세션으로 이월"); renderDayBody(); };
-  setWrap.appendChild(ctrl);
   card.appendChild(setWrap);
   // foot: e1rm + memo
   var foot=document.createElement("div"); foot.className="exfoot";
   var be=bestTop(sess), e1=e1rm(be.w,be.r);
-  foot.innerHTML='<span class="e1tag">'+(e1>0?'추정 1RM <b>'+fmt(e1)+'kg</b>':'&nbsp;')+'</span><div class="footbtns">'+(allDone?'<button class="memoBtn" data-f="fold">접기 ▴</button>':'')+'<button class="memoBtn" data-f="skip">스킵</button><button class="memoBtn" data-f="memo">메모 '+(DB.memos[k]?'●':'')+'</button></div>';
+  foot.innerHTML='<span class="e1tag">'+(e1>0?'추정 1RM <b>'+fmt(e1)+'kg</b>':'&nbsp;')+'</span><div class="footbtns">'+(allDone?'<button class="memoBtn" data-f="fold">접기 ▴</button>':'')+'<button class="memoBtn" data-f="skip">이월 ↩</button><button class="memoBtn" data-f="memo">메모 '+(DB.memos[k]?'●':'')+'</button></div>';
   card.appendChild(foot);
   var mb=document.createElement("div"); mb.className="memoBox";
   mb.innerHTML='<textarea placeholder="자세 팁 · 기구 세팅값(핀/시트 높이) 등을 남겨두세요">'+(DB.memos[k]||"")+'</textarea>';
   card.appendChild(mb);
   foot.querySelector('[data-f="memo"]').onclick=function(){ mb.classList.toggle("open"); if(mb.classList.contains("open")) mb.querySelector("textarea").focus(); };
-  foot.querySelector('[data-f="skip"]').onclick=function(){ DB.skipped[kt]=1; delete PENDING[kt]; save(); toast(ex.n+" 스킵 — 다음 주기로"); renderDayBody(); };
+  foot.querySelector('[data-f="skip"]').onclick=function(){ DB.skipped[kt]=1; delete PENDING[kt]; save(); toast(ex.n+" → 다음 세션으로 이월"); renderDayBody(); };
   var fbtn=foot.querySelector('[data-f="fold"]'); if(fbtn) fbtn.onclick=function(){ DB.collapsed[kt]=1; delete PENDING[kt]; save(); renderDayBody(); };
   mb.querySelector("textarea").addEventListener("input",function(){ DB.memos[k]=this.value; save(); });
   if(DB.memos[k]){ var pn=document.createElement("div"); pn.className="pinned"; pn.innerHTML='<span class="pin">📌</span><span>'+esc(DB.memos[k])+'</span>'; card.appendChild(pn); }
